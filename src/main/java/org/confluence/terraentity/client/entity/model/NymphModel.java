@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.entity.monster.Nymph;
 import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.cache.object.GeoBone;
 
 public class NymphModel<T extends Nymph> extends GeoNormalModel<T> {
     private final ResourceLocation animation;
@@ -31,23 +32,27 @@ public class NymphModel<T extends Nymph> extends GeoNormalModel<T> {
 
     @Override
     public ResourceLocation getTextureResource(T entity) {
-        if(!entity.isTrigger()){
+        if (!entity.isTrigger()) {
             return tex;
         }
-        if(entity.getHealth() > entity.getMaxHealth() * 0.5){
+        if (entity.getHealth() > entity.getMaxHealth() * 0.5) {
             return tex_dark;
         }
         return tex_dark_blood;
     }
+
     @Override
     public ResourceLocation getAnimationResource(T entity) {
         return animation;
     }
 
     public void setCustomAnimations(T animatable, long instanceId, AnimationState<T> animationState) {
-        if(animatable.isTamed())
-            this.getAnimationProcessor().getBone(getHeadName()).setRotZ(0);
+        if (animatable.isTamed()) {
+            GeoBone bone = getHead();
+            if (bone != null) {
+                bone.setRotZ(0);
+            }
+        }
         super.setCustomAnimations(animatable, instanceId, animationState);
     }
-
 }

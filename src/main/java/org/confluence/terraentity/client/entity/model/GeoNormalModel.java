@@ -2,6 +2,7 @@ package org.confluence.terraentity.client.entity.model;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animation.AnimationState;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -10,25 +11,22 @@ import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.model.data.EntityModelData;
 
 public class GeoNormalModel<T extends GeoEntity> extends DefaultedEntityGeoModel<T> {
-
-    GeoBone head;
-    String headName = "Head";
-    private ResourceLocation path;
+    protected GeoBone head;
+    protected final ResourceLocation path;
 
     public GeoNormalModel(ResourceLocation path) {
         this(path, true);
     }
 
     public GeoNormalModel(ResourceLocation path, boolean turnsHead) {
-        super(path, turnsHead);
+        super(path, turnsHead ? "Head" : null);
         this.path = path;
     }
 
     public GeoNormalModel(GeoNormalModel<T> model) {
-        super(model.path, model.turnsHead);
-        this.path = model.path;
-        this.headName = model.headName;
+        super(model.path, model.headBone);
         this.head = model.head;
+        this.path = model.path;
     }
 
     @Override
@@ -37,8 +35,8 @@ public class GeoNormalModel<T extends GeoEntity> extends DefaultedEntityGeoModel
     }
 
     public void setCustomAnimations(T animatable, long instanceId, AnimationState<T> animationState) {
-        if (this.turnsHead) {
-            if (this.head == null){
+        if (this.headBone != null) {
+            if (this.head == null) {
                 this.head = getHead();
             }
             if (this.head != null) {
@@ -49,17 +47,16 @@ public class GeoNormalModel<T extends GeoEntity> extends DefaultedEntityGeoModel
         }
     }
 
-    protected GeoBone getHead(){
-        return this.getAnimationProcessor().getBone(getHeadName());
+    protected @Nullable GeoBone getHead() {
+        return getAnimationProcessor().getBone(getHeadName());
     }
 
-    protected String getHeadName(){
-        return headName;
+    protected @Nullable String getHeadName() {
+        return headBone;
     }
 
-    public GeoNormalModel<T> setHeadName(String headName){
-        this.headName = headName;
+    public GeoNormalModel<T> setHeadName(String headName) {
+        this.headBone = headName;
         return this;
     }
-
 }
