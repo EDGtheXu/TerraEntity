@@ -156,6 +156,11 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.track_type.basis", "Basis Track");
 
         // hit effect
+
+        add("terra_entity.effect.strategy.set_fire", "Set fire");
+        add("terra_entity.effect.strategy.yoyo_bee", "Summon Bee");
+
+
         add("terra_entity.effect.strategy.mud", "Mud");
         add("terra_entity.effect.strategy.bat", "Blood absorb +1 hp");
         add("terra_entity.effect.strategy.lights_bane", "Summon lights bane");

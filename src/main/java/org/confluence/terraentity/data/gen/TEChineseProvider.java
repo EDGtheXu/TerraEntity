@@ -556,6 +556,10 @@ public class TEChineseProvider extends LanguageProvider {
         add("terra_entity.track_type.basis", "基平面");
 
         // hit effect
+        add("terra_entity.effect.strategy.set_fire", "着火啦");
+        add("terra_entity.effect.strategy.yoyo_bee", "召唤蜜蜂");
+
+
         add("terra_entity.effect.strategy.mud", "泥潭");
         add("terra_entity.effect.strategy.snapthorn", "中毒");
         add("terra_entity.effect.strategy.firecracker", "烈火焚身");
