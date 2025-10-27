@@ -56,7 +56,7 @@ public abstract class BaseProj<T extends BaseProj<T>> extends Projectile impleme
     CollisionProperties collisionProperties = new CollisionProperties(1,1,0.5f);
     protected double accelerationPower = 0.1;
     protected float power = 0.4f;
-    protected boolean canBeAttacked = true;
+    protected boolean canBeAttacked = false;
 
 
 
