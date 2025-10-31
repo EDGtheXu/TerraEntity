@@ -499,7 +499,7 @@ public class TEChineseProvider extends LanguageProvider {
 
 
         // Tooltip
-        add("tooltic.terra_entity.summon_item.desc", "长按以解除所有召唤物");
+        add("tooltic.terra_entity.summon_item.desc", "右键长按以解除所有召唤物");
 
         add("tooltip.terra_entity.summon_item_cost", "仆从占用: %s");
         add("tooltip.terra_entity.summon_item_entity", "仆从类型: %s");

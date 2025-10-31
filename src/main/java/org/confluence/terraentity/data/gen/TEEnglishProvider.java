@@ -100,7 +100,7 @@ public class TEEnglishProvider extends LanguageProvider {
 
 
         // Tooltip
-        add("tooltic.terra_entity.summon_item.desc", "Press for a while to release all summons");
+        add("tooltic.terra_entity.summon_item.desc", "Hold right-click to release all summons");
 
 
         add("tooltip.terra_entity.summon_item_cost", "Summon Cost: %d");
