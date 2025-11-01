@@ -81,6 +81,23 @@ public class SpawnPlacementChecks {
         return true;
     }
 
+    public static boolean checkGoblinScoutSpawn(EntityType<? extends Mob> type, ServerLevelAccessor pLevel, MobSpawnType pSpawnType, BlockPos pPos, RandomSource pRandom) {
+        if (!(pLevel instanceof Level level)) {
+            return false; // 如果 pLevel 不是 Level 的实例，返回 false
+        }
+
+        if (!checkTEMonsterWithConfig(type, pLevel, pSpawnType, pPos, pRandom)) {
+            return false;
+        }
+
+        int y = pPos.getY();
+        if (y < 60 || y >= 260) {
+            return false; // 只能生成在 y = 60 到 y = 260 之间
+        }
+
+        return level.isDay();
+    }
+
     public static boolean checkOnlyDayMonsterSpawn(EntityType<? extends Mob> type, ServerLevelAccessor pLevel, MobSpawnType pSpawnType, BlockPos pPos, RandomSource pRandom) {
         if (!(pLevel instanceof Level level)) {
             return false; // 如果 pLevel 不是 Level 的实例，返回 false
