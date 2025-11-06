@@ -121,7 +121,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> GIANT_WORM = TEEntities.registerMonster("giant_worm", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> LEECH = TEEntities.registerMonster("leech", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     // 卷壳怪
-    public static final DeferredHolder<EntityType<?>, EntityType<GiantShelly>> GIANT_SHELLY = TEEntities.registerMonster("giant_shelly", GiantShelly::new, 0.8F, 0.8F);
+    public static final DeferredHolder<EntityType<?>, EntityType<GiantShelly>> GIANT_SHELLY = TEEntities.registerMonster("giant_shelly", GiantShelly::new, 1F, 1F);
     // 宁芙
     public static final DeferredHolder<EntityType<?>, EntityType<Nymph>> NYMPH = TEEntities.registerMonster("nymph", Nymph::new, 0.8F, 1.95F);
     // 抓人草
@@ -239,7 +239,7 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.GIANT_WORM.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.GIANT_WORM.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.LEECH.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.LEECH.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.TOMB_CRAWLER.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.TOMB_CRAWLER.getId(), 2.0f, 0.0f));
-        event.registerEntityRenderer(TEMonsterEntities.GIANT_SHELLY.get(), c -> new GeoNormalRenderer<>(c, new VariantTexModel<>(TEMonsterEntities.GIANT_SHELLY.getId()), false, 2, 0));
+        event.registerEntityRenderer(TEMonsterEntities.GIANT_SHELLY.get(), c -> new GeoNormalRenderer<>(c, new VariantTexModel<>(TEMonsterEntities.GIANT_SHELLY.getId()), false, 1, 0));
         // bat
         event.registerEntityRenderer(TEMonsterEntities.CAVE_BAT.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CAVE_BAT.getId(), false));
         event.registerEntityRenderer(TEMonsterEntities.JUNGLE_BAT.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.JUNGLE_BAT.getId(), false));
