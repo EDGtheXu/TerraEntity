@@ -140,7 +140,7 @@ public final class TEEffectStrategies {
 
         /**猎弓*/
         public static final Supplier<EffectStrategyComponent>  HUNTING_RIFLE_EFFECT = ()->EffectStrategyComponent.of(
-                TimePossibilityAmplifierEffect.of("hunting_4_sec", TEEffects.SUMMON_FOCUS, 80));
+                TimePossibilityAmplifierEffect.of("hunting_4_sec", TEEffects.SUMMON_FOCUS, 160));
 
         /**火山*/
         public static final Supplier<EffectStrategyComponent> HELL_FIRE_EFFECT = ()->new EffectStrategyComponent(List.of(
