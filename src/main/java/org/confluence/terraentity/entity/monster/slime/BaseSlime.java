@@ -66,13 +66,13 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
 
     }
 
-    Predicate<FloatRGB> colorTest = c->c.equals(SlimeColor_Green) || c.equals(SlimeColor_Blue) || c.equals(SlimeColor_Purple);
+    Predicate<FloatRGB> colorTest = c -> c.equals(SlimeColor_Green) || c.equals(SlimeColor_Blue) || c.equals(SlimeColor_Purple);
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.targetSelector.removeAllGoals(gt->true);
-        this.targetSelector.addGoal(1,new KingSlime.HurtByTargetGoal(this));
+        this.targetSelector.removeAllGoals(gt -> true);
+        this.targetSelector.addGoal(1, new KingSlime.HurtByTargetGoal(this));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (liv) -> {
             return Math.abs(liv.getY() - this.getY()) <= 4.0 && (!colorTest.test(this.color) || this.level().isNight());
         }));
@@ -92,11 +92,11 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
         if (!(pLevel instanceof Level level)) {
             return false;
         }
-        if(ServerConfig.SPAWN_WITHOUT_LIGHT.get()){
+        if (ServerConfig.SPAWN_WITHOUT_LIGHT.get()) {
             if (!checkMobSpawnRules(type, pLevel, pSpawnType, pPos, pRandom)) {
                 return false;
             }
-        }else{
+        } else {
             if (!isDarkEnoughToSpawn(pLevel, pPos, pRandom) || !checkMobSpawnRules(type, pLevel, pSpawnType, pPos, pRandom)) {
                 return false;
             }
@@ -144,16 +144,16 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
                 this.getType().equals(TEMonsterEntities.PURPLE_SLIME.get()))) {
             addHoneySoakTime();
         }
-        if(this.getVehicle() != null){
+        if (this.getVehicle() != null) {
             this.setYRot(this.getVehicle().getYRot());
         }
         super.tick();
     }
 
     private void addHoneySoakTime() {
-        if (!level().isClientSide && level().getBlockState(this.blockPosition()).is(TETags.Blocks.HONEY)){
+        if (!level().isClientSide && level().getBlockState(this.blockPosition()).is(TETags.Blocks.HONEY)) {
             honeySoakTime++;
-            if (honeySoakTime >= 120){
+            if (honeySoakTime >= 120) {
                 HoneySlime slime = TEMonsterEntities.HONEY_SLIME.get().create(level());
                 if (slime != null) {
                     slime.setSize(2, true);
@@ -218,10 +218,12 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
         }
         return super.isInWater();
     }
+
     @Override
     protected boolean isDealsDamage() {
         return this.isEffectiveAi();
     }
+
     @Override
     protected void dealDamage(@NotNull LivingEntity pLivingEntity) {
         if (isAlive()) {
@@ -247,7 +249,7 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
         if (level() instanceof ServerLevel level && getType() == TEMonsterEntities.LAVA_SLIME.get() && TEUtils.isAtLeastExpert(level, blockPosition())) {
             BlockPos containing = BlockPos.containing(position());
             BlockState blockState = level.getBlockState(containing);
-            if (blockState.isAir() || blockState.canBeReplaced(Fluids.LAVA)) {
+            if (blockState.canBeReplaced(Fluids.LAVA) && !blockState.getFluidState().isSourceOfType(Fluids.LAVA)) {
                 level.setBlock(containing, Blocks.LAVA.defaultBlockState().setValue(BlockStateProperties.LEVEL, 14), Block.UPDATE_ALL);
                 level.scheduleTick(containing, Blocks.LAVA, 2);
             }
