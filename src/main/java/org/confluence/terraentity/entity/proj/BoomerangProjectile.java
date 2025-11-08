@@ -115,7 +115,7 @@ public class BoomerangProjectile extends Projectile {
                 hurter = part.getParent();
             }
             if(this.getOwner() instanceof LivingEntity owner && this.getOwner() != actualHurter) {
-                DamageSource source = this.damageSources().mobProjectile(this, owner);
+                DamageSource source = this.damageSources().mobAttack(owner); // 回旋镖是近战伤害
                 if (hurter instanceof LivingEntity living && actualHurter.isAlive() && TEUtils.projectileCanHurtEntityTest.test(this, living)) {
                     penetrationCount--;
                     float damage = (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE) + modifier.damage - 1;
