@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.confluence.lib.util.ScheduledForMove;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.item.ILeftClickStateItem;
 import org.confluence.terraentity.attachment.WeaponStorage;
@@ -25,6 +26,7 @@ import org.confluence.terraentity.utils.TEUtils;
 import java.util.EnumMap;
 import java.util.function.Consumer;
 
+@ScheduledForMove(since = "1.2.0", inVersion = "2.0.0")
 public class ServerBoundEventPacket implements CustomPacketPayload{
     private enum TypeEnum {
         SUMMON_SKELETRON,
