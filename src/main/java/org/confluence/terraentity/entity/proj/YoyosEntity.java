@@ -24,6 +24,7 @@ import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.terraentity.api.item.ILeftClickReceiver;
 import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.entity.summon.AbstractSummonMob;
+import org.confluence.terraentity.item.Boomerang;
 import org.confluence.terraentity.item.YoyosItem;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
 import org.confluence.terraentity.utils.TEUtils;
@@ -169,6 +170,10 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
             data.yoyosEntity = null;
             if (owner instanceof Player player) {
                 player.getCooldowns().removeCooldown(item);
+
+                if (WeaponStorage.of(player).leftClicking){
+                    item.onLeftClick(player, item.getDefaultInstance());
+                }
             }
         }
     }

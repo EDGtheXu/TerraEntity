@@ -21,6 +21,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.IGeneration;
+import org.confluence.terraentity.api.item.ILeftClickStateItem;
 import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.data.component.EffectStrategyComponent;
 import org.confluence.terraentity.data.component.SingleBooleanComponent;
@@ -40,7 +41,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Boomerang extends Item {
+public class Boomerang extends Item implements ILeftClickStateItem {
 
     public final BoomerangModifier boomerangModifier;
     private final IGeneration generation = new ForwardGeneration(0,1.0f);
@@ -56,6 +57,9 @@ public class Boomerang extends Item {
      * 是否已经准备好射击
      */
     public static boolean isBacked(ItemStack stack){
+        TerraEntity.LOGGER.debug(String.valueOf(stack == null));
+        TerraEntity.LOGGER.debug(String.valueOf(stack.get(TEDataComponentTypes.BOOMERANG_READY) == null));
+        TerraEntity.LOGGER.debug(String.valueOf(stack.get(TEDataComponentTypes.BOOMERANG_READY).value()));
         if(stack == null || stack.get(TEDataComponentTypes.BOOMERANG_READY) == null) return true;
         return stack.get(TEDataComponentTypes.BOOMERANG_READY).value();
     }
@@ -103,6 +107,51 @@ public class Boomerang extends Item {
         }
         else player.getCooldowns().addCooldown(this, 100); //最大等待时间
         return super.use(level, player, usedHand);
+    }
+
+
+    @Override
+    public void onLeftClick(Player player, ItemStack itemStack) {
+        if(player.swingingArm == InteractionHand.OFF_HAND) return;
+        ItemStack stack = player.getItemInHand(player.swingingArm == null ? InteractionHand.MAIN_HAND : player.swingingArm);
+        // 等待返回且未到达最大等待时间
+        if(boomerangModifier.shouldWaitForBack && !isBacked(stack)
+                && player.getCooldowns().isOnCooldown(this)
+        ) {
+            return;
+        }
+        // 冷却
+        if(boomerangModifier.shouldApplyCd && player.getCooldowns().isOnCooldown(this))
+            return;
+        // 动作
+        if(player.level().isClientSide) {
+            player.swing(InteractionHand.MAIN_HAND);
+        }
+        // 射击
+        setBacked(stack,SingleBooleanComponent.FALSE);
+        player.playSound(TESounds.WAVING.get());
+        this.shoot(player, stack);
+
+        int addition = TEEnchantmentHelper.getEnchantmentLevel(TEEnchantments.MULTI_BOOMERANG, stack);
+        if(boomerangModifier.shouldApplyCd || addition > 0) {
+
+            int count = WeaponStorage.of(player).tryIncrease(this);
+            if(count < boomerangModifier.maxCount + addition) {
+                player.getCooldowns().addCooldown(this, boomerangModifier.cd);
+            }
+            else player.getCooldowns().addCooldown(this, 100); //最大等待时间
+        }
+        else player.getCooldowns().addCooldown(this, 100); //最大等待时间
+    }
+
+    @Override
+    public void onLeftRelease(Player player, ItemStack itemStack) {
+
+    }
+
+    @Override
+    public boolean canSwitchWithoutRelease(Player player, ItemStack itemStack) {
+        return false;
     }
 
     private void shoot(LivingEntity owner, ItemStack stack){

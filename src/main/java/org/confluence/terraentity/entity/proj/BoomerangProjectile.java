@@ -9,6 +9,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -288,6 +289,10 @@ public class BoomerangProjectile extends Projectile {
 
                 player.getCooldowns().removeCooldown(weapon.getItem());
 
+                if (WeaponStorage.of(player).leftClicking){
+                    Boomerang boomerang = (Boomerang) weapon.getItem();
+                    boomerang.onLeftClick(player, weapon);
+                }
             }
 
         }
