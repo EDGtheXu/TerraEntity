@@ -2,7 +2,7 @@
     "parent": "block/chain",
     "render_type": "cutout",
     "textures": {
-        "particle": "terra_entity:item/whip_model_tex/chain/emerald_chain",
-        "all": "terra_entity:item/whip_model_tex/chain/emerald_chain"
+        "particle": "terra_entity:item/whip_model_tex/chain/jade_chain",
+        "all": "terra_entity:item/whip_model_tex/chain/jade_chain"
     }
 }
