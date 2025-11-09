@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import org.confluence.lib.util.ScheduledForMove;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.integration.curios.CuriosHelper;
 
@@ -50,6 +51,7 @@ public class TETags {
 
     }
 
+    @ScheduledForMove(since = "1.2.0", inVersion = "2.0.0")
     public static class DamageTypes {
         // 玩家召唤伤害 如鞭子
         public static final ResourceKey<DamageType> SUMMON = registerDamageType("summon");

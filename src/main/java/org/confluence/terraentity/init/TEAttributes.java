@@ -5,8 +5,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.confluence.lib.util.ScheduledForMove;
 import org.confluence.terraentity.TerraEntity;
 
+@ScheduledForMove(since = "1.2.0", inVersion = "2.0.0")
 public final class TEAttributes {
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, TerraEntity.MODID);
 
