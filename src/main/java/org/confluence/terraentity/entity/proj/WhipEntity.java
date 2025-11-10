@@ -1,5 +1,6 @@
 package org.confluence.terraentity.entity.proj;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -12,7 +13,9 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
@@ -38,10 +41,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WhipEntity extends Projectile {
     /**
@@ -92,6 +92,9 @@ public class WhipEntity extends Projectile {
     List<Vec3KeyframeAnimation> parts;
     // 关键点插值器
     public SplineKeyframeDynamicCurve<Vec3KeyframeAnimation> interpolator;
+
+    // 记录已击中的方块
+    List<Vec3> hittedPos = new ArrayList<>(Collections.emptyList());
 
     // 攻速
     public double speed = 1;
@@ -228,6 +231,24 @@ public class WhipEntity extends Projectile {
             Vec3 pos = attackPoint.add(initialPosition);
             AABB aabb = new AABB(pos.x - range, pos.y - range, pos.z - range,
                     pos.x + range, pos.y + range, pos.z + range);
+
+            if (!level().isClientSide){
+                for (int x0 = (int) (pos.x - range); x0 <= pos.x + range; x0++){
+                    for (int y0 = (int) (pos.y - range); y0 <= pos.y + range; y0++){
+                        for (int z0 = (int) (pos.z - range); z0 <= pos.z + range; z0++){
+                            Vec3 forwardP = new Vec3(x0,y0,z0);
+                            if (!hittedPos.contains(forwardP)){
+                                BlockPos blockPos = BlockPos.containing(forwardP);
+                                BlockState blockstate = level().getBlockState(blockPos);
+                                BlockHitResult blockHitResult = new BlockHitResult(forwardP, this.getDirection(), blockPos, true);
+                                blockstate.onProjectileHit(level(), blockstate, blockHitResult, this);
+                                hittedPos.add(forwardP);
+                            }
+                        }
+                    }
+                }
+            }
+
             for (var entity : level().getEntities(this, aabb, e -> e != getOwner())) {
                 IAttackableProjectile.tryHit(entity, getDamageSource());
 
