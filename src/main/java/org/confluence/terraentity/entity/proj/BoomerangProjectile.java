@@ -28,6 +28,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.EventHooks;
+import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;
 import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.config.ClientConfig;
@@ -289,7 +290,7 @@ public class BoomerangProjectile extends Projectile {
 
                 player.getCooldowns().removeCooldown(weapon.getItem());
 
-                if (WeaponStorage.of(player).leftClicking){
+                if (WeaponStorage.of(player).leftClicking && weapon.is(player.getWeaponItem().getItem())){
                     Boomerang boomerang = (Boomerang) weapon.getItem();
                     boomerang.onLeftClick(player, weapon);
                 }
