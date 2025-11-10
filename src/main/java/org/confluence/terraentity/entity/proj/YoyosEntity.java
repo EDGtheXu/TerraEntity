@@ -14,17 +14,18 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.terraentity.api.item.ILeftClickReceiver;
 import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.entity.summon.AbstractSummonMob;
-import org.confluence.terraentity.item.Boomerang;
 import org.confluence.terraentity.item.YoyosItem;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
 import org.confluence.terraentity.utils.TEUtils;
@@ -100,6 +101,17 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
             this.retrieveTicks++;
             Vec3 force = dist.normalize().scale(this.retrieveTicks * 1.0f / this.maxRetrieveTicks);
             this.addDeltaMovement(force);
+        }
+
+        // 骗方块让它以为自己被箭击中，用于破罐。
+        // 还是建议把悠悠球本身改成射弹而不是召唤物...
+        if (!level().isClientSide){
+            Vec3 forwardP = this.position().add(this.getOwner().position().vectorTo(this.position()).normalize().multiply(0.5,0.5,0.5));
+            BlockPos blockPos = BlockPos.containing(forwardP);
+            BlockState blockstate = level().getBlockState(blockPos);
+            BlockHitResult blockHitResult = new BlockHitResult(forwardP, this.getDirection(), blockPos, false);
+            blockstate.onProjectileHit(level(), blockstate, blockHitResult,
+                    new Arrow(level(), this.getOwner(), this.getOwner().getWeaponItem(), this.getOwner().getWeaponItem()));
         }
     }
 

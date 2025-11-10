@@ -5,7 +5,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -18,7 +17,6 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.IGeneration;
 import org.confluence.terraentity.api.item.ILeftClickStateItem;
@@ -83,6 +81,7 @@ public class Boomerang extends Item implements ILeftClickStateItem {
         if(boomerangModifier.shouldApplyCd && player.getCooldowns().isOnCooldown(this))
             return;
         // 动作
+        // TODO: 像悠悠球那样丢掷时显示手臂
         if(player.level().isClientSide) {
             player.swing(InteractionHand.MAIN_HAND);
         }
