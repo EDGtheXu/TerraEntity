@@ -157,13 +157,9 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
     protected void onHitBlock(BlockHitResult result) {
         if(!isBacking){
             this.playSound(SoundEvents.WOOD_PLACE, 0.5f, 1.5f);
+            Vec3 normal = Vec3.atLowerCornerOf(result.getDirection().getNormal()).normalize();
+            this.setDeltaMovement(this.getDeltaMovement().add(normal.multiply(this.getDeltaMovement().multiply(normal)).multiply(-1,-1,-1)));
         }
-        Vec3 normal = Vec3.atLowerCornerOf(result.getDirection().getNormal()).normalize();
-        this.setDeltaMovement(this.getDeltaMovement().add(normal.multiply(this.getDeltaMovement().multiply(normal)).multiply(-1,-1,-1)));
-        //isBacking = true;
-
-        //this.noPhysics = true;
-
         super.onHitBlock(result);
         if(level().isClientSide) {
             BlockPos blockpos = result.getBlockPos();
