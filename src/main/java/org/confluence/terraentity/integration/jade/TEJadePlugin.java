@@ -10,7 +10,6 @@ public final class TEJadePlugin implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
         registration.hideTarget(TESummonEntities.TERRAPRISMA.get()); // 泰拉棱镜不阻挡Jade
-        registration.hideTarget(TESummonEntities.YOYOS_ENTITY.get());
 
 //        registration.registerEntityComponent(TerraprismaJadeProvider.INSTANCE, SummonSword.class);
     }

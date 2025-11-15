@@ -57,6 +57,8 @@ public class TEProjectileEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeeProj>> BEE_PROJ = registerProj("bee_proj", BeeProj::new, 1.2F, 1.2F);
 
+    //悠悠球
+    public static final DeferredHolder<EntityType<?>, EntityType<YoyosEntity>> YOYO_PROJ = registerProj("yoyo_projectile", YoyosEntity::new, 0.5f, 0.5f);
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -83,6 +85,9 @@ public class TEProjectileEntities {
         event.registerEntityRenderer(TRAIL_SWORD_PROJECTILE.get(), TrailSwordProjectileRenderer::new);
 
         event.registerEntityRenderer(BEE_PROJ.get(), c->new ProjRenderer<>(c, new BeeProjModel(c.bakeLayer(BeeProjModel.LAYER_LOCATION))));
+
+        //悠悠球
+        event.registerEntityRenderer(YOYO_PROJ.get(), (c)->new YoyosRenderer(c));
 
     }
 

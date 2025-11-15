@@ -1,6 +1,7 @@
 package org.confluence.terraentity.entity.proj;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -14,27 +15,38 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.event.EventHooks;
+import org.confluence.terraentity.api.entity.ICollisionAttackEntity;
 import org.confluence.terraentity.api.item.ILeftClickReceiver;
 import org.confluence.terraentity.attachment.WeaponStorage;
-import org.confluence.terraentity.entity.summon.AbstractSummonMob;
 import org.confluence.terraentity.item.YoyosItem;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
 import org.confluence.terraentity.utils.TEUtils;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * 悠悠球
  */
-public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver {
+public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEntity, ICollisionAttackEntity {
     boolean isBacking = false;
     int maxRetrieveTicks = 40;
     int retrieveTicks = 0;
@@ -47,9 +59,6 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
     public YoyosEntity(EntityType<? extends YoyosEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
-
-    @Override
-    protected void registerGoals() {}
 
     @Override
     public void tick() {
@@ -68,7 +77,7 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
         Vec3 lookVec = owner.getLookAngle().normalize();
         this.setXRot(0);
         this.setYRot(0);
-        this.yBodyRot = 0;
+        //this.yBodyRot = 0;
         Vec3 targetPos;
 
         float speedModifier = 1.0f;
@@ -81,7 +90,7 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
             }
         } else {
             EntityHitResult result = TEUtils.getEyeTraceHitResult(owner, maxRange);
-            if (result != null && this.canAttackTarget(result.getEntity())) {
+            if (result != null && this.canHitEntity(result.getEntity())) {
                 targetPos = result.getEntity().position().add(0, result.getEntity().getBbHeight() * 0.5f, 0);
                 if (this.position().distanceTo(targetPos) < 0.5F) {
                     this.noPhysics = true;
@@ -103,45 +112,54 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
             this.addDeltaMovement(force);
         }
 
-        // 骗方块让它以为自己被箭击中，用于破罐。
-        // 还是建议把悠悠球本身改成射弹而不是召唤物...
-        if (!level().isClientSide){
-            Vec3 forwardP = this.position().add(this.getOwner().position().vectorTo(this.position()).normalize().multiply(0.5,0.5,0.5));
-            BlockPos blockPos = BlockPos.containing(forwardP);
-            BlockState blockstate = level().getBlockState(blockPos);
-            BlockHitResult blockHitResult = new BlockHitResult(forwardP, this.getDirection(), blockPos, false);
-            blockstate.onProjectileHit(level(), blockstate, blockHitResult,
-                    new Arrow(level(), this.getOwner(), this.getOwner().getWeaponItem(), this.getOwner().getWeaponItem()));
+        doCollisionAttack(this::canAttackTarget, this::doHurtTarget);
+
+        Entity entity = this.getOwner();
+        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
+
+            HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity, ClipContext.Block.COLLIDER);
+            if (hitresult.getType() != HitResult.Type.MISS && !EventHooks.onProjectileImpact(this, hitresult)) {
+                this.hitTargetOrDeflectSelf(hitresult);
+            }
+
+            this.checkInsideBlocks();
+            Vec3 vec3 = this.getDeltaMovement();
+            double d0 = this.getX() + vec3.x;
+            double d1 = this.getY() + vec3.y;
+            double d2 = this.getZ() + vec3.z;
+            ProjectileUtil.rotateTowardsMovement(this, 0.2F);
+            float f;
+            if (!this.isInWater()) {
+                f = 0.95F;
+            } else {
+                for(int i = 0; i < 4; ++i) {
+                    float f1 = 0.25F;
+                    this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25, d1 - vec3.y * 0.25, d2 - vec3.z * 0.25, vec3.x, vec3.y, vec3.z);
+                }
+                f = 0.8F;
+            }
+            this.setDeltaMovement(vec3.add(vec3.normalize().scale(0.1)).scale(f));
+            this.setPos(d0, d1, d2);
+        } else {
+            this.discard();
         }
+
     }
 
     @Override
     protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {}
 
-    @Override
-    protected void playBlockFallSound() {}
 
     @Override
-    public float summon_getKnockback(Entity attacker, DamageSource damageSource) {
-        if (this.getOwner() == null) {
-            return 0.0f;
+    protected void onHitBlock(BlockHitResult result) {
+        if (!level().isClientSide){
+            BlockState blockstate = level().getBlockState(result.getBlockPos());
+            blockstate.onProjectileHit(level(), blockstate, result, this);
         }
-        return (float) getOwner().getAttributeValue(Attributes.ATTACK_KNOCKBACK) + 0.1f;
-    }
-
-    @Override
-    public float summon_getAttackDamage(Entity entity, ServerLevel serverLevel, DamageSource damageSource) {
-        if (this.getOwner() == null || !(getWeaponItem().getItem() instanceof YoyosItem yoyo)) {
-            return 0.0f;
-        }
-        float f = (float) getOwner().getAttributeValue(Attributes.ATTACK_DAMAGE) + yoyo.getAttackDamage();
-        f = EnchantmentHelper.modifyDamage(serverLevel, asEntity().getWeaponItem(), entity, damageSource, f);
-        return f;
     }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
         builder.define(DATA_WEAPON_ITEM, ItemStack.EMPTY);
     }
 
@@ -153,13 +171,6 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
                 this.item = yoyo;
                 this.texture = item.getTexture();
                 this.maxRange = item.getMaxRange();
-            }
-        } else if (DATA_OWNERUUID_ID.equals(key)) {
-            Entity owner = getOwner();
-            WeaponStorage data;
-            if (owner != null) {
-                data = WeaponStorage.of(owner);
-                data.yoyosEntity = this;
             }
         }
     }
@@ -191,15 +202,18 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
     }
 
     @Override
-    public int getMaxHeadXRot() {
-        return 85;
-    }
-
-    @Override
     public boolean shouldBeSaved() {
         return false;
     }
 
+    /* Geo API */
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {}
 
@@ -221,7 +235,39 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
         this.maxRange = Mth.clamp(this.maxRange + scrollAmount, 1, ((YoyosItem) itemStack.getItem()).getMaxRange());
     }
 
+    /* Collision Attack API */
+
+    CollisionProperties collisionProperties = new CollisionProperties(5, 5, 0.75f);
+
+    public CollisionProperties getCollisionProperties() {
+        return collisionProperties;
+    }
+
     @Override
+    public boolean shouldDoCollision() {
+        return true;
+    }
+
+    public void doCollisionAttack(Predicate<Entity> filter, Consumer<Entity> attackCallback){
+        if(!this.shouldDoCollision() || this.collision$getSelf().level().isClientSide) return;
+        CollisionProperties properties = this.getCollisionProperties();
+        properties.reduceAttackInterval();
+        if (this.canCollisionHurt() && !this.collision$getSelf().level().isClientSide && properties.canAttack()) {
+            // 包围盒检测造成伤害
+            List<Entity> entities = this.collision$getSelf().level().getEntities(this.collision$getSelf(), this.collision$getSelf().getBoundingBox().inflate(properties.attackRangeExtent), e-> e!= this.collision$getSelf());
+            if (!entities.isEmpty()) {
+                for (var e : entities) {
+                    if (filter.test(e) ){
+                        attackCallback.accept(e);
+                        properties.rewind();
+                    }
+                }
+            }else{
+                properties.reDetect();
+            }
+        }
+    }
+
     public boolean canAttackTarget(Entity target) {
         Entity entity = getOwner();
         // 不能攻击主人
@@ -236,14 +282,8 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
         return entity == null || !entity.isPassengerOfSameVehicle(target);
     }
 
-    @Override
-    public boolean shouldDoCollision() {
-        return true;
-    }
-
-    @Override
     public boolean doHurtTarget(Entity entity) {
-        if (super.doHurtTarget(entity)) {
+        if (summon_doHurtTarget(entity)) {
             LivingEntity target = null;
             if (entity instanceof LivingEntity living) {
                 target = living;
@@ -253,14 +293,45 @@ public class YoyosEntity extends AbstractSummonMob implements ILeftClickReceiver
             if (target != null) {
                 IEffectStrategy effectStrategy = this.item.getEffectStrategy();
                 if (effectStrategy != null) {
-                    effectStrategy.getEffect().accept(this.getOwner(), target);
+                    effectStrategy.getEffect().accept((LivingEntity) this.getOwner(), target);
                 }
-                ItemStack stack = getMainHandItem();
-                if (getOwner() != null) {
-                    stack.hurtAndBreak(1, getOwner(), EquipmentSlot.MAINHAND);
+                ItemStack stack = getWeaponItem();
+                if (getOwner() != null && getOwner() instanceof LivingEntity owner && stack != null) {
+                    stack.hurtAndBreak(1, owner, EquipmentSlot.MAINHAND);
                 }
                 return true;
             }
+        }
+        return false;
+    }
+
+    public boolean summon_doHurtTarget(Entity entity) {
+        if (getOwner() instanceof LivingEntity owner){
+
+            float f = 0;
+            DamageSource damagesource = this.damageSources().mobAttack(owner);
+            Level var5 = this.level();
+            if (var5 instanceof ServerLevel) {
+                f = item.getAttackDamage();
+            }
+            // 事件统一处理
+//        f += (float) summon_getOwner().getAttributeValue(TEAttributes.MARK_DAMAGE);
+            boolean flag = entity.hurt(damagesource, f);
+            if (flag) {
+                float f1 = (float) (owner.getAttributeValue(Attributes.ATTACK_KNOCKBACK) + 0.1f);
+                if (f1 > 0.0F && entity instanceof LivingEntity livingentity) {
+                    livingentity.knockback(f1 * 0.5F, Mth.sin(this.getYRot() * 0.017453292F), -Mth.cos(this.getYRot() * 0.017453292F));
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.6, 1.0, 0.6));
+                }
+
+                if (this.level() instanceof ServerLevel level) {
+                    EnchantmentHelper.doPostAttackEffects(level, entity, damagesource);
+                }
+
+                owner.setLastHurtMob(entity);
+//            asEntity().playAttackSound();
+            }
+            return flag;
         }
         return false;
     }
