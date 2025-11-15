@@ -1,12 +1,14 @@
 package org.confluence.terraentity.entity.proj;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -139,7 +141,8 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
                 f = 0.8F;
             }
             this.setDeltaMovement(vec3.add(vec3.normalize().scale(0.1)).scale(f));
-            this.setPos(d0, d1, d2);
+
+            this.setPos(this.position().add(this.getDeltaMovement()));
         } else {
             this.discard();
         }
@@ -152,9 +155,23 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        if (!level().isClientSide){
-            BlockState blockstate = level().getBlockState(result.getBlockPos());
-            blockstate.onProjectileHit(level(), blockstate, result, this);
+        if(!isBacking){
+            this.playSound(SoundEvents.WOOD_PLACE, 0.5f, 1.5f);
+        }
+        Vec3 normal = Vec3.atLowerCornerOf(result.getDirection().getNormal()).normalize();
+        this.setDeltaMovement(this.getDeltaMovement().add(normal.multiply(this.getDeltaMovement().multiply(normal)).multiply(-1,-1,-1)));
+        //isBacking = true;
+
+        //this.noPhysics = true;
+
+        super.onHitBlock(result);
+        if(level().isClientSide) {
+            BlockPos blockpos = result.getBlockPos();
+            BlockState blockstate = this.level().getBlockState(blockpos);
+            Vec3 dir = this.getDeltaMovement().normalize().scale(2);
+            Vec3 mid = new Vec3(blockpos.getX()+0.5f , blockpos.getY()+0.5f, blockpos.getZ()+0.5f).add(Vec3.atLowerCornerOf(result.getDirection().getNormal()));
+            this.level().addParticle((new BlockParticleOption(ParticleTypes.BLOCK, blockstate)).setPos(blockpos), mid.x, mid.y, mid.z, -dir.x, -dir.y, -dir.z);
+            this.level().addParticle((new BlockParticleOption(ParticleTypes.BLOCK, blockstate)).setPos(blockpos), mid.x, mid.y, mid.z, -dir.x, -dir.y, -dir.z);
         }
     }
 

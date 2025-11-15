@@ -161,10 +161,6 @@ public class BoomerangProjectile extends Projectile {
     }
     @Override
     protected void onHitBlock(BlockHitResult result) {
-
-        BlockState blockstate = level().getBlockState(result.getBlockPos());
-        blockstate.onProjectileHit(level(), blockstate, result, this);
-
         if(!isBacking){
             this.playSound(SoundEvents.WOOD_PLACE, 0.5f, 1.5f);
         }
@@ -176,7 +172,7 @@ public class BoomerangProjectile extends Projectile {
         super.onHitBlock(result);
         if(level().isClientSide) {
             BlockPos blockpos = result.getBlockPos();
-            //BlockState blockstate = this.level().getBlockState(blockpos);
+            BlockState blockstate = this.level().getBlockState(blockpos);
             Vec3 dir = this.getDeltaMovement().normalize().scale(2);
             Vec3 mid = new Vec3(blockpos.getX()+0.5f , blockpos.getY()+0.5f, blockpos.getZ()+0.5f).add(Vec3.atLowerCornerOf(result.getDirection().getNormal()));
             this.level().addParticle((new BlockParticleOption(ParticleTypes.BLOCK, blockstate)).setPos(blockpos), mid.x, mid.y, mid.z, -dir.x, -dir.y, -dir.z);
