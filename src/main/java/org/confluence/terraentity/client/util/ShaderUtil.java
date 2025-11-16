@@ -68,43 +68,144 @@ public class ShaderUtil {
         RenderSystem.disableBlend();
     }
 
+    public static void renderDebugBlock(BufferBuilder buffer, BlockPos pos, float size, int r, int g, int b, int a, boolean up, boolean down, boolean north, boolean south, boolean east, boolean west){
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+
+        //0
+        if (!((!up) || (!north))) {
+            buffer.addVertex(x, y + size, z).setColor(r,g,b,a);
+            buffer.addVertex(x + size, y + size, z).setColor(r,g,b,a);
+        }
+
+        //1
+        if (!((!up) || (!east))) {
+            buffer.addVertex(x + size, y + size, z).setColor(r, g, b, a);
+            buffer.addVertex(x + size, y + size, z + size).setColor(r, g, b, a);
+        }
+
+        //2
+        if (!((!up) || (!south))) {
+            buffer.addVertex(x + size, y + size, z + size).setColor(r, g, b, a);
+            buffer.addVertex(x, y + size, z + size).setColor(r, g, b, a);
+        }
+
+        //3
+        if (!((!up) || (!west))) {
+            buffer.addVertex(x, y + size, z + size).setColor(r, g, b, a);
+            buffer.addVertex(x, y + size, z).setColor(r, g, b, a);
+        }
+
+        // BOTTaddVertex()
+        //4
+        if (!((!down) || (!east))) {
+            buffer.addVertex(x + size, y, z).setColor(r, g, b, a);
+            buffer.addVertex(x + size, y, z + size).setColor(r, g, b, a);
+        }
+
+        //5
+        if (!((!down) || (!south))) {
+            buffer.addVertex(x + size, y, z + size).setColor(r, g, b, a);
+            buffer.addVertex(x, y, z + size).setColor(r, g, b, a);
+        }
+
+        //6
+        if (!((!down) || (!west))) {
+            buffer.addVertex(x, y, z + size).setColor(r, g, b, a);
+            buffer.addVertex(x, y, z).setColor(r, g, b, a);
+        }
+
+        //7
+        if (!((!down) || (!north))) {
+            buffer.addVertex(x, y, z).setColor(r, g, b, a);
+            buffer.addVertex(x + size, y, z).setColor(r, g, b, a);
+        }
+
+        // EdgeaddVertex()
+        //8
+        if (!((!east) || (!south))) {
+            buffer.addVertex(x + size, y, z + size).setColor(r, g, b, a);
+            buffer.addVertex(x + size, y + size, z + size).setColor(r, g, b, a);
+        }
+
+        // EdgeaddVertex()
+        //9
+        if (!((!east) || (!north))) {
+            buffer.addVertex(x + size, y, z).setColor(r, g, b, a);
+            buffer.addVertex(x + size, y + size, z).setColor(r, g, b, a);
+        }
+
+        // EdgeaddVertex()
+        //10
+        if (!((!west) || (!south))) {
+            buffer.addVertex(x, y, z + size).setColor(r, g, b, a);
+            buffer.addVertex(x, y + size, z + size).setColor(r, g, b, a);
+        }
+
+        // EdgeaddVertex()
+        //11
+        if (!((!west) || (!north))) {
+            buffer.addVertex(x, y, z).setColor(r, g, b, a);
+            buffer.addVertex(x, y + size, z).setColor(r, g, b, a);
+        }
+    }
+
     public static void renderDebugBlock(BufferBuilder buffer, BlockPos pos, float size, int r, int g, int b, int a){
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
 
+        //0
         buffer.addVertex(x, y + size, z).setColor(r,g,b,a);
         buffer.addVertex(x + size, y + size, z).setColor(r,g,b,a);
+
+        //1
         buffer.addVertex(x + size, y + size, z).setColor(r,g,b,a);
         buffer.addVertex(x + size, y + size, z + size).setColor(r,g,b,a);
+
+        //2
         buffer.addVertex(x + size, y + size, z + size).setColor(r,g,b,a);
         buffer.addVertex(x, y + size, z + size).setColor(r,g,b,a);
+
+        //3
         buffer.addVertex(x, y + size, z + size).setColor(r,g,b,a);
         buffer.addVertex(x, y + size, z).setColor(r,g,b,a);
 
         // BOTTaddVertex()
+        //4
         buffer.addVertex(x + size, y, z).setColor(r,g,b,a);
         buffer.addVertex(x + size, y, z + size).setColor(r,g,b,a);
+
+        //5
         buffer.addVertex(x + size, y, z + size).setColor(r,g,b,a);
         buffer.addVertex(x, y, z + size).setColor(r,g,b,a);
+
+        //6
         buffer.addVertex(x, y, z + size).setColor(r,g,b,a);
         buffer.addVertex(x, y, z).setColor(r,g,b,a);
+
+        //7
         buffer.addVertex(x, y, z).setColor(r,g,b,a);
         buffer.addVertex(x + size, y, z).setColor(r,g,b,a);
 
         // EdgeaddVertex()
+        //8
         buffer.addVertex(x + size, y, z + size).setColor(r,g,b,a);
         buffer.addVertex(x + size, y + size, z + size).setColor(r,g,b,a);
 
         // EdgeaddVertex()
+        //9
         buffer.addVertex(x + size, y, z).setColor(r,g,b,a);
         buffer.addVertex(x + size, y + size, z).setColor(r,g,b,a);
 
         // EdgeaddVertex()
+        //10
         buffer.addVertex(x, y, z + size).setColor(r,g,b,a);
         buffer.addVertex(x, y + size, z + size).setColor(r,g,b,a);
 
         // EdgeaddVertex()
+        //11
         buffer.addVertex(x, y, z).setColor(r,g,b,a);
         buffer.addVertex(x, y + size, z).setColor(r,g,b,a);
     }
