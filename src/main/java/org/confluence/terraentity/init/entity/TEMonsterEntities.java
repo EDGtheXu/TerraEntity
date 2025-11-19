@@ -84,6 +84,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AntlionSwarmer>> ANTLION_SWARMER = TEEntities.registerMonster("antlion_swarmer", (e, l) -> new AntlionSwarmer(e, l, new FlyMonsterPrefab().getPrefab()), 3f, 1.5f);
     public static final DeferredHolder<EntityType<?>, EntityType<AntlionSwarmer>> GIANT_ANTLION_SWARMER = TEEntities.registerMonster("giant_antlion_swarmer", (e, l) -> new AntlionSwarmer(e, l, new FlyMonsterPrefab().getPrefab()), 3.5f, 2f);
     public static final DeferredHolder<EntityType<?>, EntityType<GraniteElemental>> GRANITE_ELEMENTAL = TEEntities.registerMonster("granite_elemental", (e, l) -> new GraniteElemental(e, l, new FlyMonsterPrefab().getPrefab()), 1.5f, 1.5f);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> METEOR_HEAD = registerSimpleMonster("meteor_head", FlyMonsterPrefab.METEOR_HEAD_BUILDER, 1.1F, 1.1F);
 
     // 陆行怪
     public static final DeferredHolder<EntityType<?>, EntityType<MeleeSkeleton>> SPORE_SKELETON = TEEntities.registerMonster("spore_skeleton",(e, l) -> new MeleeSkeleton(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight()), 0.65F, 1.85F);
@@ -208,6 +209,7 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.ANTLION_SWARMER.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.ANTLION_SWARMER.getId(), true, 1.0f, 0f));
         event.registerEntityRenderer(TEMonsterEntities.GIANT_ANTLION_SWARMER.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.ANTLION_SWARMER.getId(), true, 1.25f, 0f));
         event.registerEntityRenderer(TEMonsterEntities.GRANITE_ELEMENTAL.get(), c -> new GeoNegativeVolumeRenderer<>(c, TEMonsterEntities.GRANITE_ELEMENTAL.getId(), true).addBoneToGlow("Core"));
+        event.registerEntityRenderer(TEMonsterEntities.METEOR_HEAD.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.METEOR_HEAD.getId(), true));
 
         event.registerEntityRenderer(TEMonsterEntities.DEMON_EYE.get(), DemonEyeRenderer::new);
         if (!ClientConfig.ENABLE_NON_SPIDER_MODEL.get()) {
@@ -353,6 +355,7 @@ public class TEMonsterEntities {
         event.put(ANTLION_SWARMER.get(), AttBuilder.fly(AttBuilder.createAttributes(31, 8, 15, 32, 1f, 0.55f)).build());
         event.put(GIANT_ANTLION_SWARMER.get(), AttBuilder.fly(AttBuilder.createAttributes(46, 12, 17, 32, 1f, 0.73f)).build());
         event.put(GRANITE_ELEMENTAL.get(), AttBuilder.fly(AttBuilder.createAttributes(46, 8, 17, 32, 1f, 0.73f)).build());
+        event.put(METEOR_HEAD.get(), AttBuilder.fly(AttBuilder.createAttributes(13, 6, 21, 32, 1f, 0.64f)).build());
 
         // swim
         event.put(PIRANHA.get(), AttBuilder.createAttributes(15,2,13,16,0.1f,0.5f).build());
@@ -465,6 +468,7 @@ public class TEMonsterEntities {
         event.register(ANTLION_SWARMER.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(GIANT_ANTLION_SWARMER.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(GRANITE_ELEMENTAL.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(METEOR_HEAD.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkRoutineMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         // swim
         event.register(PIRANHA.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);

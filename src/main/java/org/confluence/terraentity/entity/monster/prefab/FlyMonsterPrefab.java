@@ -138,10 +138,15 @@ public class FlyMonsterPrefab extends AbstractPrefab {
             ()->new FlyMonsterPrefab().getPrefab()
                     .addGoal((g,e)->{
                         g.addGoal(0, new DashGoal(e,0.98f,2.2f,15));
-
                     })
             ;
-
+    public static Supplier<AttributeBuilder> METEOR_HEAD_BUILDER =
+            ()->new FlyMonsterPrefab().getPrefab()
+                    .setSpawnWithoutLight()
+                    .addGoal((g,e)->{
+                        g.addGoal(0, new DashGoal(e,0.8f,0.2f,10));
+                    })
+            ;
     //从一个预制体复制参数再调整参数
     public static Supplier<AttributeBuilder> DO_NOTHING  = ()->copyFrom(CRIMERA_BUILDER)
             .setController((c,e)->c.add(new AnimationController<GeoAnimatable>(e,"move",10,s->PlayState.CONTINUE)));
