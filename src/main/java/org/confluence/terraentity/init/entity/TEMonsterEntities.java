@@ -106,8 +106,8 @@ public class TEMonsterEntities {
 
 
     // 蜜蜂
-    public static final DeferredHolder<EntityType<?>, EntityType<Hornet>> HORNET = TEEntities.registerMonster("hornet", (e, l) -> new Hornet(e, l, FlyMonsterPrefab.BEE_BUILDER.get()), 0.8f, 1.2f);
-    public static final DeferredHolder<EntityType<?>, EntityType<LittleHornet>> LITTLE_HORNET = TEEntities.registerEntity("little_hornet", LittleHornet::new, MobCategory.CREATURE, 0.8f, 1.2f);
+    public static final DeferredHolder<EntityType<?>, EntityType<Hornet>> HORNET = TEEntities.registerMonster("hornet", (e, l) -> new Hornet(e, l, FlyMonsterPrefab.BEE_BUILDER.get()), 0.8f, 1.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<LittleHornet>> LITTLE_HORNET = TEEntities.registerEntity("little_hornet", LittleHornet::new, MobCategory.CREATURE, 0.4f, 0.4f);
     // 蝙蝠
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> CAVE_BAT = registerSimpleMonster("cave_bat", FlyMonsterPrefab.CAVE_BAT_BUILDER, 1.6f, 1.6f);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> JUNGLE_BAT = registerSimpleMonster("jungle_bat", FlyMonsterPrefab.JUNGLE_BAT_BUILDER, 1.6f, 1.6f);
@@ -253,8 +253,8 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.SPORE_BAT.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.SPORE_BAT.getId(), false));
 
         // bee
-        event.registerEntityRenderer(TEMonsterEntities.LITTLE_HORNET.get(), c -> new GeoNormalRenderer<>(c, new GeoNormalModel<>(TEMonsterEntities.LITTLE_HORNET.getId(), false), true, 1, 0.5f));
-        event.registerEntityRenderer(TEMonsterEntities.HORNET.get(), c -> new GeoNormalRenderer<>(c, new GeoNormalModel<>(TEMonsterEntities.HORNET.getId(), false), true, 1, 0.5f));
+        event.registerEntityRenderer(TEMonsterEntities.LITTLE_HORNET.get(), c -> new GeoNormalRenderer<>(c, new GeoNormalModel<>(TEMonsterEntities.LITTLE_HORNET.getId(), false), true, 1, 0.1f));
+        event.registerEntityRenderer(TEMonsterEntities.HORNET.get(), c -> new GeoNormalRenderer<>(c, new GeoNormalModel<>(TEMonsterEntities.HORNET.getId(), false), true, 1, 0.2f));
 
         event.registerEntityRenderer(TEMonsterEntities.NYMPH.get(), c -> new GeoNormalRenderer<>(c, new NymphModel<>(TEMonsterEntities.NYMPH.getId()), false, 1, 0f));
         event.registerEntityRenderer(TEMonsterEntities.SNATCHER.get(), c -> new SnatcherRenderer<>(c, TEMonsterEntities.SNATCHER.getId()));

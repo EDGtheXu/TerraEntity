@@ -189,10 +189,10 @@ public class InitialArmors implements Consumer<LivingEntity> {
     public static InitialArmors getDefaultParams(){
         return new InitialArmors(ImmutableMap.<EntityType<?>, List<InitialArmors.Weight>>builder()
                 .put(TEMonsterEntities.POSSESS_ARMOR.get(), List.of(
-                        InitialArmors.Weight.ofSuit(TEArmors.POSSESSED_ARMOR, 0.0f)
+                        InitialArmors.Weight.ofSuit(TEArmors.POSSESSED_ARMOR, 0.1f)
                 ))
                 .put(TEMonsterEntities.WRAITH.get(), List.of(
-                        InitialArmors.Weight.ofSuit(TEArmors.WRAITH_ARMOR, 0.0f)
+                        InitialArmors.Weight.ofSuit(TEArmors.WRAITH_ARMOR, 0.1f)
                 ))
                 .build());
     }
