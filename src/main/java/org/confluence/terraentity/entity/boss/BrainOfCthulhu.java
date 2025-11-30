@@ -172,7 +172,7 @@ public class BrainOfCthulhu extends AbstractTerraBossBase implements GeoEntity, 
         stage1_fade_out = new MobSkill<BrainOfCthulhu>(close, 40, 0)
                 .onInit(e->{
                     if(getTarget() != null) {
-                        float r = random.nextFloat() + (this.isExpert() ? 6 : 8);
+                        float r = random.nextFloat() + (this.isExpert() ? 7 : 9);
 
                         float theta = random.nextFloat() * 2 * (float) Math.PI;
                         float beta = random.nextFloat() * (float) Math.PI;
@@ -184,7 +184,7 @@ public class BrainOfCthulhu extends AbstractTerraBossBase implements GeoEntity, 
                     if(getTarget() == null) return;
                     lookAt(10);
                     // 向玩家正上方移动
-                    Vec3 tar = getTarget().position().add(0,1,0);
+                    Vec3 tar = getTarget().position().add(0,2,0);
                     if (distanceToSqr(tar) > 2)
                         setDeltaMovement(tar.subtract(position()).normalize().scale(_moveSpeed / 2));
                 })

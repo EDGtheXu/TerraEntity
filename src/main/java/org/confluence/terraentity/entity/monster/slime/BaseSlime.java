@@ -46,6 +46,9 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
     static FloatRGB SlimeColor_Green = FloatRGB.fromInteger(0x48E920);
     static FloatRGB SlimeColor_Blue = FloatRGB.fromInteger(0x73bcf4);
     static FloatRGB SlimeColor_Purple = FloatRGB.fromInteger(0xf334f8);
+    static FloatRGB SlimeColor_Pink = FloatRGB.fromInteger(0xFF87B3);
+    static FloatRGB SlimeColor_Jungle = FloatRGB.fromInteger(0x9ae920);
+    static FloatRGB SlimeColor_Ice = FloatRGB.fromInteger(0xB3F0EA);
 
     public static float slimeWaterMoveSpeed = 0.2f;
 
@@ -66,7 +69,13 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
 
     }
 
-    Predicate<FloatRGB> colorTest = c -> c.equals(SlimeColor_Green) || c.equals(SlimeColor_Blue) || c.equals(SlimeColor_Purple);
+    Predicate<FloatRGB> colorTest = c ->
+            c.equals(SlimeColor_Green) ||
+            c.equals(SlimeColor_Blue) ||
+            c.equals(SlimeColor_Purple) ||
+            c.equals(SlimeColor_Pink) ||
+            c.equals(SlimeColor_Ice) ||
+            c.equals(SlimeColor_Jungle) ;
 
     @Override
     protected void registerGoals() {

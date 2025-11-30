@@ -133,7 +133,7 @@ public class EaterOfWorlds extends AbstractTerraBossBase implements Boss, IHeigh
         ).apply(instance, SkillParams::new));
 
         public static SkillParams getDefaultParams(){
-            return new SkillParams(60,5,3,0.6f,10,2.8f,
+            return new SkillParams(60,5,2,0.5f,10,2.8f,
                     30, 200);
         }
     }
@@ -188,8 +188,8 @@ public class EaterOfWorlds extends AbstractTerraBossBase implements Boss, IHeigh
                 (AbstractTerraBossBase)->{
                     isDashing = true;
 
-                    if(this.isFtw()) moveSpeed = moveSpeedBase * 2f; // ftw 神吞的冲刺加速
-                    else moveSpeed = moveSpeedBase * 1.5f;
+                    if(this.isFtw()) moveSpeed = moveSpeedBase * 1.5f; // ftw 神吞的冲刺加速
+                    else moveSpeed = moveSpeedBase * 1.1f;
 
                     turnSpeed = 5F;
                     shouldMove = true;
