@@ -84,7 +84,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AntlionSwarmer>> ANTLION_SWARMER = TEEntities.registerMonster("antlion_swarmer", (e, l) -> new AntlionSwarmer(e, l, new FlyMonsterPrefab().getPrefab()), 3f, 1.5f);
     public static final DeferredHolder<EntityType<?>, EntityType<AntlionSwarmer>> GIANT_ANTLION_SWARMER = TEEntities.registerMonster("giant_antlion_swarmer", (e, l) -> new AntlionSwarmer(e, l, new FlyMonsterPrefab().getPrefab()), 3.5f, 2f);
     public static final DeferredHolder<EntityType<?>, EntityType<GraniteElemental>> GRANITE_ELEMENTAL = TEEntities.registerMonster("granite_elemental", (e, l) -> new GraniteElemental(e, l, new FlyMonsterPrefab().getPrefab()), 1.5f, 1.5f);
-    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> METEOR_HEAD = registerSimpleMonster("meteor_head", FlyMonsterPrefab.METEOR_HEAD_BUILDER, 1.1F, 1.1F);
+
 
     // 陆行怪
     public static final DeferredHolder<EntityType<?>, EntityType<MeleeSkeleton>> SPORE_SKELETON = TEEntities.registerMonster("spore_skeleton",(e, l) -> new MeleeSkeleton(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight()), 0.65F, 1.85F);
@@ -143,7 +143,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<CursedSkull>> CURSED_SKULL = TEEntities.registerMonster("cursed_skull", (e, l) -> new CursedSkull(e, l, new AbstractPrefab().getPrefab()), 1F, 1F);
 
     public static final DeferredHolder<EntityType<?>, EntityType<Ghost>> GHOST = TEEntities.registerMonster("ghost", (e, l) -> new Ghost(e, l, new AbstractPrefab().getPrefab()), 1F, 1.8F);
-
+    public static final DeferredHolder<EntityType<?>, EntityType<MeteorHead>> METEOR_HEAD = TEEntities.registerMonster("meteor_head", (e, l) -> new MeteorHead(e, l, new AbstractPrefab().getPrefab()), 1F, 1F);
     // 远程法师
     public static final DeferredHolder<EntityType<?>, EntityType<RangeShooter>> DARK_CASTER = TEEntities.registerMonster("dark_caster", (e, l) -> new RangeShooter(e, l, TEProjectileEntities.DARK_CASTER_PROJ, new AbstractPrefab().getPrefab()), 0.65F, 1.85F);
     public static final DeferredHolder<EntityType<?>, EntityType<RangeShooter>> GOBLIN_SORCERER = TEEntities.registerMonster("goblin_sorcerer", (e, l) -> new RangeShooter(e, l, TEProjectileEntities.DARK_CASTER_PROJ, new AbstractPrefab().getPrefab()), 0.65F, 1.85F);

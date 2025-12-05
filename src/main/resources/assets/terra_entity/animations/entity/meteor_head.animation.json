@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"fly": {
+		"move.walk": {
 			"loop": true,
 			"animation_length": 0.125,
 			"bones": {

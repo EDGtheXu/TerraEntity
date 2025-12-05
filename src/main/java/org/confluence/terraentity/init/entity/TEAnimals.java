@@ -62,7 +62,7 @@ public class TEAnimals {
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(DUCK.get(), c-> new GeoNormalRenderer<>(c, new VariantTexModel<Duck>(DUCK.getId().withPrefix("animal/"), true).setHeadName("bone3"), false, 1 ,0.15f));
+        event.registerEntityRenderer(DUCK.get(), c-> new GeoNormalRenderer<>(c, new VariantTexModel<Duck>(DUCK.getId().withPrefix("animal/"), true).setHeadName("bone3"), false, 1 ,-0.01f));
         event.registerEntityRenderer(BUNNY.get(), c-> new GeoNormalRenderer<>(c, new GeoNormalModel<Bunny>(BUNNY.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0));
         event.registerEntityRenderer(JEWEL_BUNNY.get(), c-> new GeoNormalRenderer<>(c, new VariantTexModel<JewelBunny>(BUNNY.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1 ,0));
         event.registerEntityRenderer(EXPLOSIVE_BUNNY.get(), c-> new GeoNormalRenderer<>(c, new GeoNormalModel<BoomBunny>(EXPLOSIVE_BUNNY.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0));
