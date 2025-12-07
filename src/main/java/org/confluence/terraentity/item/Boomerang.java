@@ -69,10 +69,8 @@ public class Boomerang extends Item implements ILeftClickStateItem {
 
     @Override
     public void onLeftClick(Player player, ItemStack itemStack) {
-        if(player.swingingArm == InteractionHand.OFF_HAND) return;
-        ItemStack stack = player.getItemInHand(player.swingingArm == null ? InteractionHand.MAIN_HAND : player.swingingArm); // 不这么写刚进游戏时扔不出去
         // 等待返回且未到达最大等待时间
-        if(boomerangModifier.shouldWaitForBack && !isBacked(stack)
+        if(boomerangModifier.shouldWaitForBack && !isBacked(itemStack)
                 && player.getCooldowns().isOnCooldown(this)
         ) {
             return;
@@ -86,11 +84,11 @@ public class Boomerang extends Item implements ILeftClickStateItem {
             player.swing(InteractionHand.MAIN_HAND);
         }
         // 射击
-        setBacked(stack,SingleBooleanComponent.FALSE);
+        setBacked(itemStack,SingleBooleanComponent.FALSE);
         player.playSound(TESounds.WAVING.get());
-        this.shoot(player, stack);
+        this.shoot(player, itemStack);
 
-        int addition = TEEnchantmentHelper.getEnchantmentLevel(TEEnchantments.MULTI_BOOMERANG, stack);
+        int addition = TEEnchantmentHelper.getEnchantmentLevel(TEEnchantments.MULTI_BOOMERANG, itemStack);
         if(boomerangModifier.shouldApplyCd || addition > 0) {
 
             int count = WeaponStorage.of(player).tryIncrease(this);
