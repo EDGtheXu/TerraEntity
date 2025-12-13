@@ -25,7 +25,7 @@ import org.confluence.terraentity.client.entity.renderer.GeoNormalRenderer;
 import org.confluence.terraentity.client.post.WallOfFleshTranslucent;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshEye;
-import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouse;
+import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouth;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshPart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,7 +76,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     public void render(WallOfFlesh entity, float entityYaw, float partialTick,
                        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         float alpha = Math.clamp(entity.getFadeProgress(), 0, 1);
-        
+
         if (alpha < 0.98f && entity.isDeadOrDying()) {
             TextureTarget target;
             WallOfFleshTranslucent.tuple tuple = WallOfFleshTranslucent.entityMap.get(entity);
@@ -266,8 +266,8 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
                             }
 
                         };
-                    } else if (modelPart instanceof WallOfFleshMouse) {
-                        currentModel = new GeoBossModel<>("wall_of_flesh_mouse");
+                    } else if (modelPart instanceof WallOfFleshMouth) {
+                        currentModel = new GeoBossModel<>("wall_of_flesh_mouth");
                     }
 
                     poseStack.scale(1.75f, 1.75f, 1.75f);

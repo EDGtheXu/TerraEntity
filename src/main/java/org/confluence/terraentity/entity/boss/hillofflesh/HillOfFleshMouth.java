@@ -12,12 +12,12 @@ import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
 import org.confluence.terraentity.utils.TEUtils;
 
-public class HillOfFleshMouse extends HillOfFleshPart {
+public class HillOfFleshMouth extends HillOfFleshPart {
 
     int summonHungryInterval = 256;
     HillHungry hungry;
 
-    public HillOfFleshMouse(HillOfFlesh parentMob, String name, float width, float height) {
+    public HillOfFleshMouth(HillOfFlesh parentMob, String name, float width, float height) {
         super(parentMob, name, width, height);
 
     }
@@ -49,10 +49,10 @@ public class HillOfFleshMouse extends HillOfFleshPart {
 
             @Override
             protected Vec3 initDirection(LivingEntity owner){
-                if(HillOfFleshMouse.this.name.endsWith("0")){
+                if(HillOfFleshMouth.this.name.endsWith("0")){
                     return new Vec3(0,0,-1);
                 }
-                return HillOfFleshMouse.this.modelOffset.add(0,-8,0).normalize().scale(1);
+                return HillOfFleshMouth.this.modelOffset.add(0,-8,0).normalize().scale(1);
             }
             @Override
             public boolean canAttack(LivingEntity entity) {
@@ -60,7 +60,7 @@ public class HillOfFleshMouse extends HillOfFleshPart {
             }
             @Override
             public float getMaxDis() {
-                return super.getMaxDis() * HillOfFleshMouse.this.parentMob.currentScale;
+                return super.getMaxDis() * HillOfFleshMouth.this.parentMob.currentScale;
             }
         }, (ServerLevel) level(), hungryPos);
 

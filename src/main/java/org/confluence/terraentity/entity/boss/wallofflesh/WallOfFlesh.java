@@ -202,7 +202,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss {
         // 生成嘴巴
         for (int i = 0; i < mouthPositions.size(); i++) {
             Vec3 pos = mouthPositions.get(i);
-            WallOfFleshMouse mouth = new WallOfFleshMouse(this, "WallOfFleshMouse" + i, 3.0f, 4.0f);
+            WallOfFleshMouth mouth = new WallOfFleshMouth(this, "WallOfFleshMouth" + i, 3.0f, 4.0f);
             addChild(mouth, pos);
         }
 
@@ -799,7 +799,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss {
     }
 
     public boolean hurt(WallOfFleshPart wallOfFleshPart, @NotNull DamageSource source, float damage) {
-        if (!source.is(DamageTypeTags.BYPASSES_ARMOR) && wallOfFleshPart instanceof WallOfFleshMouse) {
+        if (!source.is(DamageTypeTags.BYPASSES_ARMOR) && wallOfFleshPart instanceof WallOfFleshMouth) {
             this.hurtArmor(source, damage);
             damage = CombatRules.getDamageAfterAbsorb(this, damage, source, 12, (float)this.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
         }

@@ -23,7 +23,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import org.confluence.terraentity.client.init.model.EntityBlockModelRegister;
 import org.confluence.terraentity.effect.harmful.TheTongueEffect;
-import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouse;
+import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouth;
 import org.confluence.terraentity.init.TEEffects;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
 import org.confluence.terraentity.utils.TEUtils;
@@ -39,7 +39,7 @@ public class TongueRenderer {
                 if (player.hasEffect(TEEffects.THE_TONGUE)) {
                     MobEffect rawEffect = player.getEffect(TEEffects.THE_TONGUE).getEffect().value();
                     if (rawEffect instanceof TheTongueEffect effect) {
-                        WallOfFleshMouse mouth = effect.getWallOfFleshMouth();
+                        WallOfFleshMouth mouth = effect.getWallOfFleshMouth();
                         if (mouth != null && mouth.isAlive() && player.isAlive()) {
                             renderTongueEffect(mouth, player, event);
                         }
@@ -59,7 +59,7 @@ public class TongueRenderer {
         if (livingEntity.hasEffect(TEEffects.THE_TONGUE)) {
             MobEffect rawEffect = livingEntity.getEffect(TEEffects.THE_TONGUE).getEffect().value();
             if (rawEffect instanceof TheTongueEffect effect) {
-                WallOfFleshMouse mouth = effect.getWallOfFleshMouth();
+                WallOfFleshMouth mouth = effect.getWallOfFleshMouth();
                 if (mouth != null && mouth.isAlive() && livingEntity.isAlive()) {
                     Vec3 init = mouth.position();
 
@@ -128,7 +128,7 @@ public class TongueRenderer {
         }
     }
 
-    private static void renderTongueEffect(WallOfFleshMouse mouth, Player player, RenderLevelStageEvent event) {
+    private static void renderTongueEffect(WallOfFleshMouth mouth, Player player, RenderLevelStageEvent event) {
         Vec3 init = mouth.position();
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         PoseStack poseStack = event.getPoseStack();
@@ -154,19 +154,19 @@ public class TongueRenderer {
         Vec3 offset = diffNorm.scale(-1);
         Vec3 diff = _diff.subtract(offset);
         double distance = _diff.length();
-        
+
         int count = Math.max((int) (distance * 0.8f) + 5, 5);
         double dx = diff.x / count;
         double dy = diff.y / count;
         double dz = diff.z / count;
-        
+
         Quaternionf rotate = TEUtils.rotateFromV1ToV2(new Vector3f(0, 1, 0), new Vector3f((float) dx, (float) dy, (float) dz));
         BakedModel model = Minecraft.getInstance().getModelManager().getModel(EntityBlockModelRegister.getInstance().getModelResourceLocation(TEMonsterEntities.THE_HUNGRY.get()));
 
         for (int i = 0; i < count; i++) {
             Vec3 pos = new Vec3(-i * dx + offset.x, -i * dy + offset.y, -i * dz + offset.z);
             poseStack.pushPose();
-            
+
             poseStack.translate(-0.5f, 0.5f, -0.5f);
             poseStack.translate(pos.x, pos.y, pos.z);
             poseStack.translate(0.5, -0.75, 1.5);
@@ -186,4 +186,4 @@ public class TongueRenderer {
         }
     }
 
-} 
+}

@@ -6,7 +6,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
-import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouse;
+import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouth;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshPart;
 import org.confluence.terraentity.init.TEEffects;
 
@@ -27,21 +27,21 @@ public class HorrifiedEffect extends MobEffect {
             if(!living.getBoundingBox().intersects(wall.getOutsideCollisionBox())&&!living.getBoundingBox().intersects(wall.getInsideBox())||living.level().dimension()!=(wall.level().dimension())){
                 living.kill();
             }else if(living.getBoundingBox().intersects(wall.getOutsideCollisionBox())&&!living.getBoundingBox().intersects(wall.getInsideBox())){
-                List<WallOfFleshMouse> nearestMouths = new ArrayList<>();
+                List<WallOfFleshMouth> nearestMouths = new ArrayList<>();
                 for (int i = 0; i < wall.subEntities.size(); i++) {
                     WallOfFleshPart segment = wall.subEntities.get(i);
-                    if (segment instanceof WallOfFleshMouse mouse && segment.getY() > segment.level().getMinBuildHeight()) {
-                        nearestMouths.add(mouse);
+                    if (segment instanceof WallOfFleshMouth mouth && segment.getY() > segment.level().getMinBuildHeight()) {
+                        nearestMouths.add(mouth);
                     }
                 }
                 // 按距离排序获取最近的20个
                 nearestMouths.sort(Comparator.comparingDouble(mouth -> mouth.distanceToSqr(living)));
-                List<WallOfFleshMouse> nearest20 = nearestMouths.subList(0, Math.min(20, nearestMouths.size()));
+                List<WallOfFleshMouth> nearest20 = nearestMouths.subList(0, Math.min(20, nearestMouths.size()));
 
-                WallOfFleshMouse targetMouth = null;
-                for (WallOfFleshMouse mouse : nearest20) {
-                    if (!mouse.isInWall()) {
-                        targetMouth = mouse;
+                WallOfFleshMouth targetMouth = null;
+                for (WallOfFleshMouth mouth : nearest20) {
+                    if (!mouth.isInWall()) {
+                        targetMouth = mouth;
                         break;
                     }
                 }

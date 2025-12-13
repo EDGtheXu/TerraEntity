@@ -27,7 +27,7 @@ public class HillOfFleshEye extends HillOfFleshPart implements RangedAttackMob {
     @Override
     protected void tickPart(double offsetX, double offsetY, double offsetZ, int index) {
         this.findTarget();
-        this.getParent().setTarget(index, this.target);
+        this.getParent().setTarget(index, this.target); // Excuse me?
         if(this.target!= null && !this.level().isClientSide() && this.stareCount >= 10){
             this.shoot(this.target);
         }

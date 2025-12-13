@@ -14,7 +14,7 @@ import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
 
 @SuppressWarnings("all")
-public class WallOfFleshMouse extends WallOfFleshPart {
+public class WallOfFleshMouth extends WallOfFleshPart {
     private int pendingSpawns = 0;
     private int spawnInterval = 0;
 
@@ -23,10 +23,10 @@ public class WallOfFleshMouse extends WallOfFleshPart {
     private int summonCD = summonCDAll;
 
 
-    public WallOfFleshMouse(WallOfFlesh parentMob, String name, float width, float height) {
+    public WallOfFleshMouth(WallOfFlesh parentMob, String name, float width, float height) {
         super(parentMob, name, width, height);
     }
-    
+
     @Override
     public float getYRot() {
         if(this.parentMob!=null)return this.parentMob.getYRot();
@@ -96,7 +96,7 @@ public class WallOfFleshMouse extends WallOfFleshPart {
                 }
                 @Override
                 public boolean canAttack(LivingEntity entity) {
-                    return WallOfFleshMouse.this.parentMob.canAttack(entity);
+                    return WallOfFleshMouth.this.parentMob.canAttack(entity);
                 }
                 @Override
                 protected void registerGoals() {

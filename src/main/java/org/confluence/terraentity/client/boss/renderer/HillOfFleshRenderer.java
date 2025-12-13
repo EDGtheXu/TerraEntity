@@ -62,7 +62,7 @@ public class HillOfFleshRenderer extends GeoNormalRenderer<HillOfFlesh> {
 
             height = Mth.lerp(progress * 2, 1, 20);
         }else{
-            radius = animatable.getOutRadium();
+            radius = animatable.getOutRadius();
             height = Mth.lerp(progress * 2 - 1, 20, height);
         }
 
