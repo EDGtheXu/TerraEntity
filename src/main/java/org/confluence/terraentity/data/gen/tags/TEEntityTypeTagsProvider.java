@@ -155,5 +155,6 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
         tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(
                 TEMonsterEntities.GIANT_SHELLY.get()
                 );
+
     }
 }
