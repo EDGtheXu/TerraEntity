@@ -11,10 +11,7 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.init.TETags;
-import org.confluence.terraentity.init.entity.TEBossEntities;
-import org.confluence.terraentity.init.entity.TEMonsterEntities;
-import org.confluence.terraentity.init.entity.TERideableEntities;
-import org.confluence.terraentity.init.entity.TESummonEntities;
+import org.confluence.terraentity.init.entity.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -78,6 +75,7 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEBossEntities.QUEEN_BEE.get(),
                 TEMonsterEntities.HORNET.get(),
                 TEMonsterEntities.LITTLE_HORNET.get(),
+                TEMonsterEntities.BLOOD_CRAWLER.get(),
                 TEMonsterEntities.GIANT_SHELLY.get()
         );
         tag(TETags.EntityTypes.FLESH_ALLIANCE).add(
@@ -88,5 +86,74 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEBossEntities.HILL_OF_FLESH.get(),
                 TEBossEntities.WALL_OF_FLESH.get()
         );
+        tag(EntityTypeTags.AQUATIC).add(
+                TEMonsterEntities.PIRANHA.get(),
+                TEMonsterEntities.BLUE_JELLYFISH.get(),
+                TEMonsterEntities.PINK_JELLYFISH.get(),
+                TEMonsterEntities.GREEN_JELLYFISH.get(),
+                TEAnimals.DUCK.get()
+        );
+        tag(EntityTypeTags.ZOMBIES).add(
+                TEMonsterEntities.FACE_MONSTER.get(),
+                TEMonsterEntities.SPORE_ZOMBIE.get(),
+                TEMonsterEntities.BLOOD_ZOMBIE.get(),
+                TEMonsterEntities.HAT_SPORE_ZOMBIE.get()
+        );
+        tag(EntityTypeTags.SKELETONS).add(
+                TEMonsterEntities.DECAYEDER.get(),
+                TEMonsterEntities.SPORE_SKELETON.get(),
+                TEMonsterEntities.CURSED_SKULL.get(),
+                TEMonsterEntities.BASE_BONES.get(),
+                TEMonsterEntities.BIG_BONES.get(),
+                TEMonsterEntities.ANGER_BONES.get(),
+                TEMonsterEntities.BIG_ANGER_BONES.get(),
+                TEMonsterEntities.BIG_HELMET_ANGER_BONES.get(),
+                TEMonsterEntities.BIG_MUSCLE_ANGER_BONES.get(),
+                TEMonsterEntities.UNDEAD_VIKING.get()
+        );
+        tag(EntityTypeTags.UNDEAD).add(
+                TEMonsterEntities.SPORE_ZOMBIE.get(),
+                TEMonsterEntities.BLOOD_ZOMBIE.get(),
+                TEMonsterEntities.HAT_SPORE_ZOMBIE.get(),
+                TEMonsterEntities.DECAYEDER.get(),
+                TEMonsterEntities.SPORE_SKELETON.get(),
+                TEMonsterEntities.CURSED_SKULL.get(),
+                TEMonsterEntities.BASE_BONES.get(),
+                TEMonsterEntities.BIG_BONES.get(),
+                TEMonsterEntities.ANGER_BONES.get(),
+                TEMonsterEntities.BIG_ANGER_BONES.get(),
+                TEMonsterEntities.BIG_HELMET_ANGER_BONES.get(),
+                TEMonsterEntities.BIG_MUSCLE_ANGER_BONES.get(),
+                TEMonsterEntities.UNDEAD_VIKING.get()
+        );
+        tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(
+                TEMonsterEntities.SNOW_FLINX.get(),
+                TEMonsterEntities.UNDEAD_VIKING.get()
+        );
+        tag(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES).add(
+                TEMonsterEntities.PIRANHA.get(),
+                TEMonsterEntities.BLUE_JELLYFISH.get(),
+                TEMonsterEntities.PINK_JELLYFISH.get(),
+                TEMonsterEntities.GREEN_JELLYFISH.get()
+        );
+        tag(EntityTypeTags.AXOLOTL_HUNT_TARGETS).add(
+                TEMonsterEntities.PIRANHA.get(),
+                TEMonsterEntities.BLUE_JELLYFISH.get(),
+                TEMonsterEntities.PINK_JELLYFISH.get(),
+                TEMonsterEntities.GREEN_JELLYFISH.get()
+        );
+        tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(
+                TEMonsterEntities.SNOW_FLINX.get(),
+                TEMonsterEntities.UNDEAD_VIKING.get()
+        );
+        tag(EntityTypeTags.CAN_BREATHE_UNDER_WATER).add(
+                TEMonsterEntities.PIRANHA.get(),
+                TEMonsterEntities.BLUE_JELLYFISH.get(),
+                TEMonsterEntities.PINK_JELLYFISH.get(),
+                TEMonsterEntities.GREEN_JELLYFISH.get()
+        );
+        tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(
+                TEMonsterEntities.GIANT_SHELLY.get()
+                );
     }
 }
