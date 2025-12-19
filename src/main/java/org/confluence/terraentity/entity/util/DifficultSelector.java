@@ -69,13 +69,21 @@ public class DifficultSelector {
     }
 
     public <T> T switchBy(List<T> list){
-        if(!DifficultSelector.expert){
-            return list.get(0);
-        }else if(!DifficultSelector.master){
-            return list.get(1);
-        }else if(!this.ftw){
-            return list.get(2);
+        return switchBy(list, 0);
+    }
+
+    public <T> T switchBy(List<T> list, int offset){
+        int idx = 0;
+        if (!DifficultSelector.expert) {
+            idx = 1;
+        } else if(!DifficultSelector.master) {
+            idx = 2;
+        } else if (!this.ftw) {
+            idx = 3;
         }
-        return list.get(3);
+        idx += offset;
+        if (idx < 0) idx = 0;
+        else if (idx >= list.size()) idx = list.size() - 1;
+        return list.get(idx);
     }
 }

@@ -17,6 +17,9 @@ import org.confluence.terraentity.client.entity.renderer.mob.KingSlimeRenderer;
 import org.confluence.terraentity.entity.blur.PosRotMotionBlurRenderer;
 import org.confluence.terraentity.entity.boss.*;
 import org.confluence.terraentity.entity.boss.hillofflesh.HillOfFlesh;
+import org.confluence.terraentity.entity.boss.plantera.Plantera;
+import org.confluence.terraentity.entity.boss.plantera.PlanteraHook;
+import org.confluence.terraentity.entity.boss.plantera.PlanteraTentacle;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.model.CrownOfKingSlimeModelEntity;
 import org.confluence.terraentity.entity.util.AttBuilder;
@@ -36,6 +39,9 @@ public class TEBossEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<WallOfFlesh>> WALL_OF_FLESH = TEEntities.registerMonster("wall_of_flesh", WallOfFlesh::new, 0.1F, 0.1F);
     public static final DeferredHolder<EntityType<?>, EntityType<DungeonGuardian>> DUNGEON_GUARDIAN = TEEntities.registerMonster("dungeon_guardian", DungeonGuardian::new, 2.5F, 2.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<HillOfFlesh>> HILL_OF_FLESH = TEEntities.registerMonster("hill_of_flesh", HillOfFlesh::new, 10F, 10F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Plantera>> PLANTERA = TEEntities.registerMonster("plantera", Plantera::new, 10F, 10F);
+    public static final DeferredHolder<EntityType<?>, EntityType<PlanteraHook>> PLANTERA_HOOK = TEEntities.registerMonster("plantera_hook", PlanteraHook::new, 1.25F, 1.25F);
+    public static final DeferredHolder<EntityType<?>, EntityType<PlanteraTentacle>> PLANTERA_TENTACLE = TEEntities.registerMonster("plantera_tentacle", PlanteraTentacle::new, 2F, 2F);
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -55,6 +61,10 @@ public class TEBossEntities {
 
         event.registerEntityRenderer(TEBossEntities.WALL_OF_FLESH.get(), WallOfFleshRenderer::new);
         event.registerEntityRenderer(TEBossEntities.HILL_OF_FLESH.get(), HillOfFleshRenderer::new);
+
+        event.registerEntityRenderer(TEBossEntities.PLANTERA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
+        event.registerEntityRenderer(TEBossEntities.PLANTERA_HOOK.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
+        event.registerEntityRenderer(TEBossEntities.PLANTERA_TENTACLE.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 1f, 0));
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -73,6 +83,10 @@ public class TEBossEntities {
         event.put(TEBossEntities.DUNGEON_GUARDIAN.get(), AttBuilder.createBoss(9999, 9999, 9999).build());
 
         event.put(TEBossEntities.HILL_OF_FLESH.get(), AttBuilder.createBoss(3824, 0).build());
+
+        event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(50, 500, 0).build());
+        event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(0, 1, 0).build());
+        event.put(TEBossEntities.PLANTERA_TENTACLE.get(), AttBuilder.createBoss(20, PlanteraTentacle.MAX_HEALTH, 0).build());
     }
 
     public static void register() {}

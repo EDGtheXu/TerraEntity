@@ -413,6 +413,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     }
 
+    @Override
     public boolean canAttack(LivingEntity entity) {
         return super.canAttack(entity)&&entity.isPickable() &&
                 (

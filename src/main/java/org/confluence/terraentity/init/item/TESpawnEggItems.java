@@ -93,6 +93,7 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> DUNGEON_GUARDIAN_SPAWN_EGG = registerEgg("dungeon_guardian_spawn_egg", TEBossEntities.DUNGEON_GUARDIAN, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> WALL_OF_FLESH_SPAWN_EGG = registerEgg("wall_of_flesh_spawn_egg", TEBossEntities.WALL_OF_FLESH, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> HILL_OF_FLESH_SPAWN_EGG = registerEgg("hill_of_flesh_spawn_egg", TEBossEntities.HILL_OF_FLESH, 0xffffff, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> PLANTERA_SPAWN_EGG = registerEgg("plantera_spawn_egg", TEBossEntities.PLANTERA, 0xffffff, 0xffffff);
 
     // 地牢骷髅
 
