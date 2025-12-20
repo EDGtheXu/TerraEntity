@@ -142,29 +142,29 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
         public static SkillParams getDefaultParams(){
             return new SkillParams(2000,
                     // 钩子距离和速度
-                    List.of(32f, 32f, 32f, 32f),
+                    List.of(48f, 48f, 48f, 48f),
                     List.of(2f, 2f, 2f, 2f),
                     // 移速[]和加速度[]; → 囊度, ↓ 阶段
-                    List.of(0.2f, 0.2f, 0.2f, 0.2f,
+                    List.of(0.1f, 0.1f, 0.1f, 0.1f,
                             0.2f, 0.2f, 0.2f, 0.2f,
                             0.2f, 0.2f, 0.2f, 0.2f),
                     List.of(0.1f, 0.1f, 0.1f, 0.1f,
                             0.1f, 0.1f, 0.1f, 0.1f,
                             0.1f, 0.1f, 0.1f, 0.1f),
                     // 刺球攻击间隔[]，弹幕速度，伤害
-                    List.of(8, 8, 8, 8,
-                            6, 6, 6, 6,
-                            3, 3, 3, 3),
+                    List.of(22, 22, 22, 22,
+                            14, 14, 14, 14,
+                            14, 14, 14, 14),
                     List.of(0.85f, 0.85f, 0.85f, 0.85f),
-                    List.of(11.4f, 11.4f, 11.4f, 11.4f),
+                    List.of(18f, 28f, 42f, 42f),
                     // 种子攻击间隔[]，弹幕速度，伤害
-                    List.of(5, 5, 5, 5,
-                            3, 3, 3, 3,
-                            2, 2, 2, 2),
+                    List.of(27, 27, 27, 27,
+                            24, 24, 24, 24,
+                            13, 13, 13, 13),
                     List.of(2.5f, 2.5f, 2.5f, 2.5f),
-                    List.of(5.14f, 5.14f, 5.14f, 5.14f),
+                    List.of(12f, 19f, 28f, 28f),
                     // 触手数量
-                    List.of(25, 25, 25, 25)
+                    List.of(8, 8, 8, 8)
             );
         }
     }
@@ -199,7 +199,7 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
 
     @Override
     protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
-        return TESounds.DRIPPLER_HURT.get();
+        return TESounds.ROUTINE_HURT.get();
     }
 
     @Override
@@ -212,7 +212,7 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
 
     @Override
     protected SoundEvent getDeathSound() {
-        return TESounds.TR_ZOMBIE_DEATH.get();
+        return TESounds.ROUTINE_DEATH.get();
     }
 
     @Override

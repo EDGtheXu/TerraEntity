@@ -132,6 +132,9 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.LEECH.get(), "血蛭");
         add(TEMonsterEntities.THE_HUNGRY.get(), "饿鬼");
         add(TEMonsterEntities.FLESH_SLIME.get(), "血肉史莱姆");
+        add(TEBossEntities.PLANTERA.get(), "世纪之花");
+        add(TEBossEntities.PLANTERA_HOOK.get(), "世纪之花钩");
+        add(TEBossEntities.PLANTERA_TENTACLE.get(), "世纪之花触手");
 
 
         // 召唤物

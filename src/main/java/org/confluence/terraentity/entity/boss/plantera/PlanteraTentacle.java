@@ -35,7 +35,7 @@ public class PlanteraTentacle extends AbstractTerraBossBase implements Boss {
     private static final double TARGET_ATTRACTION_RADIUS = 24;
     private static final double REPULSION_FROM_TENTACLE = 2.5;
     private static final double ATTRACTION_FROM_TARGET = 0.25;
-    public static final double MAX_HEALTH = 100;
+    public static final double MAX_HEALTH = 260;
     Plantera owner;
 
     public PlanteraTentacle(EntityType<? extends Monster> entityType, Level level) {

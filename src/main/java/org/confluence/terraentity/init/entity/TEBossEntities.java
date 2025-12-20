@@ -84,9 +84,9 @@ public class TEBossEntities {
 
         event.put(TEBossEntities.HILL_OF_FLESH.get(), AttBuilder.createBoss(3824, 0).build());
 
-        event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(50, 500, 0).build());
-        event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(0, 1, 0).build());
-        event.put(TEBossEntities.PLANTERA_TENTACLE.get(), AttBuilder.createBoss(20, PlanteraTentacle.MAX_HEALTH, 0).build());
+        event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(26, 10920, 36).build());
+        event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(15.6, 1040, 24).build());
+        event.put(TEBossEntities.PLANTERA_TENTACLE.get(), AttBuilder.createBoss(15.6, PlanteraTentacle.MAX_HEALTH, 20).build());
     }
 
     public static void register() {}
