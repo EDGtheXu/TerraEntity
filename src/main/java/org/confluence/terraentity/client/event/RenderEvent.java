@@ -7,8 +7,11 @@ import net.irisshaders.iris.pipeline.programs.ExtendedShader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,12 +26,17 @@ import org.confluence.terraentity.client.buffer.DebugEntityHelper;
 import org.confluence.terraentity.client.buffer.NPCChatBubbleBuffer;
 import org.confluence.terraentity.client.gui.CustomizeBossHealthBar;
 import org.confluence.terraentity.client.post.BossSpawnCameraManager;
+import org.confluence.terraentity.client.boss.renderer.WallOfFleshRenderer;
 import org.confluence.terraentity.client.post.BrainTranslucent;
 import org.confluence.terraentity.client.post.TongueRenderer;
 import org.confluence.terraentity.client.post.WallOfFleshTranslucent;
+import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
+import org.confluence.terraentity.network.s2c.SyncWallOfFleshEntitiesPacket;
 import org.confluence.terraentity.integration.ModChecker;
 import org.confluence.terraentity.item.BaseWhipItem;
 import org.confluence.terraentity.item.YoyosItem;
+
+import java.util.Set;
 
 import static org.confluence.terraentity.TerraEntity.MODID;
 import static org.confluence.terraentity.config.ClientConfig.bossBarStyle;
@@ -77,6 +85,61 @@ public class RenderEvent {
             isAfterSky = false;
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
             TongueRenderer.renderFirstPerson(event);
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level != null && mc.getEntityRenderDispatcher() != null && mc.player != null) {
+                net.minecraft.client.multiplayer.ClientLevel level = mc.level;
+                if (level == null) {
+                    return;
+                }
+                PoseStack poseStack = event.getPoseStack();
+                MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+                float partialTick = mc.getTimer().getGameTimeDeltaPartialTick(false);
+
+                poseStack.pushPose();
+                Vec3 cameraPos = event.getCamera().getPosition();
+                poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
+
+                // 使用从服务端同步的肉墙实体ID列表
+                Set<Integer> syncedIds = SyncWallOfFleshEntitiesPacket.getClientWallOfFleshIds();
+                Set<Integer> renderedIds = new java.util.HashSet<>(); // 记录已渲染的实体ID，避免重复渲染
+                
+                // 先尝试使用同步的实体ID列表进行渲染
+                if (!syncedIds.isEmpty()) {
+                    for (Integer id : syncedIds) {
+                        Entity entity = level.getEntity(id);
+                        if (entity instanceof WallOfFlesh wall) {
+                            var renderer = mc.getEntityRenderDispatcher().getRenderer(wall);
+                            if (renderer instanceof WallOfFleshRenderer wallRenderer) {
+                                poseStack.pushPose();
+                                poseStack.translate(wall.getX(), wall.getY(), wall.getZ());
+                                float entityYaw = wall.getYRot();
+                                int packedLight = mc.getEntityRenderDispatcher().getPackedLightCoords(wall, partialTick);
+                                wallRenderer.renderToTarget(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+                                poseStack.popPose();
+                                renderedIds.add(wall.getId());
+                            }
+                        }
+                    }
+                }
+                
+                // 遍历所有实体，渲染那些已加载但可能不在同步列表中的实体（或同步列表为空时）
+                for (Entity entity : level.getEntities().getAll()) {
+                    if (entity instanceof WallOfFlesh wall && !renderedIds.contains(wall.getId())) {
+                        var renderer = mc.getEntityRenderDispatcher().getRenderer(wall);
+                        if (renderer instanceof WallOfFleshRenderer wallRenderer) {
+                            poseStack.pushPose();
+                            poseStack.translate(wall.getX(), wall.getY(), wall.getZ());
+                            float entityYaw = wall.getYRot();
+                            int packedLight = mc.getEntityRenderDispatcher().getPackedLightCoords(wall, partialTick);
+                            wallRenderer.renderToTarget(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+                            poseStack.popPose();
+                        }
+                    }
+                }
+
+                bufferSource.endBatch();
+                poseStack.popPose();
+            }
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
 //            NPCChatBubbleBuffer.getInstance().refresh();
 
