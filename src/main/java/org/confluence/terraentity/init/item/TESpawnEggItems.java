@@ -60,6 +60,7 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> SPORE_BAT_SPAWN_EGG = registerEgg("spore_bat_spawn_egg", TEMonsterEntities.SPORE_BAT, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> TOMB_CRAWLER_SPAWN_EGG = registerEgg("tomb_crawler_spawn_egg", TEMonsterEntities.TOMB_CRAWLER, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> BONE_SERPENT_SPAWN_EGG = registerEgg("bone_serpent_spawn_egg", TEMonsterEntities.BONE_SERPENT, 0xffffff, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> WITHER_BONE_SERPENT_SPAWN_EGG = registerEgg("wither_bone_serpent_spawn_egg", TEMonsterEntities.WITHER_BONE_SERPENT, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> ANTLION_SWARMER_SPAWN_EGG = registerEgg("antlion_swarmer_spawn_egg", TEMonsterEntities.ANTLION_SWARMER, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> GIANT_ANTLION_SWARMER_SPAWN_EGG = registerEgg("giant_antlion_spawn_egg", TEMonsterEntities.GIANT_ANTLION_SWARMER, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> GRANTITE_ELEMENTAL_SPAWN_EGG = registerEgg("grantite_elemental_spawn_egg", TEMonsterEntities.GRANITE_ELEMENTAL, 0xffffff, 0xffffff);

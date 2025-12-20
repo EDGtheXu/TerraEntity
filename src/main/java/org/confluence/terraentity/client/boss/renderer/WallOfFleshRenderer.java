@@ -105,8 +105,8 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         }
     }
 
-    private void renderToTarget(WallOfFlesh wall, float entityYaw, float partialTick,
-                                PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public void renderToTarget(WallOfFlesh wall, float entityYaw, float partialTick,
+                               PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         int collisionWidth = Mth.floor(150 * 2 / wall.gridSpacing);
         int collisionHeight = Mth.floor(150 * 2 / wall.gridSpacing);
         final int gridX = wall.getGridSizeX() + collisionWidth;

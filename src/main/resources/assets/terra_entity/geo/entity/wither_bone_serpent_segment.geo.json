@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.bone_serpent_tail",
+				"identifier": "geometry.wither_bone_serpent_segment",
 				"texture_width": 64,
 				"texture_height": 64,
 				"visible_bounds_width": 3,

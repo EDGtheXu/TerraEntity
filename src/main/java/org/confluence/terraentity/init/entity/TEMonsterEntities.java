@@ -122,6 +122,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> GIANT_WORM = TEEntities.registerMonster("giant_worm", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> LEECH = TEEntities.registerMonster("leech", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BoneSerpent<BaseWormPart>>> BONE_SERPENT = TEEntities.registerMonster("bone_serpent", (e, l) -> new BoneSerpent<>(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight().setNoGravity()), 2F, 2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BoneSerpent<BaseWormPart>>> WITHER_BONE_SERPENT = TEEntities.registerMonster("wither_bone_serpent", (e, l) -> new BoneSerpent<>(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight().setNoGravity()), 2F, 2F);
     // 卷壳怪
     public static final DeferredHolder<EntityType<?>, EntityType<GiantShelly>> GIANT_SHELLY = TEEntities.registerMonster("giant_shelly", GiantShelly::new, 1F, 1F);
     // 宁芙
@@ -241,6 +242,7 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.DEVOURER.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.DEVOURER.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.GIANT_WORM.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.GIANT_WORM.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.BONE_SERPENT.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.BONE_SERPENT.getId(), 2.0f, 0.0f));
+        event.registerEntityRenderer(TEMonsterEntities.WITHER_BONE_SERPENT.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.WITHER_BONE_SERPENT.getId(), 2.0f, 0.0f));
 
         event.registerEntityRenderer(TEMonsterEntities.LEECH.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.LEECH.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.TOMB_CRAWLER.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.TOMB_CRAWLER.getId(), 2.0f, 0.0f));
@@ -379,6 +381,7 @@ public class TEMonsterEntities {
         event.put(DEVOURER.get(), AttBuilder.createAttributes(52,2,8).build());
         event.put(TOMB_CRAWLER.get(), AttBuilder.createAttributes(16,2,4).build());
         event.put(BONE_SERPENT.get(), AttBuilder.createAttributes(156,12,18).build());
+        event.put(WITHER_BONE_SERPENT.get(), AttBuilder.createAttributes(186,15,22).build());
 
         // bee
         event.put(HORNET.get(), AttBuilder.fly(AttBuilder.createAttributes(32,6,13,32,0,0.55f).moveSpeed(0.5)).build());
@@ -486,6 +489,7 @@ public class TEMonsterEntities {
         event.register(GIANT_WORM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkCaveMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(TOMB_CRAWLER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkCaveMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(BONE_SERPENT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkNetherMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(WITHER_BONE_SERPENT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkNetherMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         // bee
         event.register(HORNET.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
