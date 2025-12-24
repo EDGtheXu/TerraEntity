@@ -19,30 +19,29 @@ import java.util.List;
 @EventBusSubscriber(modid = TerraEntity.MODID)
 public class ServerTickEvent {
 
-    private static final int SYNC_INTERVAL = 20; // 每20tick（1秒）同步一次
-
     @SubscribeEvent
     public static void onLevelTick(LevelTickEvent.Post event) {
-        if (!(event.getLevel() instanceof ServerLevel serverLevel)) {
+        if (!(event.getLevel() instanceof ServerLevel serverLevel))
             return;
-        }
+        serverLevel.getGameTime();
 
-        // 每SYNC_INTERVAL tick同步一次
-        if (serverLevel.getGameTime() % SYNC_INTERVAL != 0) {
-            return;
-        }
+        List<SyncWallOfFleshEntitiesPacket.BossInfo> infos = new ArrayList<>();
 
-        // 收集所有肉墙实体
-        List<Integer> wallOfFleshIds = new ArrayList<>();
+        // 收集发送肉墙实体数据
         for (Entity entity : serverLevel.getEntities().getAll()) {
             if (entity instanceof WallOfFlesh && entity.isAlive()) {
-                wallOfFleshIds.add(entity.getId());
+                infos.add(new SyncWallOfFleshEntitiesPacket.BossInfo(
+                        entity.getId(),
+                        entity.getX(),
+                        entity.getY(),
+                        entity.getZ(),
+                        entity.getYRot(),
+                        entity.level().dimension()));
             }
         }
 
-        // 如果有肉墙实体，发送给所有玩家
-        if (!wallOfFleshIds.isEmpty()) {
-            SyncWallOfFleshEntitiesPacket.sendToAllPlayers(wallOfFleshIds);
+        if (!infos.isEmpty()) {
+            SyncWallOfFleshEntitiesPacket.sendToAllPlayers(infos);
         }
     }
 }
