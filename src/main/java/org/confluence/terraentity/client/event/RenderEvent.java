@@ -31,11 +31,14 @@ import org.confluence.terraentity.client.post.BrainTranslucent;
 import org.confluence.terraentity.client.post.TongueRenderer;
 import org.confluence.terraentity.client.post.WallOfFleshTranslucent;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
+import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.network.s2c.SyncWallOfFleshEntitiesPacket;
 import org.confluence.terraentity.integration.ModChecker;
 import org.confluence.terraentity.item.BaseWhipItem;
 import org.confluence.terraentity.item.YoyosItem;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.confluence.terraentity.TerraEntity.MODID;
@@ -66,22 +69,17 @@ public class RenderEvent {
 
     public static boolean isIrisShader = false;
     public static boolean isAfterSky = false;
+
+    // 静态的虚拟实体，用于渲染远处的肉山
+    private static WallOfFlesh dummyBoss;
+
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             BrainTranslucent.render(event);
             WallOfFleshTranslucent.render(event);
             DebugBlocksHelper.Singleton().render(event);
-            //            NPCRenderer.target.blitToScreen(100,100);
             NPCChatBubbleBuffer.getInstance().render(event);
-//            if (!VeilLevelPerspectiveRenderer.isRenderingPerspective()) {
-//                if (VeilRenderSystem.drawLights(Minecraft.getInstance().level.getProfiler(), VeilRenderSystem.getCullingFrustum())) {
-//                    VeilRenderSystem.compositeLights(Minecraft.getInstance().level.getProfiler());
-//                } else {
-//                    AdvancedFbo.unbind();
-//                }
-//            }
-
             isAfterSky = false;
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
             TongueRenderer.renderFirstPerson(event);
@@ -99,30 +97,70 @@ public class RenderEvent {
                 Vec3 cameraPos = event.getCamera().getPosition();
                 poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 
-                // 使用从服务端同步的肉墙实体ID列表
-                Set<Integer> syncedIds = SyncWallOfFleshEntitiesPacket.getClientWallOfFleshIds();
-                Set<Integer> renderedIds = new java.util.HashSet<>(); // 记录已渲染的实体ID，避免重复渲染
-                
-                // 先尝试使用同步的实体ID列表进行渲染
-                if (!syncedIds.isEmpty()) {
-                    for (Integer id : syncedIds) {
-                        Entity entity = level.getEntity(id);
-                        if (entity instanceof WallOfFlesh wall) {
-                            var renderer = mc.getEntityRenderDispatcher().getRenderer(wall);
+                // 获取包含坐标信息的列表
+                List<SyncWallOfFleshEntitiesPacket.BossInfo> infos = SyncWallOfFleshEntitiesPacket.getClientBossInfos();
+                Set<Integer> renderedIds = new HashSet<>();
+
+                if (!infos.isEmpty()) {
+
+                    for (SyncWallOfFleshEntitiesPacket.BossInfo info : infos) {
+
+                        if (info.dimension() != level.dimension()) {
+                            continue;
+                        }
+
+                        Entity realEntity = level.getEntity(info.id());
+                        WallOfFlesh entityToRender = null;
+
+                        // 1. 如果客户端能找到真实的实体，直接用真实的
+                        if (realEntity instanceof WallOfFlesh wall) {
+                            entityToRender = wall;
+                        }
+                        // 2. 如果找不到（太远了），使用虚拟实体
+                        else {
+                            if (dummyBoss == null || dummyBoss.level() != level) {
+                                dummyBoss = new WallOfFlesh(TEBossEntities.WALL_OF_FLESH.get(), level);
+                            }
+                            // 将虚拟实体移动到数据包指定的位置
+                            dummyBoss.setPos(info.x(), info.y(), info.z());
+
+                            float rot = info.yRot();
+                            // 设置当前旋转
+                            dummyBoss.setYRot(rot);
+                            dummyBoss.yBodyRot = rot;
+                            dummyBoss.yHeadRot = rot;
+                            // 强制设置"上一帧"的旋转等于当前旋转-避免在视距边缘由于频繁切换实体渲染和虚拟渲染导致的旋转问题
+                            dummyBoss.yRotO = rot;
+                            dummyBoss.yBodyRotO = rot;
+                            dummyBoss.yHeadRotO = rot;
+
+                            dummyBoss.setId(info.id());
+                            entityToRender = dummyBoss;
+                        }
+
+                        if (entityToRender != null) {
+                            var renderer = mc.getEntityRenderDispatcher().getRenderer(entityToRender);
                             if (renderer instanceof WallOfFleshRenderer wallRenderer) {
                                 poseStack.pushPose();
-                                poseStack.translate(wall.getX(), wall.getY(), wall.getZ());
-                                float entityYaw = wall.getYRot();
-                                int packedLight = mc.getEntityRenderDispatcher().getPackedLightCoords(wall, partialTick);
-                                wallRenderer.renderToTarget(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+                                // 移动到目标位置 (info.x/y/z 是最新的服务端位置)
+                                poseStack.translate(info.x(), info.y(), info.z());
+
+                                // 渲染。注意：最后一个参数是光照。对于远处的 Boss，建议给满亮度 (15728880)，否则可能因为区块没加载而全黑
+                                wallRenderer.renderToTarget(
+                                        entityToRender,
+                                        info.yRot(),
+                                        partialTick,
+                                        poseStack,
+                                        bufferSource,
+                                        15728880);
                                 poseStack.popPose();
-                                renderedIds.add(wall.getId());
+                                renderedIds.add(info.id());
                             }
                         }
                     }
                 }
-                
-                // 遍历所有实体，渲染那些已加载但可能不在同步列表中的实体（或同步列表为空时）
+
+                // 3. 渲染原本就在附近的实体（防止闪烁或遗漏，但跳过已经渲染过的 ID）
                 for (Entity entity : level.getEntities().getAll()) {
                     if (entity instanceof WallOfFlesh wall && !renderedIds.contains(wall.getId())) {
                         var renderer = mc.getEntityRenderDispatcher().getRenderer(wall);
@@ -131,20 +169,18 @@ public class RenderEvent {
                             poseStack.translate(wall.getX(), wall.getY(), wall.getZ());
                             float entityYaw = wall.getYRot();
                             int packedLight = mc.getEntityRenderDispatcher().getPackedLightCoords(wall, partialTick);
-                            wallRenderer.renderToTarget(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+                            wallRenderer.renderToTarget(wall, entityYaw, partialTick, poseStack, bufferSource,
+                                    packedLight);
                             poseStack.popPose();
                         }
                     }
                 }
-
                 bufferSource.endBatch();
                 poseStack.popPose();
             }
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-//            NPCChatBubbleBuffer.getInstance().refresh();
-
             isAfterSky = true;
-        } else if(event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES){
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
             isIrisShader = ModChecker.iris.isLoaded() && RenderSystem.getShader() instanceof ExtendedShader;
             DebugEntityHelper.INSTANCE.render(event);
         }
