@@ -215,7 +215,7 @@ public class SkeletronHand extends Skeletron {
 
         @Override
         public boolean canContinueToUse() {
-            return phase != 2;
+            return owner != null && owner.getTarget() != null && phase != 2;
         }
 
         @Override
