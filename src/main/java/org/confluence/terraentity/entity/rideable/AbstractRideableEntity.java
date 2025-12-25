@@ -1,5 +1,6 @@
 package org.confluence.terraentity.entity.rideable;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -45,10 +46,6 @@ public class AbstractRideableEntity extends Mob implements OwnableEntity, IFlyRi
     protected int jumpCount = 0;
 
     int jumpTick;
-
-    private boolean isInputtingJumping;
-
-    protected float playerJumpPendingScale;
 
     @Nullable
     private UUID owner;
@@ -116,7 +113,7 @@ public class AbstractRideableEntity extends Mob implements OwnableEntity, IFlyRi
 
     @Override
     public float calJumpingScale(float jumpTick, float orientation) {
-        return orientation;
+        return orientation == 0? 0 : 1;
     }
 
     /**
@@ -265,12 +262,12 @@ public class AbstractRideableEntity extends Mob implements OwnableEntity, IFlyRi
         if (this.onGround()) {
             this.setIsInputtingJumping(false);
 //            this.setJumping(false);
-            if (this.playerJumpPendingScale > 0.0F && !this.isJumping) {
+            if (Minecraft.getInstance().player != null && !this.isJumping && Minecraft.getInstance().player.input.jumping) {
                 isJumping = true;
                 playLocalJumpSound();
-                this.executeRidersJump(this.playerJumpPendingScale, travelVector);
+                this.executeRidersJump(1, travelVector);
             }
-            this.playerJumpPendingScale = 0.0F;
+
         }
     }
 
@@ -351,16 +348,6 @@ public class AbstractRideableEntity extends Mob implements OwnableEntity, IFlyRi
 
     @Override
     public void onPlayerJump(int jumpPower) {
-
-        if (jumpPower < 0) {
-            jumpPower = 0;
-        }
-
-        if (jumpPower >= 90) {
-            this.playerJumpPendingScale = 1.0F;
-        } else {
-            this.playerJumpPendingScale = 0.4F + 0.4F * (float)jumpPower / 90.0F;
-        }
 
     }
 

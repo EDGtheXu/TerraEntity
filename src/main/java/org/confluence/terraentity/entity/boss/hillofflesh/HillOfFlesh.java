@@ -435,7 +435,7 @@ public class HillOfFlesh extends AbstractTerraBossBase implements Boss {
             return this.innerRadius;
         }
         // 专家模式会变大
-        return Mth.lerp(this.getExpandingProgress(partialTicks), this.innerRadius, this.outerRadius * 0.5f);
+        return Mth.lerp(this.getExpandingProgress(partialTicks), this.innerRadius, this.outerRadius * 0.25f);
     }
 
     public void setOutRadius(float radius) {
@@ -443,7 +443,7 @@ public class HillOfFlesh extends AbstractTerraBossBase implements Boss {
     }
 
     public float getExpandingScale(float partialTicks){
-        return this.getInnerRadius(partialTicks) / this.innerRadius;
+        return this.getInnerRadius(partialTicks) / this.innerRadius * 2f;
     }
 
     @Override
@@ -810,8 +810,9 @@ public class HillOfFlesh extends AbstractTerraBossBase implements Boss {
         offsetX *= this.currentScale;
         offsetY *= this.currentScale;
         offsetZ *= this.currentScale;
-        part.setPos(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ);
-        part.setModelOffset(new Vec3(offsetX, offsetY, offsetZ));
+        Vec3 dir = new Vec3(offsetX, offsetY, offsetZ).yRot(-this.getYRot()* Mth.DEG_TO_RAD);
+        part.setPos(this.getX() + dir.x, this.getY() + dir.y, this.getZ() + dir.z);
+        part.setModelOffset(dir);
         if(this.currentScaleO != this.currentScale) {
             part.setScale(this.currentScale);
         }
@@ -820,7 +821,11 @@ public class HillOfFlesh extends AbstractTerraBossBase implements Boss {
             if (HillOfFleshModelAnimationTable.getTable() != null) {
                 Vec3KeyframeAnimation animation = HillOfFleshModelAnimationTable.getTable().getPositions(part.name);
                 if (animation != null) {
-                    part.setPos(position().add(animation.calWithCache((this.tickCount + 10) % 40).add(0,-1,0).scale(this.currentScale)));
+                    part.setPos(position().add(animation.calWithCache((this.tickCount + 10) % 40)
+                            .add(0,-1,0)
+                            .scale(this.currentScale)
+                            .yRot(-this.getYRot()* Mth.DEG_TO_RAD)
+                    ));
                 }
             }
             part.tickPart(offsetX, offsetY, offsetZ, index);
