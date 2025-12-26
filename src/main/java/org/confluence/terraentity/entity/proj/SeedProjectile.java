@@ -12,6 +12,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terraentity.entity.boss.Skeletron;
 import org.confluence.terraentity.registries.track.variant.BasisTrack;
+import org.confluence.terraentity.utils.TEUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class SeedProjectile extends BaseProj<SeedProjectile> {
@@ -26,6 +27,18 @@ public class SeedProjectile extends BaseProj<SeedProjectile> {
         trackType = new BasisTrack(90, 0.05f);
         canPenetrateBlock = true;
         accelerationPower = 0;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if(getOwner() != null && target != null) {
+            Vec3 dir = target.position().add(0, target.getEyeHeight() * 0.5f, 0).subtract(position());
+            double angle = TEUtils.angleBetween(getDeltaMovement(), dir);
+            Vec3 movement = trackType.calDeltaMovement(getDeltaMovement(), dir, angle);
+            setDeltaMovement(movement);
+        }
     }
 
     @Override
