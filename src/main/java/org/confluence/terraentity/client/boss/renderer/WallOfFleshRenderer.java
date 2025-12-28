@@ -186,11 +186,6 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
                 if (localOffset != null) {
                     Vec3 rotatedOffset = wall.rotateLocalOffset(localOffset);
-                    Vec3 worldPos = wall.position().add(rotatedOffset);
-
-                    if (!shouldRenderGrid(worldPos, wall.gridSpacing)) {
-                        continue;
-                    }
 
                     poseStack.pushPose();
                     poseStack.translate(rotatedOffset.x, rotatedOffset.y, rotatedOffset.z);
@@ -288,39 +283,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         poseStack.popPose();
     }
-    private boolean shouldRenderGrid(Vec3 gridPos, double gridSize) {
-        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-
-        // 计算网格中心位置
-        Vec3 gridCenter = new Vec3(
-                gridPos.x,
-                gridPos.y,
-                gridPos.z
-        );
-
-        double maxRenderDistance = getMaxGridRenderDistance(gridSize);
-
-        double dx = Math.abs(cameraPos.x - gridCenter.x);
-        double dy = Math.abs(cameraPos.y - gridCenter.y);
-        double dz = Math.abs(cameraPos.z - gridCenter.z);
-
-        return !(dx > maxRenderDistance) && !(dy > maxRenderDistance) && !(dz > maxRenderDistance);
-    }
 
     public boolean shouldRender(WallOfFlesh wall, Frustum camera, double camX, double camY, double camZ) {
         return true;
-    }
-
-    private double getMaxGridRenderDistance(double gridSize) {
-        double baseDistance = 200.0;
-
-        double sizeMultiplier = Math.max(0.5, Math.min(2.0, gridSize / 15.0));
-
-        Minecraft minecraft = Minecraft.getInstance();
-        double renderDistance = minecraft.options.getEffectiveRenderDistance();
-        baseDistance = renderDistance * 16.0;
-
-        return baseDistance * sizeMultiplier;
     }
 
     @Override
