@@ -30,6 +30,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.terraentity.api.entity.IExtendedTracking;
 import org.confluence.terraentity.effect.harmful.HorrifiedEffect;
 import org.confluence.terraentity.entity.animal.VariantsTextureMaps;
 import org.confluence.terraentity.entity.animal.WallOfFairy;
@@ -55,7 +56,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLET_VEC3_INT_LIST_SERIALIZER;
 import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLE_INT_VEC3_LIST_SERIALIZER;
 
-public class WallOfFlesh extends AbstractTerraBossBase implements Boss {
+public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtendedTracking {
     boolean genSegments = true;
     int genTick = 20;
     boolean shouldMove = true;
