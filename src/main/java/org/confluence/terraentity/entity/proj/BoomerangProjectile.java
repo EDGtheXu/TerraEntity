@@ -252,7 +252,7 @@ public class BoomerangProjectile extends Projectile {
         }
         if(level().isClientSide){
             if(ClientConfig.GENERATE_PROJECTILE_PARTICLE.get() && modifier.particle != null) {
-                ParticleOptions particle = modifier.particle.get();
+                ParticleOptions particle = modifier.particle.apply(this);
                 for (int i = 0; i < modifier.particleCount; i++) {
                     level().addParticle(particle, this.getX() + random.nextFloat() - 0.5f, this.getY() + random.nextFloat() - 0.5f, this.getZ() + random.nextFloat() - 0.5f, 0, 0, 0);
                 }
@@ -303,4 +303,7 @@ public class BoomerangProjectile extends Projectile {
         return true;
     }
 
+    public BoomerangModifier getModifier() {
+        return modifier;
+    }
 }

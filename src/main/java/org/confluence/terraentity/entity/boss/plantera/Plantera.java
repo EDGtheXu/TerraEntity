@@ -3,6 +3,8 @@ package org.confluence.terraentity.entity.boss.plantera;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -28,9 +30,9 @@ import org.confluence.terraentity.api.entity.Boss;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.data.codec.TECodecs;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
-import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.entity.proj.SeedProjectile;
 import org.confluence.terraentity.entity.proj.SpikeBallProjectile;
+import org.confluence.terraentity.entity.proj.SporeProjectile;
 import org.confluence.terraentity.init.TESounds;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
@@ -39,23 +41,21 @@ import org.confluence.terraentity.registries.mappeddata.MappedDataTypes;
 import org.confluence.terraentity.utils.TEUtils;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaterniond;
-import org.joml.Quaternionf;
 import org.joml.Vector3d;
-import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animation.AnimatableManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 世花本体
  */
-public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
+public class Plantera extends AbstractPlanteraTentacleSrc implements GeoEntity, Boss {
+    public static final double SECOND_PHASE_HEALTH = 0.5;
     // 数组 - 0：一阶段 1：二阶段 2：狂暴
     // 世界之花钩 - 射程范围和移动速度
     private float hookRange;
-    private float hookSpeed;
+    protected float hookSpeed;
     // 本体的移动速度
     private float[] moveSpeed;
     private float[] acceleration;
@@ -66,13 +66,15 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
     private int[] seedInterval;
     private float seedSpeed;
     private float seedDamage;
+    private int[] sporeInterval;
+    private float sporeSpeed;
+    private float sporeDamage;
     // 二阶段爆触手的数量
-    private int tentacleCount;
+    private int tentacleCountSelf, tentacleCountHook;
 
-    protected ArrayList<PlanteraHook> hooks = new ArrayList<>();
-    protected ArrayList<PlanteraTentacle> tentacles = null;
+    protected PlanteraHook[] hooks;
 
-    private int indexAI = 0;
+    private int indexAI = 0, tentacleRespawnCounter = 0, phase;
     private int enragedCounter = 0; // 狂暴剩余时长
     public static final EntityDataAccessor<Integer> DATA_PHASE = SynchedEntityData.defineId(Plantera.class, EntityDataSerializers.INT);
     SkillParams skillParams;
@@ -83,6 +85,12 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
             noPhysics = true;
         }
 
+        // 钩子
+        hooks = new PlanteraHook[3];
+
+        setPhase(0);
+
+        // 各种数据
         collisionProperties = new CollisionProperties(1,1,0.5f);
         this.skillParams = MappedDataTypes.BOSS_SKILL_MAP_DATAS.get().getData(BossSkillMapDatas.PLANTERA_PARAMS);
         this.xpReward = skillParams.xpReward;
@@ -101,19 +109,39 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
         this.spikeBallInterval = new int[]{
                 this.difficultSelector.switchBy(skillParams.spikeBallInterval, 0),
                 this.difficultSelector.switchBy(skillParams.spikeBallInterval, 4),
-                this.difficultSelector.switchBy(skillParams.spikeBallInterval, 8),
         };
         this.spikeBallSpeed = this.difficultSelector.switchBy(skillParams.spikeBallSpeed);
         this.spikeBallDamage = this.difficultSelector.switchBy(skillParams.spikeBallDamage);
         this.seedInterval = new int[]{
                 this.difficultSelector.switchBy(skillParams.seedInterval, 0),
                 this.difficultSelector.switchBy(skillParams.seedInterval, 4),
-                this.difficultSelector.switchBy(skillParams.seedInterval, 8),
         };
         this.seedSpeed = this.difficultSelector.switchBy(skillParams.seedSpeed);
         this.seedDamage = this.difficultSelector.switchBy(skillParams.seedDamage);
-        this.tentacleCount = this.difficultSelector.switchBy(skillParams.tentacleCount);
+        this.sporeInterval = new int[]{
+                this.difficultSelector.switchBy(skillParams.sporeInterval, 0),
+                this.difficultSelector.switchBy(skillParams.sporeInterval, 4),
+        };
+        this.sporeSpeed = this.difficultSelector.switchBy(skillParams.sporeSpeed);
+        this.sporeDamage = this.difficultSelector.switchBy(skillParams.sporeDamage);
+        this.tentacleCountSelf = this.difficultSelector.switchBy(skillParams.tentacleCount, 0);
+        this.tentacleCountHook = this.difficultSelector.switchBy(skillParams.tentacleCount, 4);
+    }
 
+    @Override
+    public void firstSpawn() {
+        if (isMainBody() && !level().isClientSide) {
+            if (level() instanceof ServerLevel) {
+                for (int i = 0; i < hooks.length; i++) {
+                    int finalI = i;
+                    TEUtils.spawnEntity(
+                            () -> new PlanteraHook(TEBossEntities.PLANTERA_HOOK.get(), level(), Plantera.this, finalI),
+                            (ServerLevel) level(), position());
+                }
+            }
+
+            this.playSound(TESounds.ROAR.get());
+        }
     }
 
     public record SkillParams(int xpReward,
@@ -121,6 +149,7 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
                               List<Float> moveSpeed, List<Float> acceleration,
                               List<Integer> spikeBallInterval, List<Float> spikeBallSpeed, List<Float> spikeBallDamage,
                               List<Integer> seedInterval, List<Float> seedSpeed, List<Float> seedDamage,
+                              List<Integer> sporeInterval, List<Float> sporeSpeed, List<Float> sporeDamage,
                               List<Integer> tentacleCount
 
     ){
@@ -136,6 +165,9 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
                 TECodecs.INT_LIST_CODEC.fieldOf("seed_interval").forGetter(SkillParams::seedInterval),
                 TECodecs.FLOAT_LIST_CODEC.fieldOf("seed_speed").forGetter(SkillParams::seedSpeed),
                 TECodecs.FLOAT_LIST_CODEC.fieldOf("seed_damage").forGetter(SkillParams::seedDamage),
+                TECodecs.INT_LIST_CODEC.fieldOf("spore_interval").forGetter(SkillParams::sporeInterval),
+                TECodecs.FLOAT_LIST_CODEC.fieldOf("spore_speed").forGetter(SkillParams::sporeSpeed),
+                TECodecs.FLOAT_LIST_CODEC.fieldOf("spore_damage").forGetter(SkillParams::sporeDamage),
                 TECodecs.INT_LIST_CODEC.fieldOf("tentacle_count").forGetter(SkillParams::tentacleCount)
         ).apply(instance, SkillParams::new));
 
@@ -151,29 +183,35 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
                     List.of(0.1f, 0.1f, 0.1f, 0.1f,
                             0.1f, 0.1f, 0.1f, 0.1f,
                             0.1f, 0.1f, 0.1f, 0.1f),
-                    // 刺球攻击间隔[]，弹幕速度，伤害
+                    // 刺球攻击间隔（仅限一阶段或狂暴，狂暴使用满额射速）；第一行-满血，第二行-极限射速
                     List.of(22, 22, 22, 22,
-                            14, 14, 14, 14,
                             14, 14, 14, 14),
+                    // 刺球弹幕速度，伤害
                     List.of(0.85f, 0.85f, 0.85f, 0.85f),
                     List.of(18f, 28f, 42f, 42f),
-                    // 种子攻击间隔[]，弹幕速度，伤害
+                    // 种子攻击间隔（仅限一阶段或狂暴，狂暴使用满额射速）；第一行-满血，第二行-极限射速
                     List.of(27, 27, 27, 27,
-                            24, 24, 24, 24,
                             13, 13, 13, 13),
+                    // 种子弹幕速度，伤害
                     List.of(2.5f, 2.5f, 2.5f, 2.5f),
                     List.of(12f, 19f, 28f, 28f),
-                    // 触手数量
-                    List.of(8, 8, 8, 8)
+                    // 孢子攻击间隔（仅限二阶段或狂暴，狂暴使用满额射速）；第一行-半血，第二行-极限射速
+                    List.of(27, 27, 27, 27,
+                            13, 13, 13, 13),
+                    // 孢子弹幕速度，伤害
+                    List.of(2.5f, 2.5f, 2.5f, 2.5f),
+                    List.of(12f, 19f, 28f, 28f),
+                    // 触手数量：本体↓钩子  ->囊度
+                    List.of(8, 8, 8, 8,
+                            3, 3, 3, 3)
             );
         }
     }
 
-    // 考虑狂暴和进度后得出数值array中的索引
+    // 考虑狂暴和生命值后得出数值array中的索引
     public int getPhaseIndex() {
         if (enragedCounter > 0) return 2;
-        // 使用tentacles判定是否已经进入二阶段
-        return tentacles == null ? 0 : 1;
+        return getHealth() / getMaxHealth() > SECOND_PHASE_HEALTH ? 0 : 1;
     }
 
     @Override
@@ -226,10 +264,46 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
 
     }
 
+    public void setPhase(int newPhase) {
+        if (newPhase < 0) {
+            newPhase = getEntityData().get(DATA_PHASE);
+        } else {
+            if (! level().isClientSide) {
+                getEntityData().set(DATA_PHASE, newPhase);
+            }
+        }
+
+        phase = newPhase;
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("Phase", phase);
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (level() instanceof ServerLevel) {
+            if (tag.contains("Phase")) {
+                getEntityData().set(DATA_PHASE, tag.getInt("Phase"));
+            }
+        }
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_PHASE, 0);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (key == DATA_PHASE) {
+            setPhase(-1);
+        }
     }
 
     @Override
@@ -242,8 +316,21 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
         super.tick();
 
         if (server) {
+            // 服务端 - 对于加载区块中解冻部件的处理
+            if (tickCount == 1) {
+                setPhase(-1);
+            }
+
             indexAI ++;
             enragedCounter --;
+
+            System.out.println(phase);
+            if (tentacles != null) {
+                System.out.println(tentacleRespawnCounter + " | " + tentacles.size());
+            }
+            for (PlanteraHook hook : hooks) {
+                System.out.println(hook + "");
+            }
         }
     }
 
@@ -251,16 +338,25 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
     public float[] getBossEventProgress(){
         float value = getHealth();
         float getMax = getMaxHealth();
-        if (tentacles == null) {
-            value += (float) (tentacleCount * PlanteraTentacle.MAX_HEALTH);
-            getMax += (float) (tentacleCount * PlanteraTentacle.MAX_HEALTH);
-        }
-        else {
-            for (PlanteraTentacle tentacle : tentacles) {
-                value += tentacle.getHealth();
-                getMax += tentacle.getMaxHealth();
-            }
-        }
+        // 这个，不需要了
+//        if (tentacles == null) {
+//            double tentaclesMaxHealth = (tentacleCountSelf + hooks.length * tentacleCountHook) * PlanteraTentacle.MAX_HEALTH;
+//            value += (float) (tentaclesMaxHealth);
+//            getMax += (float) (tentaclesMaxHealth);
+//        }
+//        else {
+//            for (PlanteraTentacle tentacle : tentacles) {
+//                value += tentacle.getHealth();
+//                getMax += tentacle.getMaxHealth();
+//            }
+//            for (PlanteraHook hook : hooks) {
+//                if (hook == null || hook.tentacles == null) continue;
+//                for (PlanteraTentacle tentacle : hook.tentacles) {
+//                    value += tentacle.getHealth();
+//                    getMax += tentacle.getMaxHealth();
+//                }
+//            }
+//        }
         PacketDistributor.sendToAllPlayers(new SyncBossEventHealthPacket(bossEvent.getId(), value, getMax));
         return new float[]{value , getMax};
     }
@@ -285,13 +381,6 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
     @Override
     public boolean shouldDoCollision() {
         return super.shouldDoCollision();
-    }
-
-    @Override
-    public void firstSpawn() {
-        if (!level().isClientSide) {
-            this.playSound(TESounds.ROAR.get());
-        }
     }
 
     @Override
@@ -335,7 +424,8 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
             acc = acc.normalize().scale( accMag );
             // 触手最远距离
             for (PlanteraHook hook : hooks) {
-                if (! hook.grabbed) continue;
+                if (hook == null) continue;
+                if (!(hook.state == PlanteraHook.STATE_GRABBED)) continue;
 
                 Vec3 offset = hook.position().subtract(position());
                 double lenSqr = offset.lengthSqr();
@@ -404,27 +494,20 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
                 enrage();
             }
 
-            // 清理消失的钩子
-            for (int idx = 0; idx < hooks.size(); idx ++) {
-                if (hooks.get(idx).isAlive()) continue;
-                hooks.remove(idx);
-                idx --;
-            }
-
             // 发射钩子
             if (indexAI % 50 == 0) {
-                System.out.println("Hook attempt; " + hooks.size());
-                if (hooks.size() < 3) {
+                for (PlanteraHook hook : hooks) {
+                    if (hook == null) continue;
+                    if (! (hook.state == PlanteraHook.STATE_IDLE)) continue;
                     BlockPos hookPos = getHookPos();
                     // 抓不到方块直接红温
                     if (hookPos == null) {
                         enrage();
                     }
+                    // 抓方块
                     else {
-                        PlanteraHook hook = TEUtils.spawnEntity(
-                                ()->new PlanteraHook(TEBossEntities.PLANTERA_HOOK.get(), level(), Plantera.this, hookPos, hookSpeed),
-                                (ServerLevel)level(), position());
-                        hooks.add(hook);
+                        hook.setTargetBlock(hookPos);
+                        hook.setState(PlanteraHook.STATE_EXTENDING);
                     }
                 }
             }
@@ -434,8 +517,9 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
                 PlanteraHook hookToRemove = null;
                 int hooksGrabbed = 0;
                 for (PlanteraHook hook : hooks) {
+                    if (hook == null) continue;
                     if (! hook.isAlive()) continue;
-                    if (! hook.grabbed) continue;
+                    if (! (hook.state == PlanteraHook.STATE_GRABBED)) continue;
                     hooksGrabbed ++;
                     double distSqr = hook.position().distanceToSqr(getTarget().position());
                     if (distSqr > maxDistSqr) {
@@ -445,7 +529,7 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
                 }
                 // 收回钩子
                 if (hooksGrabbed >= 3 && hookToRemove != null) {
-                    hookToRemove.retract();
+                    hookToRemove.state = PlanteraHook.STATE_RETRACTING;
                 }
             }
         }
@@ -471,8 +555,33 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
             // 防止阴险的零帧起手
             if (indexAI < 100) return;
 
+            int sdItv, sbItv, sprItv;
+            switch (getPhaseIndex()) {
+                case 0: {
+                    double multi = (getHealth() / getMaxHealth() * 2) - 1; // 100% -> 50% 血: 1 -> 0
+                    sdItv = (int) Math.round(seedInterval[0] * multi + seedInterval[1] * (1 - multi));
+                    sbItv = (int) Math.round(spikeBallInterval[0] * multi + spikeBallInterval[1] * (1 - multi));
+                    sprItv = -1;
+                    break;
+                }
+                case 1: {
+                    double multi = getHealth() / getMaxHealth() * 2; // 50% -> 0% 血: 1 -> 0
+                    sdItv = -1;
+                    sbItv = -1;
+                    sprItv = (int) Math.round(sporeInterval[0] * multi + sporeInterval[1] * (1 - multi));
+                    break;
+                }
+                case 2:
+                default: {
+                    sdItv = seedInterval[1];
+                    sbItv = spikeBallInterval[1];
+                    sprItv = sporeInterval[1];
+                    break;
+                }
+            }
+
             // 种子
-            if (indexAI % seedInterval[getPhaseIndex()] == 0) {
+            if (sdItv > 0 && indexAI % sdItv == 0) {
                 Vec3 velocity = getTarget().position().subtract(position()).normalize().scale(seedSpeed);
                 SeedProjectile seed = new SeedProjectile(TEProjectileEntities.SEED.get(), level(), getTarget());
                 seed.addDamage(seedDamage);
@@ -483,7 +592,7 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
             }
 
             // 刺球
-            if (indexAI % spikeBallInterval[getPhaseIndex()] == 0) {
+            if (sbItv > 0 && indexAI % sbItv == 0) {
                 Vec3 velocity = getTarget().position().subtract(position()).normalize().scale(spikeBallSpeed);
                 SpikeBallProjectile spikeBall = new SpikeBallProjectile(TEProjectileEntities.SPIKE_BALL.get(), level(), getTarget());
                 spikeBall.addDamage(spikeBallDamage);
@@ -492,24 +601,62 @@ public class Plantera extends AbstractTerraBossBase implements GeoEntity, Boss {
                 spikeBall.shoot(velocity.x, velocity.y, velocity.z, spikeBallSpeed, 0f);
                 level().addFreshEntity(spikeBall);
             }
+
+            // 孢子
+            if (sprItv > 0 && indexAI % sprItv == 0) {
+                Vec3 velocity = getTarget().position().subtract(position())
+                        .with(Direction.Axis.Y, 0).normalize().scale(sporeSpeed);
+                SporeProjectile spore = new SporeProjectile(TEProjectileEntities.SPORE.get(), level(), getTarget());
+                spore.addDamage(sporeDamage);
+                spore.setPos(position());
+                spore.setOwner(Plantera.this);
+                spore.shoot(velocity.x, velocity.y, velocity.z, sporeSpeed, 0f);
+                level().addFreshEntity(spore);
+            }
         }
     }
 
     public class TentacleGoal extends Goal {
         @Override
         public boolean canUse() {
-            return tentacles == null && (getHealth() / getMaxHealth()) < 0.5;
+            return getPhaseIndex() >= 1;
+        }
+
+        @Override
+        public boolean requiresUpdateEveryTick() {
+            return true;
         }
 
         @Override
         public void tick() {
-            tentacles = new ArrayList<>();
-            for (int i = 0; i < tentacleCount; i ++) {
-                Vec3 spawnLocOffset = TEUtils.rotToDir(random.nextFloat() * 360, random.nextFloat() * 180 - 90);
-                PlanteraTentacle tentacle = TEUtils.spawnEntity(
-                        ()->new PlanteraTentacle(TEBossEntities.PLANTERA_TENTACLE.get(), level(), Plantera.this),
-                        (ServerLevel)level(), position().add(spawnLocOffset));
-                tentacles.add(tentacle);
+            // 爆触手
+            if (phase == 0 && getHealth() / getMaxHealth() < SECOND_PHASE_HEALTH) {
+                setPhase(1);
+                // 本体
+                for (int i = 0; i < tentacleCountSelf; i++) {
+                    spawnTentacle();
+                }
+                // 钩子
+                for (PlanteraHook hook : hooks) {
+                    if (hook == null) continue;
+                    for (int i = 0; i < tentacleCountHook; i++) {
+                        hook.spawnTentacle();
+                    }
+                }
+            }
+            // 触手重生
+            if (tentacles != null) {
+                // 清理死去的触手
+                for (int i = 0; i < tentacles.size(); i ++) {
+                    if (tentacles.get(i).isAlive()) continue;
+                    tentacles.remove(i);
+                    i --;
+                }
+                // 5秒基础，每多一个触手减缓5秒重生间隔
+                if (tentacles.size() < tentacleCountSelf && ++tentacleRespawnCounter > (tentacles.size() + 1) * 100) {
+                    tentacleRespawnCounter = 0;
+                    spawnTentacle();
+                }
             }
         }
     }

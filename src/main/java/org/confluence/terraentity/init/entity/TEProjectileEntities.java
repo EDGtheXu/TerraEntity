@@ -44,6 +44,8 @@ public class TEProjectileEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<LavaPillar>> LAVA_PILLAR = registerProj("lava_pillar",(e, l)->
             new LavaPillar(e,l).setEffectStrategy(TEEffectStrategies.SET_FIRE_EFFECT.get()),1.2F,1.2F);
     public static final DeferredHolder<EntityType<?>, EntityType<SeedProjectile>> SEED = registerProj("seed_proj", SeedProjectile::new,0.5F,0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SporeProjectile>> SPORE = registerProj("spore_proj", (e,l) ->
+            new SporeProjectile(e, l).setCanBeHurt(),0.5F,0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<SpikeBallProjectile>> SPIKE_BALL = registerProj("spike_ball_proj", SpikeBallProjectile::new,1.5F,1.5F);
 
     // 鞭子
@@ -81,6 +83,7 @@ public class TEProjectileEntities {
         event.registerEntityRenderer(LAVA_PILLAR.get(), c->new LavaPillarRenderer(c, LAVA_PILLAR.getId().withPrefix("proj/")));
 
         RegisterUtils.registerBaseProjRenderer(event, SEED.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
+        RegisterUtils.registerBaseProjRenderer(event, SPORE.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
         RegisterUtils.registerBaseProjRenderer(event, SPIKE_BALL.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
 
         // 子弹
