@@ -248,8 +248,10 @@ dependencies {
     // 联动铁魔法
     compileOnly "io.redspace:irons_spellbooks:${irons_spells_version}:api"
     compileOnly "io.redspace:irons_spellbooks:${irons_spells_version}"
-    runtimeOnly "io.redspace:irons_spellbooks:${irons_spells_version}"
-    runtimeOnly "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
+    if (false) {
+        runtimeOnly "io.redspace:irons_spellbooks:${irons_spells_version}"
+        runtimeOnly "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
+    }
 
     // 联动泰拉饰品
     compileOnly "curse.maven:terra-curio-1027625:6881159"
