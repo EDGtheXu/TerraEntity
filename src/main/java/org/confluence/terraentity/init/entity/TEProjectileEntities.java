@@ -63,6 +63,8 @@ public class TEProjectileEntities {
 
     //悠悠球
     public static final DeferredHolder<EntityType<?>, EntityType<YoyosEntity>> YOYO_PROJ = registerProj("yoyo_projectile", YoyosEntity::new, 0.5f, 0.5f);
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownIceProjectile>> THROWN_ICE_PROJECTILE = registerProj("thrown_ice_projectile", ThrownIceProjectile::new, 1f, 1f);
+    public static final DeferredHolder<EntityType<?>, EntityType<IcePillar>> ICE_PILLAR = registerProj("ice_pillar", IcePillar::new, 0.5f, 0.5f);
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -97,6 +99,8 @@ public class TEProjectileEntities {
         //悠悠球
         event.registerEntityRenderer(YOYO_PROJ.get(), (c)->new YoyosRenderer(c));
 
+        event.registerEntityRenderer(THROWN_ICE_PROJECTILE.get(), (c)->new ThrownIceProjectileRenderer(c));
+        event.registerEntityRenderer(ICE_PILLAR.get(), (c)->new IcePillarRenderer(c));
     }
 
     public static <T extends Projectile> DeferredHolder<EntityType<?>, EntityType<T>> registerProj(String name, EntityType.EntityFactory<T> entityFactory, float w, float h) {

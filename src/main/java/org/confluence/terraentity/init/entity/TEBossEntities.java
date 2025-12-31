@@ -33,6 +33,7 @@ public class TEBossEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<EaterOfWorlds>> EATER_OF_WORLDS = TEEntities.registerMonster("eater_of_worlds", EaterOfWorlds::new, 3F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BrainOfCthulhu>> BRAIN_OF_CTHULHU = TEEntities.registerMonster("brain_of_cthulhu", BrainOfCthulhu::new, 4F, 4F);
     public static final DeferredHolder<EntityType<?>, EntityType<BrainFake>> BRAIN_FAKE = TEEntities.registerMonster("brain_fake", BrainFake::new, 4F, 4F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Deerclops>> DEERCLOPS = TEEntities.registerMonster("deerclops", Deerclops::new, 3F, 7F);
     public static final DeferredHolder<EntityType<?>, EntityType<QueenBee>> QUEEN_BEE = TEEntities.registerMonster("queen_bee", QueenBee::new, 2.5F, 3F);
     public static final DeferredHolder<EntityType<?>, EntityType<Skeletron>> SKELETRON = TEEntities.registerMonster("skeletron", Skeletron::new, 2.3F, 2.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<SkeletronHand>> SKELETRON_HAND = TEEntities.registerMonster("skeletron_hand", SkeletronHand::new, 2F, 2F);
@@ -54,6 +55,7 @@ public class TEBossEntities {
         event.registerEntityRenderer(TEBossEntities.BRAIN_OF_CTHULHU.get(), c -> new BrainOfCthulhuRenderer(c, new GeoBossModel<>(TEBossEntities.BRAIN_OF_CTHULHU)));
         event.registerEntityRenderer(TEMonsterEntities.VISUAL_NEURON.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true));
         event.registerEntityRenderer(TEBossEntities.BRAIN_FAKE.get(), c -> new BrainOfCthulhuRenderer(c, new GeoBossModel<>(TEBossEntities.BRAIN_OF_CTHULHU)));
+        event.registerEntityRenderer(TEBossEntities.DEERCLOPS.get(), c -> new GeoNormalRenderer<>(c, new GeoBossModel<>(TEBossEntities.DEERCLOPS), false, 1, 0));
         event.registerEntityRenderer(TEBossEntities.QUEEN_BEE.get(), c -> new QueenBeeRenderer(c, new GeoBossModel<>(TEBossEntities.QUEEN_BEE)));
         event.registerEntityRenderer(TEBossEntities.SKELETRON.get(), c -> new SkeletronRenderer(c, new GeoBossModel<>(TEBossEntities.SKELETRON)));
         event.registerEntityRenderer(TEBossEntities.SKELETRON_HAND.get(), c -> new SkeletronHandRenderer(c, new SkeletronHandModel()));
@@ -75,6 +77,7 @@ public class TEBossEntities {
         event.put(TEBossEntities.BRAIN_OF_CTHULHU.get(), AttBuilder.createBoss(14, 552, 14).knockResistance(0.5f).build());
 
         event.put(TEBossEntities.BRAIN_FAKE.get(), AbstractTerraBossBase.createAttributes().build());
+        event.put(TEBossEntities.DEERCLOPS.get(), AttBuilder.createBoss(14, 1237, 8).moveSpeed(0.4f).build());
         event.put(TEBossEntities.QUEEN_BEE.get(), AttBuilder.createBoss(14, 1237, 8).build());
         event.put(TEBossEntities.SKELETRON.get(), AttBuilder.createBoss(18.2, 2288, 10).build());
         event.put(TEBossEntities.SKELETRON_HAND.get(), AttBuilder.createBoss(10, 405, 4).build());

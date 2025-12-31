@@ -1,10 +1,7 @@
 package org.confluence.terraentity.utils;
 
 import it.unimi.dsi.fastutil.Pair;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -977,4 +974,22 @@ public final class TEUtils {
 //        return new Vec3(entity.getX())
     }
 
+    public static BlockPos findNearbyBlockEntity(Level level, BlockPos center, int radius, BiPredicate<BlockPos, BlockEntity> predicate) {
+        for (int i = -radius; i <= radius; i++) {
+            for (int j = -radius; j <= radius; j++) {
+                Map<BlockPos, BlockEntity> entities = level.getChunk(
+                        SectionPos.blockToSectionCoord(center.getX()) + i,
+                        SectionPos.blockToSectionCoord(center.getZ()) + j).getBlockEntities();
+                if (!entities.isEmpty()) {
+                    for (Map.Entry<BlockPos, BlockEntity> entry : entities.entrySet()) {
+                        if(predicate.test(entry.getKey(), entry.getValue())) {
+                            return entry.getKey();
+                        }
+                    }
+
+                }
+            }
+        }
+        return null;
+    }
 }

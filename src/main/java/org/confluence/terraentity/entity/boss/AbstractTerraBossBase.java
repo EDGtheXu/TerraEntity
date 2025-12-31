@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -81,7 +82,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     public AbstractTerraBossBase(EntityType<? extends Monster> type, Level level) {
         super(type, level);
-        this.moveControl = new FlyingMoveControl(this, 10, false);
+        this.moveControl = this.createMoveControl();
         setNoGravity(true);
 //        this.baseHealth = health;
 //        this.baseArmor = armor;
@@ -94,6 +95,10 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
 
         bossEvent = (ServerBossEvent) new ServerBossEvent(getDisplayName(), getBossBarColor(), BossEvent.BossBarOverlay.PROGRESS).setDarkenScreen(true).setPlayBossMusic(true);
+    }
+
+    protected MoveControl createMoveControl() {
+        return new FlyingMoveControl(this, 10, false);
     }
 
     /**
@@ -600,5 +605,8 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
         return super.isInvulnerableTo(source);
     }
 
+    protected int calShareFlag(int data, int index, boolean value) {
+        return value? (data | (1 << index)) : (data & ~(1 << index));
+    }
 
 }

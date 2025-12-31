@@ -8,7 +8,7 @@ import org.confluence.terraentity.api.entity.ai.ISkill;
 public abstract class CdGoal<T extends Mob> extends Goal implements ISkill {
     protected T mob;
     protected int interval;
-    protected int _interval;
+    protected final int _interval;
     protected int time;
     protected int maxCount;
     protected int count;
@@ -17,7 +17,7 @@ public abstract class CdGoal<T extends Mob> extends Goal implements ISkill {
         this.mob = mob;
         this.interval = interval / 2;
         this._interval = this.interval;
-        this.time = interval;
+        this.time = this.interval;
         this.maxCount = maxCount;
         this.count = 0;
     }

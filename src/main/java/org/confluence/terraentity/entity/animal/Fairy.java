@@ -9,9 +9,9 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.terraentity.utils.TEUtils;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -94,20 +94,10 @@ public class Fairy extends BirdVariantAnimal {
             }
             if(this.guidePos == null) {
                 // 寻找附近的箱子作为导航点
-                int offset = 1;
-                for (int i = -offset; i <= offset; i++) {
-                    for (int j = -offset; j <= offset; j++) {
-                        Map<BlockPos, BlockEntity> entities = this.mob.level().getChunkAt(this.mob.blockPosition()).getBlockEntities();
-                        if (!entities.isEmpty()) {
-                            for (Map.Entry<BlockPos, BlockEntity> entry : entities.entrySet()) {
-                                if (entry.getValue() instanceof ChestBlockEntity) {
-                                    this.guidePos = entry.getKey();
-                                    return;
-                                }
-                            }
-
-                        }
-                    }
+                BlockPos chestPos = TEUtils.findNearbyBlockEntity(this.mob.level(), this.mob.blockPosition(), 1,(pos, entity)-> entity instanceof  ChestBlockEntity);
+                if (chestPos != null) {
+                    this.guidePos = chestPos;
+                    return;
                 }
             }
             if(this.guidePos == null){

@@ -1,0 +1,64 @@
+package org.confluence.terraentity.entity.ai.goal.behavior.composite;
+
+import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 序列节点（按顺序执行，全部成功才算成功）
+ */
+public class SequenceNode extends BTNode {
+    private final List<BTNode> children = new ArrayList<>();
+    private int currentIndex = 0;
+
+    public SequenceNode addChild(BTNode child) {
+        children.add(child);
+        return this;
+    }
+
+    @Override
+    public BTStatus execute() {
+        while (currentIndex < children.size()) {
+            BTNode child = children.get(currentIndex);
+
+            child.tryStart();
+
+            child.tick();
+
+            if (child.canContinueToUse()) {
+                return BTStatus.RUNNING;
+            }
+
+            BTStatus childResult = child.getStatus();
+            child.stop();
+
+            if (childResult == BTStatus.FAILURE) {
+                return BTStatus.FAILURE;
+            }
+
+            currentIndex++;
+        }
+
+        return BTStatus.SUCCESS;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return children.stream().reduce(
+                new StringBuilder("SequenceNode[").append(currentIndex).append("/").append(children.size()).append("|"),
+                (sb, node)-> sb.append(",").append(node.getClass().getSimpleName()),
+                (a, b)->a ).append("]").toString();
+    }
+
+    @Override
+    protected void cleanup() {
+        currentIndex = 0;
+        for (BTNode child : children) {
+//            if (child.getStatus() == BTStatus.RUNNING) {
+                child.stop();
+//            }
+        }
+    }
+}

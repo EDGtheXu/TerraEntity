@@ -51,6 +51,10 @@ public final class BossSkillMapDatas extends MappedData<BossSkillMapDatas.BossSk
             .registerCodec("eater_of_worlds_params", EaterOfWorlds.SkillParams.CODEC)
             .withDefaultValue(EaterOfWorlds.SkillParams::getDefaultParams);
 
+    public static MappedKey<BossSkillType, Deerclops.SkillParams> DEERCLOPS_PARAMS = builder
+            .registerCodec("deerclops_params", Deerclops.SkillParams.CODEC)
+            .withDefaultValue(Deerclops.SkillParams::getDefaultParams);
+
     public static MappedKey<BossSkillType, QueenBee.SkillParams> QUEEN_BEE_PARAMS = builder
             .registerCodec("queen_bee_params", QueenBee.SkillParams.CODEC)
             .withDefaultValue(QueenBee.SkillParams::getDefaultParams);
