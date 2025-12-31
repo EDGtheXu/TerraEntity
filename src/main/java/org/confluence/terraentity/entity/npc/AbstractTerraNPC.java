@@ -166,6 +166,14 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
     }
 
     @Override
+    public boolean canAttack(LivingEntity target) {
+        if (target instanceof Player || target instanceof AbstractTerraNPC) {
+            return false;
+        }
+        return target.canBeSeenAsEnemy();
+    }
+
+    @Override
     public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         // confluence mixin here
         return !this.hasCustomName(); // 交互以后不会被刷走
