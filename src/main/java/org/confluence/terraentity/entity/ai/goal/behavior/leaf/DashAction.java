@@ -26,7 +26,7 @@ public class DashAction extends BTNode {
     public void start() {
         super.start();
         this.component.setDirection(mob.getForward());
-        targetPos = mob.position().add(mob.getForward().normalize().scale(20));
+        targetPos = mob.position().add(mob.getForward().normalize().scale(200));
     }
 
     @Override

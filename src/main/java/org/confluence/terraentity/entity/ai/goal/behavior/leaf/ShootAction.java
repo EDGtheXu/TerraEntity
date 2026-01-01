@@ -7,11 +7,11 @@ import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 /**
  * 射击行为
  */
-public abstract class ShootAction extends BTNode {
+public abstract class ShootAction<T extends Mob> extends BTNode {
 
-    protected final Mob mob;
+    protected final T mob;
 
-    public ShootAction(Mob mob) {
+    public ShootAction(T mob) {
         this.mob = mob;
     }
 

@@ -28,7 +28,11 @@ public class ParallelMoveAction extends BTNode {
         if (mob.getTarget() == null) {
             return BTStatus.FAILURE;
         }
-        component.hangOn(mob.getTarget(), dist, this.offsetY, this.speed);
+        if(dist <= 0) {
+            component.hangAbove(mob.getTarget(), this.offsetY, this.speed);
+        }else{
+            component.hangOn(mob.getTarget(), dist, this.offsetY, this.speed);
+        }
         return BTStatus.RUNNING;
     }
 }

@@ -54,23 +54,16 @@ public class BTFactory {
                 .addChild(node);
     }
 
+    public static ParallelNode withTimer(int duration) {
+        return parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ONE)
+                .addChild(wait(duration));
+    }
+
     public static GoalWrapper goal(Goal goal) {
         return new GoalWrapper(goal);
     }
 
-//    // 示例：创建一个复杂的行为树
-//    public static BTNode createZombieBehaviorTree(PathfinderMob zombie) {
-//        return selector()
-//            .addChild(sequence()
-//                .addChild(condition(
-//                    new MoveToAction(zombie, 1.0)
-//                        .setTarget(100, 64, 200),
-//                    () -> zombie.distanceToSqr(100, 64, 200) > 100
-//                ))
-//            )
-//            .addChild(sequence()
-//                .addChild(wait(20))
-//                .addChild(new RandomWanderAction(zombie, 1.0))
-//            );
-//    }
+
+
+
 }
