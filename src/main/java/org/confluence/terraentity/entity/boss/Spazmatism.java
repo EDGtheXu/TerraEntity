@@ -3,12 +3,15 @@ package org.confluence.terraentity.entity.boss;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -32,21 +35,24 @@ import org.confluence.terraentity.entity.ai.goal.behavior.composite.SequenceNode
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.HealthLowerThanCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.*;
+import org.confluence.terraentity.entity.boss.thetwins.TheTwins;
 import org.confluence.terraentity.entity.util.SharedFlagController;
 import org.confluence.terraentity.init.TEParticles;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * 魔焰眼
  */
-public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagControllerHolder, FlyingAnimal, IBlackboardHolder {
+public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagControllerHolder, FlyingAnimal, IBlackboardHolder, OwnableEntity {
 
     private static final EntityDataAccessor<Integer> DATA_SHARE_FLAG = SynchedEntityData.defineId(Spazmatism.class, EntityDataSerializers.INT);
     private static final RawAnimation move1 = RawAnimation.begin().thenLoop("type_1");
@@ -67,6 +73,7 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
     private final Blackboard blackboard;
     private final SkillParams skillParams;
 
+    public UUID ownerUUID;
 
 
     public Spazmatism(EntityType<? extends Monster> type, Level level) {
@@ -83,6 +90,11 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
         this.skillParams = SkillParams.getDefaultParams(); // 等注册双子魔眼
         this.xpReward = skillParams.xpReward;
 
+    }
+
+    @Override
+    public @Nullable UUID getOwnerUUID() {
+        return this.ownerUUID;
     }
 
 
@@ -339,5 +351,42 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
                 .triggerableAnim("run2", run2)
         );
 
+    }
+
+    @Override
+    public boolean canAttack(LivingEntity entity) {
+        return !(entity instanceof Spazmatism) && super.canAttack(entity);
+    }
+
+    @Override
+    public boolean shouldShowBossBar() {
+        return false;
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        if(this.getOwnerUUID() != null){
+            compound.putUUID("ownerUUID", this.getOwnerUUID());
+        }
+
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if(tag.contains("ownerUUID")) {
+            this.ownerUUID = tag.getUUID("ownerUUID");
+        }
+    }
+
+    @Override
+    public void die(DamageSource damageSource) {
+        if(level() instanceof ServerLevel serverLevel && this.getOwnerUUID() != null) {
+            if(serverLevel.getEntity(ownerUUID) instanceof TheTwins theTwins) {
+                theTwins.onPartDie(this);
+            }
+        }
+        super.die(damageSource);
     }
 }

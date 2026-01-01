@@ -20,6 +20,7 @@ import org.confluence.terraentity.entity.boss.hillofflesh.HillOfFlesh;
 import org.confluence.terraentity.entity.boss.plantera.Plantera;
 import org.confluence.terraentity.entity.boss.plantera.PlanteraHook;
 import org.confluence.terraentity.entity.boss.plantera.PlanteraTentacle;
+import org.confluence.terraentity.entity.boss.thetwins.TheTwins;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.model.CrownOfKingSlimeModelEntity;
 import org.confluence.terraentity.entity.util.AttBuilder;
@@ -43,6 +44,7 @@ public class TEBossEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<Spazmatism>> SPAZMATISM = TEEntities.registerMonster("spazmatism", Spazmatism::new, 2.6F, 2.6F);
     public static final DeferredHolder<EntityType<?>, EntityType<Retinazer>> RETINAZER = TEEntities.registerMonster("retinazer", Retinazer::new, 2.6F, 2.6F);
+    public static final DeferredHolder<EntityType<?>, EntityType<TheTwins>> THE_TWINS = TEEntities.registerMonster("the_twins", TheTwins::new, 2.6F, 2.6F);
 
     public static final DeferredHolder<EntityType<?>, EntityType<Plantera>> PLANTERA = TEEntities.registerMonster("plantera", Plantera::new, 10F, 10F);
     public static final DeferredHolder<EntityType<?>, EntityType<PlanteraHook>> PLANTERA_HOOK = TEEntities.registerMonster("plantera_hook", PlanteraHook::new, 1.25F, 1.25F);
@@ -70,6 +72,7 @@ public class TEBossEntities {
 
         event.registerEntityRenderer(TEBossEntities.SPAZMATISM.get(), c -> new GeoNormalRenderer<>(c, new GeoBossModel<>(TEBossEntities.SPAZMATISM), true, 1, 0f));
         event.registerEntityRenderer(TEBossEntities.RETINAZER.get(), c -> new GeoNormalRenderer<>(c, new GeoBossModel<>(TEBossEntities.RETINAZER), true, 1, 0f));
+        event.registerEntityRenderer(TEBossEntities.THE_TWINS.get(), TheTwinsRenderer::new);
 
         event.registerEntityRenderer(TEBossEntities.PLANTERA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
         event.registerEntityRenderer(TEBossEntities.PLANTERA_HOOK.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
@@ -96,6 +99,7 @@ public class TEBossEntities {
 
         event.put(TEBossEntities.SPAZMATISM.get(), AttBuilder.createBoss(1, 100, 0).build());
         event.put(TEBossEntities.RETINAZER.get(), AttBuilder.createBoss(1, 100, 0).build());
+        event.put(TEBossEntities.THE_TWINS.get(), AttBuilder.createBoss(0, 100, 0).build());
 
         event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(26, 10920, 36).build());
         event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(15.6, 1040, 24).build());

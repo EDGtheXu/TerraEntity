@@ -482,7 +482,8 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
             float[] datas = getBossEventProgress();
             ((IBossEvent)this.bossEvent).terra_enity$setBossHealth(datas[0]);
             ((IBossEvent)this.bossEvent).terra_enity$setBossMaxHealth(datas[1]);
-            this.bossEvent.setProgress(datas[0] / datas[1]);
+            float res = datas[1] == 0? 1 : datas[0] / datas[1];
+            this.bossEvent.setProgress(res);
         }
     }
 
