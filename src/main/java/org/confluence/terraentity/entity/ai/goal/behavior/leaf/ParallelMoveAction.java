@@ -1,0 +1,34 @@
+package org.confluence.terraentity.entity.ai.goal.behavior.leaf;
+
+import net.minecraft.world.entity.Mob;
+import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
+import org.confluence.terraentity.entity.ai.motion.DashComponent;
+
+/**
+ * 平行于目标移动，如魔焰眼一阶段
+ */
+public class ParallelMoveAction extends BTNode {
+
+    final Mob mob;
+    float dist;
+    final DashComponent component;
+    final float speed;
+    final float offsetY;
+
+    public ParallelMoveAction(Mob mob, float dist, float speed, float offsetY) {
+        this.mob = mob;
+        this.dist = dist;
+        this.component = new DashComponent(mob);
+        this.speed = speed;
+        this.offsetY = offsetY;
+    }
+
+    @Override
+    public BTStatus execute() {
+        if (mob.getTarget() == null) {
+            return BTStatus.FAILURE;
+        }
+        component.hangOn(mob.getTarget(), dist, this.offsetY, this.speed);
+        return BTStatus.RUNNING;
+    }
+}

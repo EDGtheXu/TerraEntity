@@ -21,13 +21,12 @@ import net.neoforged.neoforge.common.Tags;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
+import org.confluence.terraentity.entity.ai.goal.behavior.BTRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.TargetExistCondition;
-import org.confluence.terraentity.entity.ai.goal.behavior.decoration.BTRoot;
+import org.confluence.terraentity.entity.ai.goal.behavior.leaf.LandRandomStrollAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.MoveToTargetAction;
-import org.confluence.terraentity.entity.ai.goal.behavior.leaf.RandomStrollBTGoal;
-import org.confluence.terraentity.entity.ai.goal.behavior.leaf.TimerAction;
 import org.confluence.terraentity.entity.util.SharedFlagController;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.confluence.terraentity.registries.mappeddata.MappedDataTypes;
@@ -87,7 +86,7 @@ public class Deerclops extends AbstractTerraBossBase {
     }
 
 
-    static class DeerSharedFlagController extends SharedFlagController {
+    private static class DeerSharedFlagController extends SharedFlagController {
         SharedFlag attackFlag = this.registerFlag();
         SharedFlag roarFlag = this.registerFlag();
         SharedFlag roaringFlag = this.registerFlag();
@@ -257,7 +256,7 @@ public class Deerclops extends AbstractTerraBossBase {
                             .addChild(BTFactory.condition(new TargetExistCondition(mob), BTFactory.infinite(BTFactory.sequence()
                                     .addChild(BTFactory.parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ONE)
                                             .addChild(new MoveToTargetAction(this.mob, 7, 20))
-                                            .addChild(new TimerAction(100)))
+                                            .addChild(BTFactory.wait(100)))
                                     .addChild(BTFactory.withTimer(15, new IceAttack()))
                             )))
                     )
@@ -266,19 +265,9 @@ public class Deerclops extends AbstractTerraBossBase {
                                     .addChild(new WalkToChestGoal(mob))
                                     .addChild(new DestroyChestGoal(mob))
                             )
-                            .addChild(new RandomStrollBTGoal(mob, 1.0f, 50))
+                            .addChild(new LandRandomStrollAction(mob, 1.0f, 50))
                     ))
             );
-        }
-
-        @Override
-        public boolean canUse() {
-            return true;
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return this.canUse();
         }
 
         private class IceAttack extends BTNode {

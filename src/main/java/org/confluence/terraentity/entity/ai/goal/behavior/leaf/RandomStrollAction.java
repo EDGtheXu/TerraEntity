@@ -1,42 +1,47 @@
-
 package org.confluence.terraentity.entity.ai.goal.behavior.leaf;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.ai.util.LandRandomPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public class RandomStrollBTGoal extends BTNode {
+/**
+ * 飞行生物游走
+ */
+public class RandomStrollAction extends BTNode{
 
     protected final PathfinderMob mob;
     protected final double speedModifier;
     protected int interval;
     protected final int _interval;
 
-    public RandomStrollBTGoal(PathfinderMob mob, double speedModifier, int interval) {
+    public RandomStrollAction(PathfinderMob mob, double speedModifier, int interval) {
         this.mob = mob;
         this.speedModifier = speedModifier;
         this._interval = interval;
         this.interval = 0;
 
-        this.setFlags(EnumSet.of(Flag.MOVE));
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
 
     @Override
-    public BTStatus execute() {
+    public BTNode.BTStatus execute() {
         if(++this.interval > _interval) {
             return BTStatus.SUCCESS;
         }
+//        System.out.println(this.interval);
 
         return BTStatus.RUNNING;
     }
 
     @Nullable
     protected Vec3 getPosition() {
-        return LandRandomPos.getPos(this.mob, 15, 7);
+        return AirRandomPos.getPosTowards(mob, 10, 5,1, mob.blockPosition().getBottomCenter(), Mth.PI * 0.1f);
     }
 
 

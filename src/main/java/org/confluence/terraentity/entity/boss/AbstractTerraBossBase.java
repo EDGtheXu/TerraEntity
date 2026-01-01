@@ -609,4 +609,9 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
         return value? (data | (1 << index)) : (data & ~(1 << index));
     }
 
+    @Override
+    public int getMaxHeadXRot() {
+        return 85;
+    }
+
 }

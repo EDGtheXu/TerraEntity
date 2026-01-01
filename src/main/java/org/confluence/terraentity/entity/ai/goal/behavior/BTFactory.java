@@ -9,7 +9,6 @@ import org.confluence.terraentity.entity.ai.goal.behavior.decoration.ConditionNo
 import org.confluence.terraentity.entity.ai.goal.behavior.decoration.InverterNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.decoration.RepeaterNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.GoalWrapper;
-import org.confluence.terraentity.entity.ai.goal.behavior.leaf.TimerAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.WaitAction;
 
 /**
@@ -33,12 +32,12 @@ public class BTFactory {
         return new InverterNode(child);
     }
 
-    public static RepeaterNode repeater(BTNode child, int count) {
-        return new RepeaterNode(child, count);
+    public static RepeaterNode repeater(int count, BTNode child) {
+        return new RepeaterNode(count, child);
     }
 
     public static RepeaterNode infinite(BTNode child) {
-        return new RepeaterNode(child, -1);
+        return new RepeaterNode(-1, child);
     }
 
     public static ConditionNode condition(Condition condition, BTNode child) {
@@ -49,13 +48,9 @@ public class BTFactory {
         return new WaitAction(ticks);
     }
 
-    public static TimerAction timer(int duration) {
-        return new TimerAction(duration);
-    }
-
     public static ParallelNode withTimer(int duration, BTNode node) {
         return parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ONE)
-                .addChild(timer(duration))
+                .addChild(wait(duration))
                 .addChild(node);
     }
 

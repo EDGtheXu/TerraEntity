@@ -15,7 +15,7 @@ public class RepeaterNode extends DecorationNode {
     /**
      * @param repeatCount 当小于0时infinite为true
      */
-    public RepeaterNode(BTNode child, int repeatCount) {
+    public RepeaterNode(int repeatCount, BTNode child) {
         super(child);
 
 

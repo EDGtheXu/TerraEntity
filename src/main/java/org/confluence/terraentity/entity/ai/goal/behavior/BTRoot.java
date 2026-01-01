@@ -1,8 +1,10 @@
-package org.confluence.terraentity.entity.ai.goal.behavior.decoration;
+package org.confluence.terraentity.entity.ai.goal.behavior;
 
-import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 行为树根节点
+ */
 public abstract class BTRoot extends BTNode {
 
     protected BTNode child;
@@ -14,10 +16,14 @@ public abstract class BTRoot extends BTNode {
     protected abstract BTNode createBehaviorTree();
 
     @Override
-    public abstract boolean canUse();
+    public boolean canUse() {
+        return true;
+    }
 
     @Override
-    public abstract boolean canContinueToUse();
+    public boolean canContinueToUse() {
+        return this.canUse();
+    }
 
     @Override
     public void start() {

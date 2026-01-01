@@ -3,7 +3,7 @@ package org.confluence.terraentity.entity.ai.goal.behavior.leaf;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 
 /**
- * 等待节点
+ * 等待节点，到达指定时间返回{@link BTStatus#SUCCESS SUCCESS}
  */
 public class WaitAction extends BTNode {
     private final int waitTicks;
@@ -15,8 +15,7 @@ public class WaitAction extends BTNode {
 
     @Override
     public BTStatus execute() {
-        currentTicks++;
-        if (currentTicks >= waitTicks) {
+        if (++currentTicks >= waitTicks) {
             return BTStatus.SUCCESS;
         }
         return BTStatus.RUNNING;

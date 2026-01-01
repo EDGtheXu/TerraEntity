@@ -6,7 +6,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import java.util.EnumSet;
 
 /**
- * 包装现有的Goal作为行为树节点
+ * 包装现有的Goal作为行为，大概率有问题，极不推荐使用
  */
 public class GoalWrapper extends BTNode {
     private final Goal goal;

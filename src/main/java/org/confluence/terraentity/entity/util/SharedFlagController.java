@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 实体共享状态
  */
-public abstract class SharedFlagController {
+public class SharedFlagController {
 
     final SynchedEntityData entityData;
     final EntityDataAccessor<Integer> DATA_SHARE_FLAG;
