@@ -128,6 +128,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.LITTLE_HORNET.get(), "小黄蜂");
         add(TEBossEntities.SKELETRON.get(), "骷髅王");
         add(TEBossEntities.DUNGEON_GUARDIAN.get(), "地牢守卫");
+        add(TEBossEntities.DEERCLOPS.get(), "独眼巨鹿");
         add(TEBossEntities.HILL_OF_FLESH.get(), "血肉山");
         add(TEBossEntities.WALL_OF_FLESH.get(), "血肉墙");
         add(TEMonsterEntities.LEECH.get(), "血蛭");
@@ -292,6 +293,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.EATER_OF_WORLD_SPAWN_EGG.get(), "世界吞噬怪刷怪蛋");
         add(TESpawnEggItems.BRAIN_OF_CTHULHU_SPAWN_EGG.get(), "克苏鲁之脑刷怪蛋");
         add(TESpawnEggItems.QUEEN_BEE_SPAWN_EGG.get(), "蜂王刷怪蛋");
+        add(TESpawnEggItems.DEERCLOPS_SPAWN_EGG.get(), "独眼巨鹿刷怪蛋");
         add(TESpawnEggItems.SKELETRON_SPAWN_EGG.get(), "骷髅王刷怪蛋");
         add(TESpawnEggItems.DUNGEON_GUARDIAN_SPAWN_EGG.get(), "地牢守卫刷怪蛋");
         add(TESpawnEggItems.WALL_OF_FLESH_SPAWN_EGG.get(), "血肉墙刷怪蛋");
@@ -496,6 +498,7 @@ public class TEChineseProvider extends LanguageProvider {
         add("terra_entity.configuration.chance_to_spawn_slime_on_zombie_head", "在僵尸头上生成史莱姆的几率");
         add("terra_entity.configuration.enemy_spawn_chance_apply_all", "所有怪物的生成几率");
         add("terra_entity.configuration.enemy_spawn_chance", "Terra Entity怪物生成几率");
+        add("terra_entity.configuration.enable_entity_motion_blur", "启用实体移动模糊");
 
 
         add("terra_entity.configuration.boss_bar_style", "BOSS血条样式");

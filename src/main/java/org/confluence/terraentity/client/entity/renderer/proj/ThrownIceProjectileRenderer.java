@@ -30,7 +30,7 @@ public class ThrownIceProjectileRenderer  extends EntityRenderer<ThrownIceProjec
         poseStack.pushPose();
         poseStack.mulPose(Axis.of(entity.axis).rotation((entity.tickCount + partialTick) * entity.rotSpeed));
         poseStack.translate(-0.5f, -0.5f, -0.5f);
-        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.SNOW_BLOCK.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
+        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.BLUE_ICE.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
 

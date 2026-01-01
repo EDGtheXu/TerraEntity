@@ -35,7 +35,7 @@ public class IcePillarRenderer extends EntityRenderer<IcePillar> {
 
         for (int i = 0; i < 4; i++) {
 
-            Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.SNOW_BLOCK.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
+            Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.BLUE_ICE.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
             poseStack.translate(0,1,0);
         }
         poseStack.popPose();

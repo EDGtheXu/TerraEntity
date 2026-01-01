@@ -82,7 +82,7 @@ public class TEBossEntities {
         event.put(TEBossEntities.BRAIN_OF_CTHULHU.get(), AttBuilder.createBoss(14, 552, 14).knockResistance(0.5f).build());
 
         event.put(TEBossEntities.BRAIN_FAKE.get(), AbstractTerraBossBase.createAttributes().build());
-        event.put(TEBossEntities.DEERCLOPS.get(), AttBuilder.createBoss(14, 1237, 8).moveSpeed(0.4f).build());
+        event.put(TEBossEntities.DEERCLOPS.get(), AttBuilder.createBoss(10.4, 3094, 10).moveSpeed(0.4f).build());
         event.put(TEBossEntities.QUEEN_BEE.get(), AttBuilder.createBoss(14, 1237, 8).build());
         event.put(TEBossEntities.SKELETRON.get(), AttBuilder.createBoss(18.2, 2288, 10).build());
         event.put(TEBossEntities.SKELETRON_HAND.get(), AttBuilder.createBoss(10, 405, 4).build());
