@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
+import org.confluence.terraentity.api.entity.Boss;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
@@ -28,6 +29,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.condition.TargetExistC
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.LandRandomStrollAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.MoveToTargetAction;
 import org.confluence.terraentity.entity.util.SharedFlagController;
+import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.confluence.terraentity.registries.mappeddata.MappedDataTypes;
 import org.confluence.terraentity.utils.TEUtils;
@@ -37,7 +39,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 
-public class Deerclops extends AbstractTerraBossBase {
+public class Deerclops extends AbstractTerraBossBase implements Boss {
 
     private static final RawAnimation WALK = RawAnimation.begin().thenLoop("Walk");
     private static final RawAnimation STAND = RawAnimation.begin().thenLoop("Stand");
@@ -70,6 +72,9 @@ public class Deerclops extends AbstractTerraBossBase {
         this.xpReward = skillParams.xpReward;
     }
 
+    public Deerclops(Level level) {
+        this(TEBossEntities.DEERCLOPS.get(), level);
+    }
 
     public record SkillParams(int xpReward, int attackDamage, int attackRange, int rangeDamage, int thrownIceCount) {
         public static Codec<SkillParams> CODEC = RecordCodecBuilder.create(instance -> instance.group(
