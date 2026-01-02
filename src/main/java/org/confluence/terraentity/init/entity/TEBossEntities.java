@@ -97,9 +97,9 @@ public class TEBossEntities {
 
         event.put(TEBossEntities.HILL_OF_FLESH.get(), AttBuilder.createBoss(3824, 0).build());
 
-        event.put(TEBossEntities.SPAZMATISM.get(), AttBuilder.createBoss(1, 100, 0).build());
-        event.put(TEBossEntities.RETINAZER.get(), AttBuilder.createBoss(1, 100, 0).build());
-        event.put(TEBossEntities.THE_TWINS.get(), AttBuilder.createBoss(0, 100, 0).build());
+        event.put(TEBossEntities.SPAZMATISM.get(), AttBuilder.createBoss(22, 8970, 10).build());
+        event.put(TEBossEntities.RETINAZER.get(), AttBuilder.createBoss(19, 7800, 10).build());
+        event.put(TEBossEntities.THE_TWINS.get(), AttBuilder.createBoss(0, 16770, 0).build());
 
         event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(26, 10920, 36).build());
         event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(15.6, 1040, 24).build());

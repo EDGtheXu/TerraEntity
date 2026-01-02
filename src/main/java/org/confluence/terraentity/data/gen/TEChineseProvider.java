@@ -134,6 +134,9 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.LEECH.get(), "血蛭");
         add(TEMonsterEntities.THE_HUNGRY.get(), "饿鬼");
         add(TEMonsterEntities.FLESH_SLIME.get(), "血肉史莱姆");
+        add(TEBossEntities.RETINAZER.get(), "激光眼");
+        add(TEBossEntities.SPAZMATISM.get(), "魔焰眼");
+        add(TEBossEntities.THE_TWINS.get(), "双子魔眼");
         add(TEBossEntities.PLANTERA.get(), "世纪之花");
         add(TEBossEntities.PLANTERA_HOOK.get(), "世纪之花钩");
         add(TEBossEntities.PLANTERA_TENTACLE.get(), "世纪之花触手");
@@ -298,6 +301,9 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.DUNGEON_GUARDIAN_SPAWN_EGG.get(), "地牢守卫刷怪蛋");
         add(TESpawnEggItems.WALL_OF_FLESH_SPAWN_EGG.get(), "血肉墙刷怪蛋");
         add(TESpawnEggItems.HILL_OF_FLESH_SPAWN_EGG.get(), "血肉山刷怪蛋");
+        add(TESpawnEggItems.RETINAZER_SPAWN_EGG.get(), "激光眼刷怪蛋");
+        add(TESpawnEggItems.SPAZMATISM_SPAWN_EGG.get(), "魔焰眼刷怪蛋");
+        add(TESpawnEggItems.THE_TWINS_SPAWN_EGG.get(), "双子魔眼刷怪蛋");
         add(TESpawnEggItems.PLANTERA_SPAWN_EGG.get(), "世纪之花刷怪蛋");
 
 
