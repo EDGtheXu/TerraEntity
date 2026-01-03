@@ -5,7 +5,6 @@ import org.confluence.terraentity.api.entity.IStateChangeableMob;
 import org.confluence.terraentity.entity.ai.goal.behavior.blackboard.Blackboard;
 import org.confluence.terraentity.entity.ai.goal.behavior.blackboard.IBlackboardHolder;
 import org.confluence.terraentity.entity.ai.goal.behavior.blackboard.KeyType;
-import org.confluence.terraentity.entity.ai.goal.behavior.composite.SelectorNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.SequenceNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.SyncAction;
@@ -13,7 +12,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.leaf.SyncAction;
 /**
  * 两个阶段的怪物AI
  */
-public abstract class BTBossTwoStageRoot<T extends PathfinderMob & IBlackboardHolder & IStateChangeableMob> extends BTBossRoot<T> {
+public abstract class BTBossTwoStageRoot<T extends PathfinderMob & IBlackboardHolder & IStateChangeableMob> extends BTCommonRoot<T> {
 
     public BTBossTwoStageRoot(T mob) {
         super(mob);
@@ -45,8 +44,8 @@ public abstract class BTBossTwoStageRoot<T extends PathfinderMob & IBlackboardHo
     protected abstract BTNode createStageTwoAttack();
 
     @Override
-    protected BTNode createStageTrigger(SelectorNode selector) {
-        return selector
+    protected BTNode createStageTrigger() {
+        return BTFactory.selector()
                 // 二阶段
                 .addWithCondition(new Blackboard.ContainsValue<>(this.mob, KeyType.STAGE, v -> v == 3), BTFactory.wait(10000))
                 // 转换阶段
@@ -64,8 +63,8 @@ public abstract class BTBossTwoStageRoot<T extends PathfinderMob & IBlackboardHo
     }
 
     @Override
-    protected BTNode createAttackBehavior(SelectorNode selector) {
-        return selector
+    protected BTNode createAttackBehavior() {
+        return BTFactory.selector()
                 // 一阶段
                 .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 1), BTFactory.infinite(this.createStageOneAttack()))
                 // 二阶段

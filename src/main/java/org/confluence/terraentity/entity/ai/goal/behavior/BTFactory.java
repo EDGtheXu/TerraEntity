@@ -44,8 +44,17 @@ public class BTFactory {
         return new ConditionNode(condition, child);
     }
 
-    public static WaitAction wait(int ticks) {
+    public static BTNode wait(int ticks) {
         return new WaitAction(ticks);
+    }
+
+    public static BTNode waitForever() {
+        return new BTNode() {
+            @Override
+            public BTStatus execute() {
+                return BTStatus.RUNNING;
+            }
+        };
     }
 
     public static ParallelNode withTimer(int duration, BTNode node) {

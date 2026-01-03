@@ -5,7 +5,8 @@ import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.confluence.terraentity.entity.ai.motion.DashComponent;
 
 /**
- * 平行于目标移动，如魔焰眼一阶段
+ * <p>平行于目标移动，如魔焰眼一阶段</p>
+ * <p>或者在目标头顶，如激光眼二阶段</p>
  */
 public class ParallelMoveAction extends BTNode {
 

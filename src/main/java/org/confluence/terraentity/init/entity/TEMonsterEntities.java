@@ -171,6 +171,10 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<Wraith>> WRAITH = TEEntities.registerMonster("wraith", (e, l) -> new Wraith(e, l), 1F, 2F);
 
 
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> WOODEN_MIMIC = TEEntities.registerMonster("wooden_mimic", WoodenMimic::new, 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CRIMSON_MIMIC = TEEntities.registerMonster("crimson_mimic", CrimsonMimic::new, 1F, 1F);
+
+
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         ResourceLocation defaultHumanoidModel = TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.getId();
@@ -299,6 +303,8 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.get(), c -> new HumanoidRenderer<>(c, TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.getId()));
         event.registerEntityRenderer(TEMonsterEntities.WRAITH.get(), c -> new HumanoidRenderer<>(c, defaultHumanoidModel).setDisableRender());
 
+        event.registerEntityRenderer(TEMonsterEntities.WOODEN_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.WOODEN_MIMIC.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.CRIMSON_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CRIMSON_MIMIC.getId()));
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -425,6 +431,9 @@ public class TEMonsterEntities {
         event.put(POSSESS_ARMOR_VOID_VESSEL.get(), AttBuilder.createAttributes(1, 0, 28, 32, 1, 0.64f).build());
         event.put(WRAITH.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).gravity(0).build());
 
+        event.put(WOODEN_MIMIC.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).build());
+        event.put(CRIMSON_MIMIC.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).build());
+
     }
 
 
@@ -539,6 +548,9 @@ public class TEMonsterEntities {
         event.register(WRAITH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkDemonEyeSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(CRIMSLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(CORRUPT_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        event.register(WOODEN_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(CRIMSON_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
     }
 

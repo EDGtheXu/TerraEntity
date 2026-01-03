@@ -248,4 +248,11 @@ public class TheTwins extends AbstractTerraBossBase implements Boss {
         }
         return new float[]{hp1+hp2, mhp1+mhp2};
     }
+
+    @Override
+    public boolean isPickable() {
+        return false;
+    }
+
+
 }

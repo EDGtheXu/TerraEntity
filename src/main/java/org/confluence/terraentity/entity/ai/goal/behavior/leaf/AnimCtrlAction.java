@@ -35,6 +35,8 @@ public class AnimCtrlAction<T extends GeoEntity & ISharedFlagControllerHolder> e
     public void start() {
         super.start();
         entity.getSharedFlagController().setFlag(sharedFlag, isEnable);
-        entity.triggerAnim(controllerName, animationName);
+        if(isEnable) {
+            entity.triggerAnim(controllerName, animationName);
+        }
     }
 }
