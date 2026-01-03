@@ -3,13 +3,9 @@ package org.confluence.terraentity.registries.npc_trade_lock.variant;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.npc.trade.ITradeHolder;
 import org.confluence.terraentity.api.npc.trade.ITradeLock;
-import org.confluence.terraentity.api.npc.trade.TradeLockDrawer;
 import org.confluence.terraentity.registries.npc_trade_lock.TradeLockProvider;
 import org.confluence.terraentity.registries.npc_trade_lock.TradeLockProviderTypes;
 
@@ -22,7 +18,7 @@ import java.util.Optional;
  * @param to 结束时间
  * @param reverse 是否翻转,默认为false,即时间区间内可以交易
  */
-public record TimeLock(int from, int to, boolean reverse) implements ITradeLock, TradeLockDrawer {
+public record TimeLock(int from, int to, boolean reverse) implements ITradeLock {
 
     public static final MapCodec<TimeLock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.INT.fieldOf("from").forGetter(TimeLock::from),
@@ -42,13 +38,5 @@ public record TimeLock(int from, int to, boolean reverse) implements ITradeLock,
     @Override
     public TradeLockProvider getCodec() {
         return TradeLockProviderTypes.TIME_LOCK.get();
-    }
-
-    @Override
-    public void drawRecipe(GuiGraphics guiGraphics, int x, int y, int mouseX, int mouseY) {
-        var size = getRecipeSize();
-        guiGraphics.blitSprite(ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "shop_lock_time"), x, y, size, size);
-        drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY,
-                "Time: " + (reverse() ? "Except " : "") + from() + " to " +  to());
     }
 }

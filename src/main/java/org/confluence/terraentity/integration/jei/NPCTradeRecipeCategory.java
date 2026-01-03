@@ -24,8 +24,9 @@ import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.npc.trade.ITradeLock;
-import org.confluence.terraentity.api.npc.trade.TradeLockDrawer;
 import org.confluence.terraentity.init.item.TESpawnEggItems;
+import org.confluence.terraentity.registries.npc_trade_lock.TradeLockProvider;
+import org.confluence.terraentity.registries.npc_trade_lock.TradeLockProviderTypes;
 import org.confluence.terraentity.registries.npc_trade_lock.variant.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -106,7 +107,7 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
         }
         // output
 
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 87, 24).addItemStacks(outputs);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 72, 24).addItemStacks(outputs);
     }
 
     /*
@@ -121,10 +122,11 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
     name - 58 centered
     arrow padding - 2 width
 
-    maximum left - 48 + 35 + 16 + 2*2= 103
+    output x - 48 + 22 + 2*2 = 72
+    output end - 72 + 16 = 88
 
     lock condition - 8 width
-    lock column = 128 - 103 = 25 / 8 = 3
+    lock column = 128 - 88 = 40 / 8 = 5
      */
 
     @Override
@@ -137,13 +139,14 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
             guiGraphics.renderItem(item.getDefaultInstance(), 50, 10);
         }
         guiGraphics.drawCenteredString(Minecraft.getInstance().font, type.getDescription(), 58, 0, 0xFFFFFF);
-        drawLock(guiGraphics, recipe.trade.lock(), 87 + 16 + 1, 0, (int) mouseX, (int) mouseY);
+        drawLock(guiGraphics, recipe.trade.lock(), 88, 0, (int) mouseX, (int) mouseY);
     }
 
     private void drawLock(GuiGraphics guiGraphics, @NotNull ITradeLock lock, int x, int y, int mouseX, int mouseY) {
-        if (!(lock instanceof TradeLockDrawer drawer)) {
+        var drawer = lock.getCodec().drawer();
+        if (drawer == null) {
             return;
         }
-        drawer.drawRecipe(guiGraphics, x, y, mouseX, mouseY);
+        drawer.drawRecipe(lock, guiGraphics, x, y, mouseX, mouseY);
     }
 }
