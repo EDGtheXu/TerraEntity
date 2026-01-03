@@ -10,15 +10,24 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import org.confluence.terraentity.TerraEntity;
+import org.confluence.terraentity.api.npc.trade.ITradeLock;
+import org.confluence.terraentity.api.npc.trade.TradeLockDrawer;
 import org.confluence.terraentity.init.item.TESpawnEggItems;
+import org.confluence.terraentity.registries.npc_trade_lock.variant.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -65,11 +74,11 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
 
         List<Ingredient> ingredients = recipe.trade.normalizeCost();
         if(ingredients.isEmpty()){
-            return;
+//            return;
         }
         List<ItemStack> outputs = recipe.trade.normalizeResult();
         if(outputs.isEmpty()){
-            return;
+//            return;
         }
         // input
         int size = ingredients.size();
@@ -97,8 +106,26 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
         }
         // output
 
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 24).addItemStacks(outputs);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 87, 24).addItemStacks(outputs);
     }
+
+    /*
+    total width 128
+
+    slot 1 - 0 with 16 width
+    slot 2 - 16 with 16 width
+    slot 3 - 32 with 16 width
+    arrow right - 50 with 35 width
+    result - 96 with 16 width
+    icon - 50 with 16 width
+    name - 58 centered
+    arrow padding - 2 width
+
+    maximum left - 48 + 35 + 16 + 2*2= 103
+
+    lock condition - 8 width
+    lock column = 128 - 103 = 25 / 8 = 3
+     */
 
     @Override
     public void draw(NPCRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
@@ -110,5 +137,13 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
             guiGraphics.renderItem(item.getDefaultInstance(), 50, 10);
         }
         guiGraphics.drawCenteredString(Minecraft.getInstance().font, type.getDescription(), 58, 0, 0xFFFFFF);
+        drawLock(guiGraphics, recipe.trade.lock(), 87 + 16 + 1, 0, (int) mouseX, (int) mouseY);
+    }
+
+    private void drawLock(GuiGraphics guiGraphics, @NotNull ITradeLock lock, int x, int y, int mouseX, int mouseY) {
+        if (!(lock instanceof TradeLockDrawer drawer)) {
+            return;
+        }
+        drawer.drawRecipe(guiGraphics, x, y, mouseX, mouseY);
     }
 }
