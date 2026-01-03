@@ -75,7 +75,7 @@ public final class TEJeiPlugin implements IModPlugin {
     }
 
     public static void drawArrowRight(GuiGraphics guiGraphics, int x, int y, boolean usable) {
-        guiGraphics.blit(MENU_LOCATION,x,y,276,0,35,17,512,256);
+        guiGraphics.blit(MENU_LOCATION,x,y,276,0,22,17,512,256);
     }
 
     public static void addInput(IRecipeLayoutBuilder builder, int x, int y, Ingredient ingredient) {
