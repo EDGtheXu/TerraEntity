@@ -36,6 +36,7 @@ import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.item.YoyosItem;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
 import org.confluence.terraentity.utils.TEUtils;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -53,7 +54,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
     int maxRetrieveTicks = 40;
     int retrieveTicks = 0;
     float maxRange = 10;
-    YoyosItem item;
+    @Nullable YoyosItem item;  // TODO: 临时解决空物品问题，具体逻辑仍需重新考量
     public ResourceLocation texture;
 
     protected static final EntityDataAccessor<ItemStack> DATA_WEAPON_ITEM = SynchedEntityData.defineId(YoyosEntity.class, EntityDataSerializers.ITEM_STACK);
@@ -72,9 +73,11 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
         }
 
         // 存在时间
-        if (this.tickCount > this.item.getExistTime() * 20) {
-            this.isBacking = true;
-            this.noPhysics = true;
+        if (this.item != null) { // TODO: 临时解决空物品问题，具体逻辑仍需重新考量
+            if (this.tickCount > this.item.getExistTime() * 20) {
+                this.isBacking = true;
+                this.noPhysics = true;
+            }
         }
         Vec3 lookVec = owner.getLookAngle().normalize();
         this.setXRot(0);

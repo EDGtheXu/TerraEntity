@@ -12,6 +12,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.client.entity.model.*;
+import org.confluence.terraentity.client.entity.renderer.mob.GeoNegativeVolumeRenderer;
 import org.confluence.terraentity.client.entity.renderer.proj.*;
 import org.confluence.terraentity.client.util.RegisterUtils;
 import org.confluence.terraentity.entity.proj.*;
@@ -43,6 +44,10 @@ public class TEProjectileEntities {
             (DemonScytheProj) new DemonScytheProj(e,l, null).setTexture(TerraEntity.space("textures/entity/model/demon_scythe_projectile.png")),1.2F,1.2F);
     public static final DeferredHolder<EntityType<?>, EntityType<LavaPillar>> LAVA_PILLAR = registerProj("lava_pillar",(e, l)->
             new LavaPillar(e,l).setEffectStrategy(TEEffectStrategies.SET_FIRE_EFFECT.get()),1.2F,1.2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SeedProjectile>> SEED = registerProj("seed_proj", SeedProjectile::new,0.5F,0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SporeProjectile>> SPORE = registerProj("spore_proj", (e,l) ->
+            new SporeProjectile(e, l).setCanBeHurt(),0.5F,0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SpikeBallProjectile>> SPIKE_BALL = registerProj("spike_ball_proj", SpikeBallProjectile::new,1.5F,1.5F);
 
     // 鞭子
     public static final DeferredHolder<EntityType<?>, EntityType<WhipEntity>> WHIP_PROJECTILE = TEEntities.ENTITIES.register("whip_projectile", () -> EntityType.Builder.<WhipEntity>of(WhipEntity::new, MobCategory.MISC).updateInterval(1).clientTrackingRange(1).sized(0.5F, 0.5F).build(TEEntities.Key("whip_projectile")));
@@ -59,6 +64,9 @@ public class TEProjectileEntities {
 
     //悠悠球
     public static final DeferredHolder<EntityType<?>, EntityType<YoyosEntity>> YOYO_PROJ = registerProj("yoyo_projectile", YoyosEntity::new, 0.5f, 0.5f);
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownIceProjectile>> THROWN_ICE_PROJECTILE = registerProj("thrown_ice_projectile", ThrownIceProjectile::new, 1f, 1f);
+    public static final DeferredHolder<EntityType<?>, EntityType<IcePillar>> ICE_PILLAR = registerProj("ice_pillar", IcePillar::new, 1f, 3f);
+    public static final DeferredHolder<EntityType<?>, EntityType<ShadowHandProjectile>> SHADOW_HAND = registerProj("shadow_hand", ShadowHandProjectile::new, 0.5f, 0.5f);
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -78,6 +86,10 @@ public class TEProjectileEntities {
 //        RegisterUtils.registerBaseProjRenderer(event, LAVA_PILLAR.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
         event.registerEntityRenderer(LAVA_PILLAR.get(), c->new LavaPillarRenderer(c, LAVA_PILLAR.getId().withPrefix("proj/")));
 
+        RegisterUtils.registerBaseProjRenderer(event, SEED.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
+        RegisterUtils.registerBaseProjRenderer(event, SPORE.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
+        RegisterUtils.registerBaseProjRenderer(event, SPIKE_BALL.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
+
         // 子弹
         event.registerEntityRenderer(TEProjectileEntities.TRAIL_PROJECTILE.get(), TrailProjectileRenderer::new);
         // 鞭子
@@ -89,6 +101,9 @@ public class TEProjectileEntities {
         //悠悠球
         event.registerEntityRenderer(YOYO_PROJ.get(), (c)->new YoyosRenderer(c));
 
+        event.registerEntityRenderer(THROWN_ICE_PROJECTILE.get(), (c)->new ThrownIceProjectileRenderer(c));
+        event.registerEntityRenderer(ICE_PILLAR.get(), (c)->new IcePillarRenderer(c));
+        event.registerEntityRenderer(SHADOW_HAND.get(), (c)->new GeoNegativeVolumeRenderer<>(c, SHADOW_HAND.getId().withPrefix("proj/")));
     }
 
     public static <T extends Projectile> DeferredHolder<EntityType<?>, EntityType<T>> registerProj(String name, EntityType.EntityFactory<T> entityFactory, float w, float h) {

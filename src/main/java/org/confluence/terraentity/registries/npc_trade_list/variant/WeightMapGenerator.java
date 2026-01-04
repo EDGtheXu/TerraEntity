@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class WeightMapGenerator implements ITradeGenerator {
 
-    record Weight(ITrade trade, int weight){
+    public record Weight(ITrade trade, int weight){
         private static final Codec<Weight> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ITrade.TYPED_CODEC.fieldOf("trade").forGetter(Weight::trade),
                 Codec.INT.fieldOf("weight").forGetter(Weight::weight)

@@ -122,6 +122,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> GIANT_WORM = TEEntities.registerMonster("giant_worm", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> LEECH = TEEntities.registerMonster("leech", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BoneSerpent<BaseWormPart>>> BONE_SERPENT = TEEntities.registerMonster("bone_serpent", (e, l) -> new BoneSerpent<>(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight().setNoGravity()), 2F, 2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BoneSerpent<BaseWormPart>>> WITHER_BONE_SERPENT = TEEntities.registerMonster("wither_bone_serpent", (e, l) -> new BoneSerpent<>(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight().setNoGravity()), 2F, 2F);
     // 卷壳怪
     public static final DeferredHolder<EntityType<?>, EntityType<GiantShelly>> GIANT_SHELLY = TEEntities.registerMonster("giant_shelly", GiantShelly::new, 1F, 1F);
     // 宁芙
@@ -168,6 +169,16 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<HumanoidMonster>> POSSESS_ARMOR = TEEntities.registerMonster("possess_armor", (e, l) -> new HumanoidMonster(e, l, new AbstractPrefab().getPrefab().setDeathSound(TESounds.SOUL_DEATH).setHurtSound(TESounds.METAL_HURT)), 1F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<HumanoidMonster>> POSSESS_ARMOR_VOID_VESSEL = TEEntities.registerMonster("possess_armor_void_vessel", (e, l) -> new HumanoidMonster(e, l, new AbstractPrefab().getPrefab().setDeathSound(TESounds.SOUL_DEATH).setHurtSound(TESounds.METAL_HURT)), 1F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<Wraith>> WRAITH = TEEntities.registerMonster("wraith", (e, l) -> new Wraith(e, l), 1F, 2F);
+
+
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> WOODEN_MIMIC = TEEntities.registerMonster("wooden_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> GOLDEN_MIMIC = TEEntities.registerMonster("golden_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> ICE_MIMIC = TEEntities.registerMonster("ice_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> SHADOW_MIMIC = TEEntities.registerMonster("shadow_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CRIMSON_MIMIC = TEEntities.registerMonster("crimson_mimic", CrimsonMimic::new, 1.6f, 1.6f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CORRUPT_MIMIC = TEEntities.registerMonster("corrupt_mimic", CrimsonMimic::new, 1.6f, 1.6f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> HALLOWED_MIMIC = TEEntities.registerMonster("hallowed_mimic", CrimsonMimic::new, 1.6f, 1.6f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> JUNGLE_MIMIC = TEEntities.registerMonster("jungle_mimic", CrimsonMimic::new, 1.6f, 1.6f);
 
 
     @OnlyIn(Dist.CLIENT)
@@ -241,6 +252,7 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.DEVOURER.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.DEVOURER.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.GIANT_WORM.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.GIANT_WORM.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.BONE_SERPENT.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.BONE_SERPENT.getId(), 2.0f, 0.0f));
+        event.registerEntityRenderer(TEMonsterEntities.WITHER_BONE_SERPENT.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.WITHER_BONE_SERPENT.getId(), 2.0f, 0.0f));
 
         event.registerEntityRenderer(TEMonsterEntities.LEECH.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.LEECH.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.TOMB_CRAWLER.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.TOMB_CRAWLER.getId(), 2.0f, 0.0f));
@@ -297,6 +309,14 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.get(), c -> new HumanoidRenderer<>(c, TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.getId()));
         event.registerEntityRenderer(TEMonsterEntities.WRAITH.get(), c -> new HumanoidRenderer<>(c, defaultHumanoidModel).setDisableRender());
 
+        event.registerEntityRenderer(TEMonsterEntities.WOODEN_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.WOODEN_MIMIC.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.GOLDEN_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.GOLDEN_MIMIC.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.SHADOW_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.SHADOW_MIMIC.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.ICE_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.ICE_MIMIC.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.CRIMSON_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CRIMSON_MIMIC.getId(), false, 2f, 0));
+        event.registerEntityRenderer(TEMonsterEntities.CORRUPT_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CORRUPT_MIMIC.getId(), false, 2f, 0));
+        event.registerEntityRenderer(TEMonsterEntities.HALLOWED_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.HALLOWED_MIMIC.getId(), false, 2f, 0));
+        event.registerEntityRenderer(TEMonsterEntities.JUNGLE_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.JUNGLE_MIMIC.getId(), false, 2f, 0));
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -379,6 +399,7 @@ public class TEMonsterEntities {
         event.put(DEVOURER.get(), AttBuilder.createAttributes(52,2,8).build());
         event.put(TOMB_CRAWLER.get(), AttBuilder.createAttributes(16,2,4).build());
         event.put(BONE_SERPENT.get(), AttBuilder.createAttributes(156,12,18).build());
+        event.put(WITHER_BONE_SERPENT.get(), AttBuilder.createAttributes(186,15,22).build());
 
         // bee
         event.put(HORNET.get(), AttBuilder.fly(AttBuilder.createAttributes(32,6,13,32,0,0.55f).moveSpeed(0.5)).build());
@@ -418,9 +439,18 @@ public class TEMonsterEntities {
         /* *********肉后***************** */
         event.put(WYVERN.get(), AttBuilder.createAttributes(2080, 10, 41, 50, 1f, 0.28f).build());
         event.put(PIXIE.get(), AttBuilder.createAttributes(78, 20, 28, 16, 1, 0.46f).build());
-        event.put(POSSESS_ARMOR.get(), AttBuilder.createAttributes(135, 0, 28, 32, 1, 0.64f).build());
+        event.put(POSSESS_ARMOR.get(), AttBuilder.createAttributes(135, 26, 28, 32, 1, 0.64f).build());
         event.put(POSSESS_ARMOR_VOID_VESSEL.get(), AttBuilder.createAttributes(1, 0, 28, 32, 1, 0.64f).build());
-        event.put(WRAITH.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).gravity(0).build());
+        event.put(WRAITH.get(), AttBuilder.createAttributes(83, 16, 33, 32, 1, 0.37f).gravity(0).build());
+
+        event.put(WOODEN_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(ICE_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(GOLDEN_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(SHADOW_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(CRIMSON_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
+        event.put(CORRUPT_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
+        event.put(HALLOWED_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
+        event.put(JUNGLE_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
 
     }
 
@@ -486,6 +516,7 @@ public class TEMonsterEntities {
         event.register(GIANT_WORM.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkCaveMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(TOMB_CRAWLER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkCaveMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(BONE_SERPENT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkNetherMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(WITHER_BONE_SERPENT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkNetherMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         // bee
         event.register(HORNET.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
@@ -535,6 +566,15 @@ public class TEMonsterEntities {
         event.register(WRAITH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkDemonEyeSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(CRIMSLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(CORRUPT_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        event.register(WOODEN_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(GOLDEN_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(SHADOW_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkNetherMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ICE_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(CRIMSON_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(CORRUPT_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(HALLOWED_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(JUNGLE_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
     }
 

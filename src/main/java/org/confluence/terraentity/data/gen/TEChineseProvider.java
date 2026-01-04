@@ -93,6 +93,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.DEMON.get(), "恶魔");
         add(TEMonsterEntities.VOODOO_DEMON.get(), "巫毒恶魔");
         add(TEMonsterEntities.BONE_SERPENT.get(), "骨蛇");
+        add(TEMonsterEntities.WITHER_BONE_SERPENT.get(), "凋零骨蛇");
         add(TEMonsterEntities.FIRE_IMP.get(), "火焰小鬼");
         add(TEMonsterEntities.ANGER_BONES.get(), "愤怒骷髅");
         add(TEMonsterEntities.SHORT_BONES.get(), "矮骷髅");
@@ -112,6 +113,14 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.POSSESS_ARMOR.get(), "装甲幻影魔");
         add(TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.get(), "装甲幻影魔-虚空载体");
         add(TEMonsterEntities.WRAITH.get(), "幻灵");
+        add(TEMonsterEntities.WOODEN_MIMIC.get(), "木宝箱怪");
+        add(TEMonsterEntities.GOLDEN_MIMIC.get(), "金宝箱怪");
+        add(TEMonsterEntities.SHADOW_MIMIC.get(), "暗影宝箱怪");
+        add(TEMonsterEntities.ICE_MIMIC.get(), "冰雪宝箱怪");
+        add(TEMonsterEntities.CRIMSON_MIMIC.get(), "猩红宝箱怪");
+        add(TEMonsterEntities.CORRUPT_MIMIC.get(), "腐化宝箱怪");
+        add(TEMonsterEntities.HALLOWED_MIMIC.get(), "神圣宝箱怪");
+        add(TEMonsterEntities.JUNGLE_MIMIC.get(), "丛林宝箱怪");
 
 
         // boss
@@ -127,11 +136,18 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.LITTLE_HORNET.get(), "小黄蜂");
         add(TEBossEntities.SKELETRON.get(), "骷髅王");
         add(TEBossEntities.DUNGEON_GUARDIAN.get(), "地牢守卫");
+        add(TEBossEntities.DEERCLOPS.get(), "独眼巨鹿");
         add(TEBossEntities.HILL_OF_FLESH.get(), "血肉山");
         add(TEBossEntities.WALL_OF_FLESH.get(), "血肉墙");
         add(TEMonsterEntities.LEECH.get(), "血蛭");
         add(TEMonsterEntities.THE_HUNGRY.get(), "饿鬼");
         add(TEMonsterEntities.FLESH_SLIME.get(), "血肉史莱姆");
+        add(TEBossEntities.RETINAZER.get(), "激光眼");
+        add(TEBossEntities.SPAZMATISM.get(), "魔焰眼");
+        add(TEBossEntities.THE_TWINS.get(), "双子魔眼");
+        add(TEBossEntities.PLANTERA.get(), "世纪之花");
+        add(TEBossEntities.PLANTERA_HOOK.get(), "世纪之花钩");
+        add(TEBossEntities.PLANTERA_TENTACLE.get(), "世纪之花触手");
 
 
         // 召唤物
@@ -191,6 +207,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.NYMPH_SPAWN_EGG.get(), "宁芙刷怪蛋");
         add(TESpawnEggItems.TOMB_CRAWLER_SPAWN_EGG.get(), "墓穴爬虫刷怪蛋");
         add(TESpawnEggItems.BONE_SERPENT_SPAWN_EGG.get(), "骨蛇刷怪蛋");
+        add(TESpawnEggItems.WITHER_BONE_SERPENT_SPAWN_EGG.get(), "凋零骨蛇刷怪蛋");
         add(TESpawnEggItems.ANTLION_SWARMER_SPAWN_EGG.get(), "蚁狮蜂刷怪蛋");
         add(TESpawnEggItems.GIANT_ANTLION_SWARMER_SPAWN_EGG.get(), "巨型蚁狮蜂刷怪蛋");
         add(TESpawnEggItems.GRANTITE_ELEMENTAL_SPAWN_EGG.get(), "花岗精刷怪蛋");
@@ -240,6 +257,16 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.DARK_CASTER_SPAWN_EGG.get(), "暗黑法师刷怪蛋");
         add(TESpawnEggItems.UNDEAD_VIKING_SPAWN_EGG.get(), "亡灵维京海盗刷怪蛋");
 
+        // 宝箱怪
+        add(TESpawnEggItems.WOODEN_MIMIC_SPAWN_EGG.get(), "木宝箱怪刷怪蛋");
+        add(TESpawnEggItems.GOLDEN_MIMIC_SPAWN_EGG.get(), "金宝箱怪刷怪蛋");
+        add(TESpawnEggItems.SHADOW_MIMIC_SPAWN_EGG.get(), "暗影宝箱怪刷怪蛋");
+        add(TESpawnEggItems.ICE_MIMIC_SPAWN_EGG.get(), "冰雪宝箱怪刷怪蛋");
+        add(TESpawnEggItems.CRIMSON_MIMIC_SPAWN_EGG.get(), "猩红宝箱怪刷怪蛋");
+        add(TESpawnEggItems.CORRUPT_MIMIC_SPAWN_EGG.get(), "腐化宝箱怪刷怪蛋");
+        add(TESpawnEggItems.HALLOWED_MIMIC_SPAWN_EGG.get(), "神圣宝箱怪刷怪蛋");
+        add(TESpawnEggItems.JUNGLE_MIMIC_SPAWN_EGG.get(), "丛林宝箱怪刷怪蛋");
+
 
         add(TEMonsterEntities.GOBLIN_SORCERER.get(), "哥布林巫士");
         add(TEMonsterEntities.GOBLIN_ARCHER.get(), "哥布林弓箭手");
@@ -287,10 +314,15 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.EATER_OF_WORLD_SPAWN_EGG.get(), "世界吞噬怪刷怪蛋");
         add(TESpawnEggItems.BRAIN_OF_CTHULHU_SPAWN_EGG.get(), "克苏鲁之脑刷怪蛋");
         add(TESpawnEggItems.QUEEN_BEE_SPAWN_EGG.get(), "蜂王刷怪蛋");
+        add(TESpawnEggItems.DEERCLOPS_SPAWN_EGG.get(), "独眼巨鹿刷怪蛋");
         add(TESpawnEggItems.SKELETRON_SPAWN_EGG.get(), "骷髅王刷怪蛋");
         add(TESpawnEggItems.DUNGEON_GUARDIAN_SPAWN_EGG.get(), "地牢守卫刷怪蛋");
         add(TESpawnEggItems.WALL_OF_FLESH_SPAWN_EGG.get(), "血肉墙刷怪蛋");
         add(TESpawnEggItems.HILL_OF_FLESH_SPAWN_EGG.get(), "血肉山刷怪蛋");
+        add(TESpawnEggItems.RETINAZER_SPAWN_EGG.get(), "激光眼刷怪蛋");
+        add(TESpawnEggItems.SPAZMATISM_SPAWN_EGG.get(), "魔焰眼刷怪蛋");
+        add(TESpawnEggItems.THE_TWINS_SPAWN_EGG.get(), "双子魔眼刷怪蛋");
+        add(TESpawnEggItems.PLANTERA_SPAWN_EGG.get(), "世纪之花刷怪蛋");
 
 
         add(TEBossSummonsItems.KING_SLIME_SUMMONS.get(), "史莱姆皇冠");
@@ -490,6 +522,7 @@ public class TEChineseProvider extends LanguageProvider {
         add("terra_entity.configuration.chance_to_spawn_slime_on_zombie_head", "在僵尸头上生成史莱姆的几率");
         add("terra_entity.configuration.enemy_spawn_chance_apply_all", "所有怪物的生成几率");
         add("terra_entity.configuration.enemy_spawn_chance", "Terra Entity怪物生成几率");
+        add("terra_entity.configuration.enable_entity_motion_blur", "启用实体移动模糊");
 
 
         add("terra_entity.configuration.boss_bar_style", "BOSS血条样式");

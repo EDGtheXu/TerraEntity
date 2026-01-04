@@ -63,7 +63,7 @@ public class RideableSlime extends AbstractRideableEntity {
             Entity hitEntity = getHitResult(0.5F, 0.5F);
             if (hitEntity != null && hitEntity.isAttackable()) {
                 trigger = true;
-                if(hitEntity instanceof LivingEntity living){
+                if(!this.level().isClientSide && hitEntity instanceof LivingEntity living){
                     living.hurt(damageSources().generic(), 5);
                 }
             }

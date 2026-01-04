@@ -32,7 +32,7 @@ public class BoneSerpent<S extends BaseWormPart> extends BaseWorm<S> implements 
 
     public BoneSerpent(EntityType<? extends BoneSerpent> type, Level level, AttributeBuilder builder) {
         super(type, level, builder);
-        this.segInternal = 2.4f;
+        this.segInternal = 2.5f;
     }
     @Override
     protected int getSegmentCount() {

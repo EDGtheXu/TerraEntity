@@ -58,30 +58,22 @@ public class RenderEvent {
 
     public static boolean isIrisShader = false;
     public static boolean isAfterSky = false;
+
+
     @SubscribeEvent
     public static void renderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             BrainTranslucent.render(event);
             WallOfFleshTranslucent.render(event);
             DebugBlocksHelper.Singleton().render(event);
-            //            NPCRenderer.target.blitToScreen(100,100);
             NPCChatBubbleBuffer.getInstance().render(event);
-//            if (!VeilLevelPerspectiveRenderer.isRenderingPerspective()) {
-//                if (VeilRenderSystem.drawLights(Minecraft.getInstance().level.getProfiler(), VeilRenderSystem.getCullingFrustum())) {
-//                    VeilRenderSystem.compositeLights(Minecraft.getInstance().level.getProfiler());
-//                } else {
-//                    AdvancedFbo.unbind();
-//                }
-//            }
-
             isAfterSky = false;
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
             TongueRenderer.renderFirstPerson(event);
-        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-//            NPCChatBubbleBuffer.getInstance().refresh();
 
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
             isAfterSky = true;
-        } else if(event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES){
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
             isIrisShader = ModChecker.iris.isLoaded() && RenderSystem.getShader() instanceof ExtendedShader;
             DebugEntityHelper.INSTANCE.render(event);
         }

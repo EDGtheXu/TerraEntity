@@ -52,6 +52,23 @@ public class DashComponent {
         }
     }
 
+    /**
+     * 悬挂在目标实体目标头顶
+     * @param target 目标实体
+     * @param height 高度
+     * @param speed 速度
+     */
+    public void hangAbove(LivingEntity target, float height, float speed){
+        if(target!=null){
+            targetPos = target.position().add(0, height, 0);
+            direction = targetPos.subtract(owner.position());
+            owner.addDeltaMovement(direction.scale(speed * 0.01f));
+            if(owner.distanceToSqr(target)<2){
+                owner.setDeltaMovement(owner.getDeltaMovement().scale(0.95f));
+            }
+        }
+    }
+
     public void accelerate(float speed) {
         owner.addDeltaMovement(direction.normalize().scale(speed));
     }

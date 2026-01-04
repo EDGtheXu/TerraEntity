@@ -153,6 +153,7 @@ public class Boomerang extends Item implements ILeftClickStateItem {
         public int forwardTick = 15;                //前进时间
         public int maxCount = 1;                    //最大射击次数
         public int maxPenetration = 1;              //最大穿透次数
+        public int luminance = 0;                   //实体亮度
         public boolean canPenetrate = false;        //是否可穿透，否则命中生物返回
         public boolean shouldWaitForBack = true;    //是否等待返回
         public boolean shouldApplyCd = false;       //是否应用冷却
@@ -164,7 +165,7 @@ public class Boomerang extends Item implements ILeftClickStateItem {
         public ItemAttributeModifiers.Builder attributeModifiersBuilder = ItemAttributeModifiers.builder();
         private int modifyCount = 0;
         List<Function<Properties, Properties>> modifierFunctions = new ArrayList<>();
-        public Supplier<ParticleOptions> particle;
+        public Function<BoomerangProjectile, ParticleOptions> particle;
         public int particleCount = 1;
         public Supplier<BoomerangTrail> trail;
         /**
@@ -268,15 +269,20 @@ public class Boomerang extends Item implements ILeftClickStateItem {
         /**
          * 设置粒子效果
          */
-        public BoomerangModifier setParticle(Supplier<ParticleOptions> particle) {
+        public BoomerangModifier setParticle(Function<BoomerangProjectile, ParticleOptions> particle) {
             return setParticle(particle, 1);
         }
         /**
          * 设置粒子效果
          */
-        public BoomerangModifier setParticle(Supplier<ParticleOptions> particle, int particleCount) {
+        public BoomerangModifier setParticle(Function<BoomerangProjectile, ParticleOptions> particle, int particleCount) {
             this.particle = particle;
             this.particleCount = particleCount;
+            return this;
+        }
+
+        public BoomerangModifier setLuminance(int luminance) {
+            this.luminance = luminance;
             return this;
         }
 

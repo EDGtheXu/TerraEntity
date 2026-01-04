@@ -1,10 +1,7 @@
 package org.confluence.terraentity.utils;
 
 import it.unimi.dsi.fastutil.Pair;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -428,6 +425,36 @@ public final class TEUtils {
         // 理论上不会走到这里
         throw new IllegalStateException("Failed to find random item.");
     }
+
+    public static <T> T getRandomByWeightInt(List<T> items, List<Integer> weights) {
+        if (items == null || weights == null || items.size() != weights.size() || items.isEmpty()) {
+            throw new IllegalArgumentException("Items and weights must be non-null, non-empty, and of the same size.");
+        }
+
+        // 计算总权重
+        float totalWeight = 0.0f;
+        for (var weight : weights) {
+            totalWeight += weight;
+        }
+
+        if (totalWeight == 0.0f) {
+            throw new IllegalArgumentException("Total weight cannot be zero.");
+        }
+
+        float randomValue = ThreadLocalRandom.current().nextFloat(0, totalWeight);
+
+        // 遍历物品，累积权重，直到累积权重超过随机数
+        float cumulativeWeight = 0.0f;
+        for (int i = 0; i < items.size(); i++) {
+            cumulativeWeight += weights.get(i);
+            if (cumulativeWeight >= randomValue) {
+                return items.get(i);
+            }
+        }
+        // 理论上不会走到这里
+        throw new IllegalStateException("Failed to find random item.");
+    }
+
 
     /**
      * 获取玩家视角下距离指定距离的实体
@@ -977,4 +1004,22 @@ public final class TEUtils {
 //        return new Vec3(entity.getX())
     }
 
+    public static BlockPos findNearbyBlockEntity(Level level, BlockPos center, int radius, BiPredicate<BlockPos, BlockEntity> predicate) {
+        for (int i = -radius; i <= radius; i++) {
+            for (int j = -radius; j <= radius; j++) {
+                Map<BlockPos, BlockEntity> entities = level.getChunk(
+                        SectionPos.blockToSectionCoord(center.getX()) + i,
+                        SectionPos.blockToSectionCoord(center.getZ()) + j).getBlockEntities();
+                if (!entities.isEmpty()) {
+                    for (Map.Entry<BlockPos, BlockEntity> entry : entities.entrySet()) {
+                        if(predicate.test(entry.getKey(), entry.getValue())) {
+                            return entry.getKey();
+                        }
+                    }
+
+                }
+            }
+        }
+        return null;
+    }
 }

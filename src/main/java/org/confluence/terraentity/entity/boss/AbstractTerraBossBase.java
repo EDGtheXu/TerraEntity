@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -81,7 +82,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     public AbstractTerraBossBase(EntityType<? extends Monster> type, Level level) {
         super(type, level);
-        this.moveControl = new FlyingMoveControl(this, 10, false);
+        this.moveControl = this.createMoveControl();
         setNoGravity(true);
 //        this.baseHealth = health;
 //        this.baseArmor = armor;
@@ -94,6 +95,10 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
 
         bossEvent = (ServerBossEvent) new ServerBossEvent(getDisplayName(), getBossBarColor(), BossEvent.BossBarOverlay.PROGRESS).setDarkenScreen(true).setPlayBossMusic(true);
+    }
+
+    protected MoveControl createMoveControl() {
+        return new FlyingMoveControl(this, 10, false);
     }
 
     /**
@@ -413,6 +418,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     }
 
+    @Override
     public boolean canAttack(LivingEntity entity) {
         return super.canAttack(entity)&&entity.isPickable() &&
                 (
@@ -476,7 +482,8 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
             float[] datas = getBossEventProgress();
             ((IBossEvent)this.bossEvent).terra_enity$setBossHealth(datas[0]);
             ((IBossEvent)this.bossEvent).terra_enity$setBossMaxHealth(datas[1]);
-            this.bossEvent.setProgress(datas[0] / datas[1]);
+            float res = datas[1] == 0? 1 : datas[0] / datas[1];
+            this.bossEvent.setProgress(res);
         }
     }
 
@@ -599,5 +606,13 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
         return super.isInvulnerableTo(source);
     }
 
+    protected int calShareFlag(int data, int index, boolean value) {
+        return value? (data | (1 << index)) : (data & ~(1 << index));
+    }
+
+    @Override
+    public int getMaxHeadXRot() {
+        return 85;
+    }
 
 }

@@ -3,7 +3,6 @@ package org.confluence.terraentity.entity.boss;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -173,17 +172,15 @@ public class EyeOfCthulhu extends AbstractTerraBossBase implements GeoEntity, Bo
                     if (getTarget() == null) return;
                     lookAt(10);
                     // 生成粒子
-                    for (int i = 0; i < 10; i++) {
-                        BlockPos pos = BlockPos.containing(position());
+//                    for (int i = 0; i < 10; i++) {
+//                        BlockPos pos = BlockPos.containing(position());
 
-                        /*
-                        ((ServerLevel) level()).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ModBlocks.TR_CRIMSON_STONE.get().defaultBlockState()),
-                                pos.getX() + 0.5F,
-                                pos.getY() + 0.75F,
-                                pos.getZ() + 0.5F,
-                                10, 0.0625F, 0.0625F, 0.0625F, 0.15F);
-                        */
-                    }
+//                        ((ServerLevel) level()).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ModBlocks.TR_CRIMSON_STONE.get().defaultBlockState()),
+//                                pos.getX() + 0.5F,
+//                                pos.getY() + 0.75F,
+//                                pos.getZ() + 0.5F,
+//                                10, 0.0625F, 0.0625F, 0.0625F, 0.15F);
+//                    }
                     // 生成仆从
                     spawnMinions(getTarget());
                     // 向玩家正上方移动
@@ -391,7 +388,7 @@ public class EyeOfCthulhu extends AbstractTerraBossBase implements GeoEntity, Bo
     public boolean canAttack(LivingEntity target) {
         return super.canAttack(target) && !(target instanceof DemonEye);
     }
-    
+
     private void spawnMinions(LivingEntity target) {
         if (level() instanceof ServerLevel serverLevel) {
             if (--summonCD > 0) return;
