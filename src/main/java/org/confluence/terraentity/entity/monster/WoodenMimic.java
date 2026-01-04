@@ -3,6 +3,8 @@ package org.confluence.terraentity.entity.monster;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
@@ -22,6 +24,8 @@ import org.confluence.terraentity.entity.ai.goal.behavior.leaf.JumpAttackAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.LookAtTargetAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.SetAttributeAction;
 import org.confluence.terraentity.entity.util.SharedFlagController;
+import org.confluence.terraentity.init.TESounds;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
@@ -161,5 +165,12 @@ public class WoodenMimic extends AbstractMonster implements ISharedFlagControlle
 
         );
     }
-
+    @Override
+    protected SoundEvent getDeathSound() {
+        return TESounds.SOUL_DEATH.get();
+    }
+    @Override
+    protected SoundEvent getHurtSound(@NotNull DamageSource pDamageSource) {
+        return TESounds.METAL_HURT.get();
+    }
 }
