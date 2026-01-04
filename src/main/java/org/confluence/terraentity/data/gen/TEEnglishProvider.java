@@ -41,6 +41,17 @@ public class TEEnglishProvider extends LanguageProvider {
         TEEntities.ENTITIES.getEntries().forEach(entity -> add(entity.get(), toTitleCase(entity.getId().getPath())));
         TEEffects.EFFECTS.getEntries().forEach(effect -> add(effect.get(), toTitleCase(effect.getId().getPath())));
 
+        add("terra_entity.trade_lock.drawer.time.title", "Time");
+        add("terra_entity.trade_lock.drawer.time.title.expect", "Except");
+        add("terra_entity.trade_lock.drawer.npc_exist.title", "%s is nearby");
+        add("terra_entity.trade_lock.drawer.mood.title", "Mood");
+        add("terra_entity.trade_lock.drawer.kill_entity.title", "Kill");
+        add("terra_entity.trade_lock.drawer.biome.title", "Biome");
+        add("terra_entity.trade_lock.drawer.biome.title.tag", "Biome Tag");
+        add("terra_entity.trade_lock.drawer.and.title", "All should be satisfied");
+        add("terra_entity.trade_lock.drawer.not.title", "None should be satisfied");
+        add("terra_entity.trade_lock.drawer.or.title", "Any can be satisfied");
+
         add("itemGroup.terraentity.title", "Terra Entity");
 
         add("title.terra_entity.npc_trade", "Terra Shop");

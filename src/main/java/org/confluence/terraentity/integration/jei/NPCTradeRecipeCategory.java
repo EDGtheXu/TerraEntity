@@ -10,25 +10,19 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.biome.Biome;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.npc.trade.ITradeLock;
 import org.confluence.terraentity.init.item.TESpawnEggItems;
-import org.confluence.terraentity.registries.npc_trade_lock.TradeLockProvider;
-import org.confluence.terraentity.registries.npc_trade_lock.TradeLockProviderTypes;
-import org.confluence.terraentity.registries.npc_trade_lock.variant.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -122,7 +116,7 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
     name - 58 centered
     arrow padding - 2 width
 
-    output x - 48 + 22 + 2*2 = 72
+    output x - 48 + 1 + 22 + 1 = 72
     output end - 72 + 16 = 88
 
     lock condition - 8 width
@@ -131,14 +125,14 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
 
     @Override
     public void draw(NPCRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        TEJeiPlugin.drawArrowRight(guiGraphics, 50, 22, true);
-        recipe.drawResultCallback.draw(guiGraphics, 50, 22);
+        TEJeiPlugin.drawArrowRight(guiGraphics, 49, 24, true);
+        recipe.drawResultCallback.draw(guiGraphics, 49, 22);
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(recipe.id);
         var item = DeferredSpawnEggItem.deferredOnlyById(type);
         if (item != null) {
-            guiGraphics.renderItem(item.getDefaultInstance(), 50, 10);
+            guiGraphics.renderItem(item.getDefaultInstance(), 49, 10);
         }
-        guiGraphics.drawCenteredString(Minecraft.getInstance().font, type.getDescription(), 58, 0, 0xFFFFFF);
+        guiGraphics.drawCenteredString(Minecraft.getInstance().font, type.getDescription(), 56, 0, 0xFFFFFF);
         drawLock(guiGraphics, recipe.trade.lock(), 88, 0, (int) mouseX, (int) mouseY);
     }
 
@@ -148,5 +142,14 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
             return;
         }
         drawer.drawRecipe(lock, guiGraphics, x, y, mouseX, mouseY);
+    }
+
+    @Override
+    public @Nullable ResourceLocation getRegistryName(NPCRecipe recipe) {
+        List<ItemStack> outputs = recipe.trade.normalizeResult();
+        if(outputs.isEmpty()){
+            return null;
+        }
+        return ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "npc_trade/" + recipe.id.getPath() + "/" + BuiltInRegistries.ITEM.getKey(outputs.get(0).getItem()).getPath());
     }
 }
