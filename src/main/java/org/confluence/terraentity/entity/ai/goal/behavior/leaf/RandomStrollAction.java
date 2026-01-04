@@ -48,7 +48,7 @@ public class RandomStrollAction extends BTNode{
     @Override
     public void start() {
         super.start();
-        this.interval = 0;
+        this.interval = this.mob.getRandom().nextInt(this._interval / 4);
         Vec3 vec3 = this.getPosition();
         if (vec3 != null) {
             this.mob.getNavigation().moveTo(vec3.x, vec3.y, vec3.z, this.speedModifier);

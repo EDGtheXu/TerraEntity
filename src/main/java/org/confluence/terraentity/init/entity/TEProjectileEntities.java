@@ -12,6 +12,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.client.entity.model.*;
+import org.confluence.terraentity.client.entity.renderer.mob.GeoNegativeVolumeRenderer;
 import org.confluence.terraentity.client.entity.renderer.proj.*;
 import org.confluence.terraentity.client.util.RegisterUtils;
 import org.confluence.terraentity.entity.proj.*;
@@ -64,7 +65,8 @@ public class TEProjectileEntities {
     //悠悠球
     public static final DeferredHolder<EntityType<?>, EntityType<YoyosEntity>> YOYO_PROJ = registerProj("yoyo_projectile", YoyosEntity::new, 0.5f, 0.5f);
     public static final DeferredHolder<EntityType<?>, EntityType<ThrownIceProjectile>> THROWN_ICE_PROJECTILE = registerProj("thrown_ice_projectile", ThrownIceProjectile::new, 1f, 1f);
-    public static final DeferredHolder<EntityType<?>, EntityType<IcePillar>> ICE_PILLAR = registerProj("ice_pillar", IcePillar::new, 0.5f, 0.5f);
+    public static final DeferredHolder<EntityType<?>, EntityType<IcePillar>> ICE_PILLAR = registerProj("ice_pillar", IcePillar::new, 1f, 3f);
+    public static final DeferredHolder<EntityType<?>, EntityType<ShadowHandProjectile>> SHADOW_HAND = registerProj("shadow_hand", ShadowHandProjectile::new, 0.5f, 0.5f);
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -101,6 +103,7 @@ public class TEProjectileEntities {
 
         event.registerEntityRenderer(THROWN_ICE_PROJECTILE.get(), (c)->new ThrownIceProjectileRenderer(c));
         event.registerEntityRenderer(ICE_PILLAR.get(), (c)->new IcePillarRenderer(c));
+        event.registerEntityRenderer(SHADOW_HAND.get(), (c)->new GeoNegativeVolumeRenderer<>(c, SHADOW_HAND.getId().withPrefix("proj/")));
     }
 
     public static <T extends Projectile> DeferredHolder<EntityType<?>, EntityType<T>> registerProj(String name, EntityType.EntityFactory<T> entityFactory, float w, float h) {

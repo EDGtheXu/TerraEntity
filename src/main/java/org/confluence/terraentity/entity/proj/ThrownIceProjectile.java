@@ -51,7 +51,7 @@ public class ThrownIceProjectile extends BaseProj<ThrownIceProjectile> {
         super.onAddedToLevel();
         Vec3 dir = TEUtils.sphere(this.random.nextFloat() * 0.3f + 0.3f, this.random.nextFloat() * 6.28f, this.random.nextFloat() * 0.3f);
 //        Vec3 dir = TEUtils.sphere(0.5f, 0.3f, 3.14f);
-        this.addDeltaMovement(dir.add(0,0.1,0));
+        this.addDeltaMovement(dir.add(0,1,0));
     }
 
     @Override

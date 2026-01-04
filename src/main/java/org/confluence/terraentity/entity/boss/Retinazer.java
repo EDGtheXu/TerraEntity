@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
+import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTBossTwoStageRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
@@ -18,13 +19,14 @@ import org.confluence.terraentity.entity.ai.goal.behavior.condition.DistanceCond
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.HealthLowerThanCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.*;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
+import org.confluence.terraentity.registries.mappeddata.MappedDataTypes;
 
 public class Retinazer extends Spazmatism {
     private final SkillParams skillParams;
 
     public Retinazer(EntityType<? extends Monster> type, Level level) {
         super(type, level);
-        this.skillParams = SkillParams.getDefaultParams();
+        this.skillParams = MappedDataTypes.BOSS_SKILL_MAP_DATAS.get().getData(BossSkillMapDatas.THE_TWINS_PARAMS).retinazerParams();
         this.xpReward = skillParams.xpReward;
 
     }

@@ -33,7 +33,7 @@ public class IcePillarRenderer extends EntityRenderer<IcePillar> {
         poseStack.translate(-0.5f, -0.5f, -0.5f);
         poseStack.mulPose(new Quaternionf().rotateTo(new Vector3f(0,1,0), entity.axis));
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < Math.min(4, entity.tickCount * (entity.getLifetime() - entity.tickCount) / 75); i++) {
 
             Minecraft.getInstance().getBlockRenderer().renderSingleBlock(Blocks.BLUE_ICE.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
             poseStack.translate(0,1,0);

@@ -6,14 +6,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -76,17 +77,18 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
         this(TEBossEntities.DEERCLOPS.get(), level);
     }
 
-    public record SkillParams(int xpReward, int attackDamage, int attackRange, int rangeDamage, int thrownIceCount) {
+    public record SkillParams(int xpReward, int attackDamage, int attackRange, int rangeDamage, int thrownIceCount, int blackHandDamage) {
         public static Codec<SkillParams> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.INT.fieldOf("xp_reward").forGetter(SkillParams::xpReward),
                 Codec.INT.fieldOf("attack_damage").forGetter(SkillParams::attackDamage),
                 Codec.INT.fieldOf("attack_range").forGetter(SkillParams::attackRange),
                 Codec.INT.fieldOf("range_damage").forGetter(SkillParams::rangeDamage),
-                Codec.INT.fieldOf("thrown_ice_count").forGetter(SkillParams::thrownIceCount)
+                Codec.INT.fieldOf("thrown_ice_count").forGetter(SkillParams::thrownIceCount),
+                Codec.INT.fieldOf("black_hand_damage").forGetter(SkillParams::blackHandDamage)
         ).apply(instance, SkillParams::new));
 
         public static SkillParams getDefaultParams(){
-            return new SkillParams(1500,10, 10, 10, 2);
+            return new SkillParams(1500,10, 10, 10, 20, 10);
         }
     }
 
@@ -122,6 +124,8 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
         super.tick();
         if(!level().isClientSide) {
             this.scheduler.tick(1L);
+        }else{
+            this.setYBodyRot(this.getYRot());
         }
 
     }
@@ -214,10 +218,10 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
             }
             animTick++;
             if(animTick == 7) {
-                // TODO 技能
                 if(this.mob.level().getBlockEntity(this.mob.destroyChestPos) instanceof ChestBlockEntity) {
-                    this.mob.level().setBlock(this.mob.destroyChestPos, Blocks.AIR.defaultBlockState(), 2);
+                    this.mob.level().destroyBlock(this.mob.destroyChestPos, true);
                 }
+                mob.doMeleeAttack();
             }
             if(animTick > 15) {
                 return BTStatus.SUCCESS;
@@ -261,7 +265,7 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
                             .addChild(BTFactory.condition(new TargetExistCondition(mob), BTFactory.infinite(BTFactory.sequence()
                                     .addChild(BTFactory.parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ONE)
                                             .addChild(new MoveToTargetAction(this.mob, 7, 20))
-                                            .addChild(BTFactory.wait(100)))
+                                            .addChild(BTFactory.wait(30)))
                                     .addChild(BTFactory.withTimer(15, new IceAttack()))
                             )))
                     )
@@ -304,14 +308,15 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
                 }
 
                 if(tick == 12 ) {
-                    if(mob.getTarget().distanceTo(mob) >= mob.attackRange) {
+                    double horizonDist = mob.position().subtract(mob.getTarget().position()).multiply(1,0,1).length();
+                    if(horizonDist >= mob.attackRange) {
                         // 远程攻击
                         for(int i=0;i<mob.thrownIceCount;i++) {
                             var entity = TEProjectileEntities.THROWN_ICE_PROJECTILE.get().create(mob.level());
                             if(entity != null) {
                                 entity.setPos(
                                         mob.getX() + mob.getRandom().nextDouble() * 2 - 1,
-                                        mob.getRandom().nextDouble() * 2 + 1,
+                                        mob.getY() + mob.getRandom().nextDouble() * 2 + 1,
                                         mob.getZ()+ mob.getRandom().nextDouble() * 2 - 1);
                                 entity.setOwner(mob);
                                 entity.setDamage(mob.rangeDamage);
@@ -319,18 +324,19 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
                             }
                         }
                     }else{
-                        // 近战技能
-                        for(int i=0;i<mob.attackRange;i++) {
-                            int finalI = i;
-                            mob.scheduler.schedule(()->{
-                                for(int j=0;j < finalI * 2 + 1;j++){
 
-                                    mob.createMeleeIcePillar(j-3, Math.max(j, 5), mob.position(), TEUtils.rotToDir(mob.getYRot(), mob.getXRot()).multiply(1,0,1));
-                                }
-                            }, i);
+                        if(mob.getTarget().getY() - mob.getY() > 5) {
+                            // 召唤黑手
+                            mob.doBlackHandAttack(mob.getTarget());
+                        }else{
+                            // 召唤冰刺
+                            mob.doMeleeAttack();
                         }
-
                     }
+
+                }else if(tick < 12) {
+                    mob.lookAt(mob.getTarget(), 30, 30);
+                    mob.getLookControl().setLookAt(mob.getTarget());
 
                 }
 
@@ -385,6 +391,36 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
 
     }
 
+    protected void doMeleeAttack(){
+        for(int i=0;i<attackRange;i++) {
+            int finalI = i;
+            Vec3 dir = TEUtils.rotToDir(this.getYRot(), this.getXRot()).multiply(1,0,1);
+            Vec3 pos = this.position();
+            this.scheduler.schedule(()->{
+                for(int j=0;j < finalI * 2 + 1;j++){
+                    this.createMeleeIcePillar(j-3, Math.max(j, 5), pos, dir);
+                }
+            }, i );
+        }
+    }
+
+    protected void doBlackHandAttack(LivingEntity target){
+        Vec3 center = target.position();
+        for(int i=0;i<4;i++) {
+            Vec3 related = TEUtils.sphere(5, this.random.nextFloat() * 6.28f, this.random.nextFloat() * 3.14f);
+
+            Vec3 absolutePos = center.add(related);
+            var entity = TEProjectileEntities.SHADOW_HAND.get().create(this.level());
+            if(entity != null) {
+                entity.setOwner(this);
+                entity.setDamage(this.skillParams.blackHandDamage);
+                entity.setPos(absolutePos);
+                this.level().addFreshEntity(entity);
+            }
+        }
+
+    }
+
     protected void createMeleeIcePillar(int i,int horizon,  Vec3 center, Vec3 direction){
         var entity = TEProjectileEntities.ICE_PILLAR.get().create(this.level());
         if(entity != null) {
@@ -403,6 +439,8 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
     public void addSkills() {
     }
 
+
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "Controller", 5,
@@ -412,5 +450,14 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
                 .triggerableAnim("Roaring", ROARING)
         );
 
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        // 距离过远不可被攻击
+        if(source.getDirectEntity() instanceof LivingEntity living && living.distanceTo(this) > skillParams.attackRange * 1.5f) {
+            return false;
+        }
+        return super.hurt(source, amount);
     }
 }

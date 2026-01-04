@@ -6,6 +6,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -38,9 +39,10 @@ import java.util.function.Function;
 public class WoodenMimic extends AbstractMonster implements ISharedFlagControllerHolder {
 
     protected static final EntityDataAccessor<Integer> DATA_SHARE_FLAG = SynchedEntityData.defineId(WoodenMimic.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Integer> DATA_IDLE_ANGLE = SynchedEntityData.defineId(WoodenMimic.class, EntityDataSerializers.INT);
     protected static final RawAnimation stand = RawAnimation.begin().thenLoop("Closed state");
     protected static final RawAnimation open = RawAnimation.begin().thenPlayAndHold("Open");
-    protected static final RawAnimation jump = RawAnimation.begin().thenPlay("Jump");
+    protected static final RawAnimation jump = RawAnimation.begin().thenPlayAndHold("Jump");
     protected static final RawAnimation close = RawAnimation.begin().thenPlay("Closed");
 
     protected final SharedFlagController sharedFlagController;
@@ -55,6 +57,7 @@ public class WoodenMimic extends AbstractMonster implements ISharedFlagControlle
         this.closeFlag = this.sharedFlagController.registerFlag();
         this.jumpFlag = this.sharedFlagController.registerFlag();
         this.collisionProperties.attackRangeExtent = 0.5f;
+        this.entityData.set(DATA_IDLE_ANGLE, this.random.nextInt(4) * 90);
     }
 
 
@@ -79,7 +82,19 @@ public class WoodenMimic extends AbstractMonster implements ISharedFlagControlle
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_SHARE_FLAG, 0);
+        builder.define(DATA_IDLE_ANGLE, 0);
 
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if(key == DATA_SHARE_FLAG ){
+            if(!this.sharedFlagController.getFlag(openFlag)) {
+                this.setYBodyRot(this.entityData.get(DATA_IDLE_ANGLE));
+                this.setYHeadRot(this.entityData.get(DATA_IDLE_ANGLE));
+            }
+        }
     }
 
     @Override
@@ -107,11 +122,12 @@ public class WoodenMimic extends AbstractMonster implements ISharedFlagControlle
         protected BTNode createStageTrigger() {
             // 丢失目标100秒后，设置跟随距离为5
             return BTFactory.condition(Condition.not(new TargetExistCondition(this.mob)), BTFactory.sequence()
-                    .addChild(BTFactory.withTimer(100, BTFactory.sequence()
-                            .addChild(new SetAttributeAction(this.mob, Attributes.FOLLOW_RANGE, 5))
-                            .addChild(new AnimCtrlAction<>(this.mob, "Controller", "open", this.mob.openFlag, false))
-                            .addChild(new AnimCtrlAction<>(this.mob, "Controller", "close", this.mob.closeFlag, true))
-                    ))
+                    .addChild(BTFactory.wait(20))
+                    .addChild(new SetAttributeAction(this.mob, Attributes.FOLLOW_RANGE, 5))
+                    .addChild(new AdjustRotateAction(this.mob))
+                    .addChild(BTFactory.wait(6))
+                    .addChild(new AnimCtrlAction<>(this.mob, "Controller", "open", this.mob.openFlag, false))
+                    .addChild(new AnimCtrlAction<>(this.mob, "Controller", "close", this.mob.closeFlag, true))
                     .addChild(BTFactory.waitForever())
             );
         }
@@ -128,6 +144,22 @@ public class WoodenMimic extends AbstractMonster implements ISharedFlagControlle
                     ))
             ;
 
+        }
+
+        private static class AdjustRotateAction extends BTNode {
+            Mob mob;
+            public AdjustRotateAction(Mob mob) {
+                this.mob = mob;
+            }
+            @Override
+            public BTStatus execute() {
+                this.mob.setDeltaMovement(0,0.3f, 0);
+                int angle = this.mob.getRandom().nextInt(4) * 90;
+                this.mob.moveTo(this.mob.blockPosition(), angle, 0);
+                this.mob.getEntityData().set(DATA_IDLE_ANGLE, angle);
+
+                return BTStatus.SUCCESS;
+            }
         }
 
         protected SequenceNode createActualAttackBehavior(Function<Integer, BTNode> waitActionFunction){

@@ -1,5 +1,7 @@
 package org.confluence.terraentity.entity.boss.thetwins;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -45,6 +47,15 @@ public class TheTwins extends AbstractTerraBossBase implements Boss {
     public static final EntityDataAccessor<Integer> DATA_SPAZMATISM_ID = SynchedEntityData.defineId(TheTwins.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> DATA_RETINAZER_ID = SynchedEntityData.defineId(TheTwins.class, EntityDataSerializers.INT);
 
+    public record SkillParams(Spazmatism.SkillParams spazmatismParams, Retinazer.SkillParams retinazerParams){
+        public static Codec<SkillParams> CODEC = RecordCodecBuilder.create(instance-> instance.group(
+                Spazmatism.SkillParams.CODEC.fieldOf("spazmatismParams").forGetter(SkillParams::spazmatismParams),
+                Retinazer.SkillParams.CODEC.fieldOf("retinazerParams").forGetter(SkillParams::retinazerParams)
+        ).apply(instance, SkillParams::new));
+        public static SkillParams getDefaultParams() {
+            return new SkillParams(Spazmatism.SkillParams.getDefaultParams(), Retinazer.SkillParams.getDefaultParams());
+        }
+    }
 
     public TheTwins(EntityType<? extends Monster> type, Level level) {
         super(type, level);
@@ -126,10 +137,19 @@ public class TheTwins extends AbstractTerraBossBase implements Boss {
         }
 
         // 更新位置
-        if(!level().isClientSide && (this.tickCount & 31) == 0) {
+        if(this.tickCount > 50 && !level().isClientSide && (this.tickCount & 31) == 0) {
             if(spazmatism != null && spazmatism.isAlive() && retinazer != null && retinazer.isAlive()) {
                 Vec3 pos = spazmatism.position().add(retinazer.position()).scale(0.5f);
                 this.setPos(pos);
+                if(spazmatism.getTarget() == null && retinazer.getTarget() == null) {
+                    // 无目标时相互靠近
+                    if(spazmatism.distanceTo(retinazer) > 50) {
+                        Vec3 dir = spazmatism.position().subtract(position()).normalize();
+                        spazmatism.addDeltaMovement(dir.scale(-1));
+                        retinazer.addDeltaMovement(dir);
+                    }
+                }
+
             }else{
                 if(spazmatism != null && spazmatism.isAlive()) {
                     this.setPos(spazmatism.position().add(0, 5, 0));

@@ -48,8 +48,11 @@ public class CrimsonMimic extends WoodenMimic {
 
             BTNode trackTarget = BTFactory.sequence()
                     .addChild(shortWait)
-                    .addChild(new AnimCtrlAction<>(this.mob, "Controller", "open", this.mob.openFlag, true))
+                    .addChild(new AnimCtrlAction<>(this.mob, "Controller", "jump", this.mob.jumpFlag, true))
                     .addChild(BTFactory.withTimer(50, new TrackTargetAction(this.mob, 5f)))
+                    .addChild(new AnimCtrlAction<>(this.mob, "Controller", "jump", this.mob.jumpFlag, false))
+                    .addChild(new AnimCtrlAction<>(this.mob, "Controller", "close", this.mob.closeFlag, true))
+
                     .addChild(shortWait)
                     ;
 

@@ -55,9 +55,8 @@ public class TrackTargetAction extends BTNode {
             steeringForce = steeringForce.normalize().scale(maxAcceleration);
         }
 
-        // 应用加速度（考虑时间）
-        Vec3 acceleration = steeringForce;
-        currentVelocity = currentVelocity.add(acceleration);
+        // 应用加速度
+        currentVelocity = currentVelocity.add(steeringForce);
 
         // 限制最大速度
         double currentSpeed = currentVelocity.length();

@@ -23,6 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terraentity.api.entity.ISharedFlagControllerHolder;
+import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTBossTwoStageRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
@@ -39,6 +40,7 @@ import org.confluence.terraentity.entity.boss.thetwins.TheTwins;
 import org.confluence.terraentity.entity.util.SharedFlagController;
 import org.confluence.terraentity.init.TEParticles;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
+import org.confluence.terraentity.registries.mappeddata.MappedDataTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -87,7 +89,8 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
 
         this.blackboard = Blackboard.create();
         this.blackboard.put(KeyType.STAGE, 1);
-        this.skillParams = SkillParams.getDefaultParams(); // 等注册双子魔眼
+        // 由于行为树是延迟创建的，所以在goal注册以后再初始化也没问题
+        this.skillParams = MappedDataTypes.BOSS_SKILL_MAP_DATAS.get().getData(BossSkillMapDatas.THE_TWINS_PARAMS).spazmatismParams();
         this.xpReward = skillParams.xpReward;
 
     }
