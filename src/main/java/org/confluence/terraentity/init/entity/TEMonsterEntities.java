@@ -171,14 +171,14 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<Wraith>> WRAITH = TEEntities.registerMonster("wraith", (e, l) -> new Wraith(e, l), 1F, 2F);
 
 
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> WOODEN_MIMIC = TEEntities.registerMonster("wooden_mimic", WoodenMimic::new, 1F, 1F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> GOLDEN_MIMIC = TEEntities.registerMonster("golden_mimic", WoodenMimic::new, 1F, 1F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> ICE_MIMIC = TEEntities.registerMonster("ice_mimic", WoodenMimic::new, 1F, 1F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> SHADOW_MIMIC = TEEntities.registerMonster("shadow_mimic", WoodenMimic::new, 1F, 1F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CRIMSON_MIMIC = TEEntities.registerMonster("crimson_mimic", CrimsonMimic::new, 2F, 2F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CORRUPT_MIMIC = TEEntities.registerMonster("corrupt_mimic", CrimsonMimic::new, 2F, 2F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> HALLOWED_MIMIC = TEEntities.registerMonster("hallowed_mimic", CrimsonMimic::new, 2F, 2F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> JUNGLE_MIMIC = TEEntities.registerMonster("jungle_mimic", CrimsonMimic::new, 2F, 2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> WOODEN_MIMIC = TEEntities.registerMonster("wooden_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> GOLDEN_MIMIC = TEEntities.registerMonster("golden_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> ICE_MIMIC = TEEntities.registerMonster("ice_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> SHADOW_MIMIC = TEEntities.registerMonster("shadow_mimic", WoodenMimic::new, 0.8f, 0.8f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CRIMSON_MIMIC = TEEntities.registerMonster("crimson_mimic", CrimsonMimic::new, 1.6f, 1.6f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CORRUPT_MIMIC = TEEntities.registerMonster("corrupt_mimic", CrimsonMimic::new, 1.6f, 1.6f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> HALLOWED_MIMIC = TEEntities.registerMonster("hallowed_mimic", CrimsonMimic::new, 1.6f, 1.6f);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> JUNGLE_MIMIC = TEEntities.registerMonster("jungle_mimic", CrimsonMimic::new, 1.6f, 1.6f);
 
 
     @OnlyIn(Dist.CLIENT)
@@ -310,8 +310,13 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.WRAITH.get(), c -> new HumanoidRenderer<>(c, defaultHumanoidModel).setDisableRender());
 
         event.registerEntityRenderer(TEMonsterEntities.WOODEN_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.WOODEN_MIMIC.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.GOLDEN_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.GOLDEN_MIMIC.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.SHADOW_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.SHADOW_MIMIC.getId()));
         event.registerEntityRenderer(TEMonsterEntities.ICE_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.ICE_MIMIC.getId()));
         event.registerEntityRenderer(TEMonsterEntities.CRIMSON_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CRIMSON_MIMIC.getId(), false, 2f, 0));
+        event.registerEntityRenderer(TEMonsterEntities.CORRUPT_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CORRUPT_MIMIC.getId(), false, 2f, 0));
+        event.registerEntityRenderer(TEMonsterEntities.HALLOWED_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.HALLOWED_MIMIC.getId(), false, 2f, 0));
+        event.registerEntityRenderer(TEMonsterEntities.JUNGLE_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.JUNGLE_MIMIC.getId(), false, 2f, 0));
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
