@@ -172,7 +172,13 @@ public class TEMonsterEntities {
 
 
     public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> WOODEN_MIMIC = TEEntities.registerMonster("wooden_mimic", WoodenMimic::new, 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> GOLDEN_MIMIC = TEEntities.registerMonster("golden_mimic", WoodenMimic::new, 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> ICE_MIMIC = TEEntities.registerMonster("ice_mimic", WoodenMimic::new, 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> SHADOW_MIMIC = TEEntities.registerMonster("shadow_mimic", WoodenMimic::new, 1F, 1F);
     public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CRIMSON_MIMIC = TEEntities.registerMonster("crimson_mimic", CrimsonMimic::new, 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> CORRUPT_MIMIC = TEEntities.registerMonster("corrupt_mimic", CrimsonMimic::new, 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> HALLOWED_MIMIC = TEEntities.registerMonster("hallowed_mimic", CrimsonMimic::new, 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> JUNGLE_MIMIC = TEEntities.registerMonster("jungle_mimic", CrimsonMimic::new, 1F, 1F);
 
 
     @OnlyIn(Dist.CLIENT)
@@ -431,8 +437,14 @@ public class TEMonsterEntities {
         event.put(POSSESS_ARMOR_VOID_VESSEL.get(), AttBuilder.createAttributes(1, 0, 28, 32, 1, 0.64f).build());
         event.put(WRAITH.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).gravity(0).build());
 
-        event.put(WOODEN_MIMIC.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).build());
-        event.put(CRIMSON_MIMIC.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).build());
+        event.put(WOODEN_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(ICE_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(GOLDEN_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(SHADOW_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
+        event.put(CRIMSON_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
+        event.put(CORRUPT_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
+        event.put(HALLOWED_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
+        event.put(JUNGLE_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
 
     }
 
@@ -549,8 +561,14 @@ public class TEMonsterEntities {
         event.register(CRIMSLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(CORRUPT_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
-        event.register(WOODEN_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
-        event.register(CRIMSON_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(WOODEN_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(GOLDEN_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(SHADOW_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkNetherMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ICE_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(CRIMSON_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(CORRUPT_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(HALLOWED_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(JUNGLE_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
     }
 

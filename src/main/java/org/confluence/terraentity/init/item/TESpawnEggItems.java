@@ -128,6 +128,16 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> POSSESS_ARMOR_SPAWN_EGG = registerEgg("possess_armor_spawn_egg", TEMonsterEntities.POSSESS_ARMOR, 0xffffff);
     public static final DeferredItem<SpawnEggItem> WRAITH_SPAWN_EGG = registerEgg("wraith_spawn_egg", TEMonsterEntities.WRAITH, 0xffffff);
 
+    // 宝箱怪
+    public static final DeferredItem<SpawnEggItem> WOODEN_MIMIC_SPAWN_EGG = registerEgg("wooden_mimic_spawn_egg", TEMonsterEntities.WOODEN_MIMIC, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> GOLDEN_MIMIC_SPAWN_EGG = registerEgg("golden_mimic_spawn_egg", TEMonsterEntities.GOLDEN_MIMIC, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> SHADOW_MIMIC_SPAWN_EGG = registerEgg("shadow_mimic_spawn_egg", TEMonsterEntities.SHADOW_MIMIC, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> ICE_MIMIC_SPAWN_EGG = registerEgg("ice_mimic_spawn_egg", TEMonsterEntities.ICE_MIMIC, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> CRIMSON_MIMIC_SPAWN_EGG = registerEgg("crimson_mimic_spawn_egg", TEMonsterEntities.CRIMSON_MIMIC, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> CORRUPT_MIMIC_SPAWN_EGG = registerEgg("corrupt_mimic_spawn_egg", TEMonsterEntities.CORRUPT_MIMIC, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> HALLOWED_MIMIC_SPAWN_EGG = registerEgg("hallowed_mimic_spawn_egg", TEMonsterEntities.HALLOWED_MIMIC, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> JUNGLE_MIMIC_SPAWN_EGG = registerEgg("jungle_mimic_spawn_egg", TEMonsterEntities.JUNGLE_MIMIC, 0xffffff);
+
 
     // NPC
     public static final DeferredItem<SpawnEggItem> GUIDE_SPAWN_EGG = registerEgg("guide_spawn_egg", TENpcEntities.GUIDE, 0xffffff);

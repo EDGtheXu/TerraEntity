@@ -113,6 +113,14 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.POSSESS_ARMOR.get(), "装甲幻影魔");
         add(TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.get(), "装甲幻影魔-虚空载体");
         add(TEMonsterEntities.WRAITH.get(), "幻灵");
+        add(TEMonsterEntities.WOODEN_MIMIC.get(), "木宝箱怪");
+        add(TEMonsterEntities.GOLDEN_MIMIC.get(), "金宝箱怪");
+        add(TEMonsterEntities.SHADOW_MIMIC.get(), "暗影宝箱怪");
+        add(TEMonsterEntities.ICE_MIMIC.get(), "冰雪宝箱怪");
+        add(TEMonsterEntities.CRIMSON_MIMIC.get(), "猩红宝箱怪");
+        add(TEMonsterEntities.CORRUPT_MIMIC.get(), "腐化宝箱怪");
+        add(TEMonsterEntities.HALLOWED_MIMIC.get(), "神圣宝箱怪");
+        add(TEMonsterEntities.JUNGLE_MIMIC.get(), "丛林宝箱怪");
 
 
         // boss
@@ -248,6 +256,16 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.CURSED_SKULL_SPAWN_EGG.get(), "诅咒骷髅头刷怪蛋");
         add(TESpawnEggItems.DARK_CASTER_SPAWN_EGG.get(), "暗黑法师刷怪蛋");
         add(TESpawnEggItems.UNDEAD_VIKING_SPAWN_EGG.get(), "亡灵维京海盗刷怪蛋");
+
+        // 宝箱怪
+        add(TESpawnEggItems.WOODEN_MIMIC_SPAWN_EGG.get(), "木宝箱怪刷怪蛋");
+        add(TESpawnEggItems.GOLDEN_MIMIC_SPAWN_EGG.get(), "金宝箱怪刷怪蛋");
+        add(TESpawnEggItems.SHADOW_MIMIC_SPAWN_EGG.get(), "暗影宝箱怪刷怪蛋");
+        add(TESpawnEggItems.ICE_MIMIC_SPAWN_EGG.get(), "冰雪宝箱怪刷怪蛋");
+        add(TESpawnEggItems.CRIMSON_MIMIC_SPAWN_EGG.get(), "猩红宝箱怪刷怪蛋");
+        add(TESpawnEggItems.CORRUPT_MIMIC_SPAWN_EGG.get(), "腐化宝箱怪刷怪蛋");
+        add(TESpawnEggItems.HALLOWED_MIMIC_SPAWN_EGG.get(), "神圣宝箱怪刷怪蛋");
+        add(TESpawnEggItems.JUNGLE_MIMIC_SPAWN_EGG.get(), "丛林宝箱怪刷怪蛋");
 
 
         add(TEMonsterEntities.GOBLIN_SORCERER.get(), "哥布林巫士");
