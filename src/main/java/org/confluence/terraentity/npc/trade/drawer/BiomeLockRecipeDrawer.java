@@ -1,7 +1,7 @@
 package org.confluence.terraentity.npc.trade.drawer;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.Holder;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -14,29 +14,30 @@ import org.jetbrains.annotations.NotNull;
 
 public class BiomeLockRecipeDrawer extends TradeLockRecipeDrawer {
     @Override
-    public void drawRecipe(@NotNull ITradeLock lock, GuiGraphics guiGraphics, int x, int y, int mouseX, int mouseY) {
+    public int drawRecipe(@NotNull ITradeLock lock, GuiGraphics guiGraphics, int x, int y, int mouseX, int mouseY) {
         if (!(lock instanceof BiomeLock biomeLock)) {
-            return;
+            return y;
         }
         var size = getRecipeSize();
         for (var biomeResource : biomeLock.values()) {
             guiGraphics.blitSprite(getBiomeSprite(biomeResource), x, y, size, size);
-            drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, "Biome: " + biomeResource.location());
+            drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.biome.title") + ": " + biomeResource.location().getPath());
             x += size;
         }
 
         for (var biomeResource : biomeLock.tags()) {
             guiGraphics.blitSprite(getBiomeSpriteByTag(biomeResource), x, y, size, size);
-            drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, "Biome Tag: " + biomeResource.location());
+            drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.biome.title.tag") + ": " +biomeResource.location().getPath());
             x += size;
         }
+        return y + size;
     }
 
     private ResourceLocation getBiomeSpriteByTag(TagKey<Biome> biomeResource) {
-        return ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "shop_lock_biome_tag");
+        return ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "shop_lock/biome_tag");
     }
 
     private ResourceLocation getBiomeSprite(ResourceKey<Biome> biomeResource) {
-        return ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "shop_lock_biome");
+        return ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "shop_lock/biome");
     }
 }

@@ -64,6 +64,19 @@ public final class TEJeiPlugin implements IModPlugin {
                     });
                 }
                 return recipe;
+            }).filter(t -> {
+                var cost = t.trade.normalizeCost();
+                var id = t.id;
+                if (cost.isEmpty()) {
+                    TerraEntity.LOGGER.warn("NPC Trade Recipe {} has empty cost, skipping registration.", id);
+                    return false;
+                }
+                var result = t.trade.normalizeResult();
+                if (result.isEmpty()) {
+                    TerraEntity.LOGGER.warn("NPC Trade Recipe {} has empty result, skipping registration.", id);
+                    return false;
+                }
+                return true;
             }).toList());
         });
     }
@@ -75,7 +88,7 @@ public final class TEJeiPlugin implements IModPlugin {
     }
 
     public static void drawArrowRight(GuiGraphics guiGraphics, int x, int y, boolean usable) {
-        guiGraphics.blit(MENU_LOCATION,x,y,276,0,22,17,512,256);
+        guiGraphics.blit(MENU_LOCATION,x,y,277,0,22,17,512,256);
     }
 
     public static void addInput(IRecipeLayoutBuilder builder, int x, int y, Ingredient ingredient) {
