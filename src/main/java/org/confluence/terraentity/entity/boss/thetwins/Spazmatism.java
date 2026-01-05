@@ -1,4 +1,4 @@
-package org.confluence.terraentity.entity.boss;
+package org.confluence.terraentity.entity.boss.thetwins;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -36,7 +36,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.composite.SequenceNode
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.HealthLowerThanCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.*;
-import org.confluence.terraentity.entity.boss.thetwins.TheTwins;
+import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.entity.util.SharedFlagController;
 import org.confluence.terraentity.init.TEParticles;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;

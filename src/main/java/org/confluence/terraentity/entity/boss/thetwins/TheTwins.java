@@ -20,8 +20,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terraentity.api.entity.Boss;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
-import org.confluence.terraentity.entity.boss.Retinazer;
-import org.confluence.terraentity.entity.boss.Spazmatism;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.utils.TEUtils;
 import org.jetbrains.annotations.NotNull;

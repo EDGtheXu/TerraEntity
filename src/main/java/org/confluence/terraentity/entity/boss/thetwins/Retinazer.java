@@ -1,4 +1,4 @@
-package org.confluence.terraentity.entity.boss;
+package org.confluence.terraentity.entity.boss.thetwins;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
