@@ -92,10 +92,10 @@ public class TEBossEntities {
         event.put(TEBossEntities.SKELETRON.get(), AttBuilder.createBoss(18.2, 2288, 10).build());
         event.put(TEBossEntities.SKELETRON_HAND.get(), AttBuilder.createBoss(10, 405, 4).build());
 
-        event.put(TEBossEntities.WALL_OF_FLESH.get(), AttBuilder.createBoss(39, 3096, 0).build());
+        event.put(TEBossEntities.WALL_OF_FLESH.get(), AttBuilder.createBoss(39, 3096, 6).build());
         event.put(TEBossEntities.DUNGEON_GUARDIAN.get(), AttBuilder.createBoss(9999, 9999, 9999).build());
 
-        event.put(TEBossEntities.HILL_OF_FLESH.get(), AttBuilder.createBoss(3824, 0).build());
+        event.put(TEBossEntities.HILL_OF_FLESH.get(), AttBuilder.createBoss(3824, 6).build());
 
         event.put(TEBossEntities.SPAZMATISM.get(), AttBuilder.createBoss(22, 8970, 10).build());
         event.put(TEBossEntities.RETINAZER.get(), AttBuilder.createBoss(19, 7800, 10).build());
