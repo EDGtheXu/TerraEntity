@@ -361,8 +361,8 @@ public class TEMonsterEntities {
         event.put(NYMPH.get(), AttBuilder.createAttributes(156,16,15,5,1,0.5f).build());
         event.put(SNATCHER.get(), AttBuilder.createAttributes(31, 10, 13, 20, 1, 1).build());
         event.put(MAN_EATER.get(), AttBuilder.createAttributes(57, 10, 15, 20, 1, 1).build());
-        event.put(THE_HUNGRY.get(), AttBuilder.createAttributes(30,1,10,32,0.75f,1).build());
-        event.put(HILL_HUNGRY.get(), AttBuilder.createAttributes(30,1,10,32,0.75f,1).build());
+        event.put(THE_HUNGRY.get(), AttBuilder.createAttributes(87,16,15,32,0.75f,1).build());
+        event.put(HILL_HUNGRY.get(), AttBuilder.createAttributes(87,16,15,32,0.75f,1).build());
 
         // fly
         event.put(DEMON_EYE.get(), DemonEye.createAttributes().build());
