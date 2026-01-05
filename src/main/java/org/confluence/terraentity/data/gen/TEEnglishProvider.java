@@ -208,6 +208,8 @@ public class TEEnglishProvider extends LanguageProvider {
         // 附魔
         add("enchantment.terra_entity.multi_boomerang", "Multi Shoot Boomerang");
         add("enchantment.terra_entity.multi_boomerang.desc", "Fires an additional boomerang");
+        add("enchantment.terra_entity.summoner_pact", "Summoner Pact");
+        add("enchantment.terra_entity.summoner_pact.desc", "Summons extra minions");
         add("enchantment.terra_entity.whip_sweep", "Whip Sweep");
         add("enchantment.terra_entity.whip_sweep.desc", "Chance to deal a wide area of damage");
         add("enchantment.terra_entity.summoner_pact", "Summoner's Pact");
