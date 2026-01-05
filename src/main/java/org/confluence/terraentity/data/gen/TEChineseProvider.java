@@ -121,7 +121,10 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.CORRUPT_MIMIC.get(), "腐化宝箱怪");
         add(TEMonsterEntities.HALLOWED_MIMIC.get(), "神圣宝箱怪");
         add(TEMonsterEntities.JUNGLE_MIMIC.get(), "丛林宝箱怪");
-
+        add(TEMonsterEntities.MUMMY.get(), "木乃伊");
+        add(TEMonsterEntities.DARK_MUMMY.get(), "暗黑木乃伊");
+        add(TEMonsterEntities.BLOOD_MUMMY.get(), "血木乃伊");
+        add(TEMonsterEntities.LIGHT_MUMMY.get(), "光明木乃伊");
 
         // boss
         add(TEBossEntities.KING_SLIME.get(), "史莱姆王");
@@ -266,6 +269,12 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.CORRUPT_MIMIC_SPAWN_EGG.get(), "腐化宝箱怪刷怪蛋");
         add(TESpawnEggItems.HALLOWED_MIMIC_SPAWN_EGG.get(), "神圣宝箱怪刷怪蛋");
         add(TESpawnEggItems.JUNGLE_MIMIC_SPAWN_EGG.get(), "丛林宝箱怪刷怪蛋");
+
+        add(TESpawnEggItems.MUMMY_SPAWN_EGG.get(), "木乃伊刷怪蛋");
+        add(TESpawnEggItems.DARK_MUMMY_SPAWN_EGG.get(), "暗黑木乃伊刷怪蛋");
+        add(TESpawnEggItems.BLOOD_MUMMY_SPAWN_EGG.get(), "血木乃伊刷怪蛋");
+        add(TESpawnEggItems.LIGHT_MUMMY_SPAWN_EGG.get(), "光明木乃伊刷怪蛋");
+
 
 
         add(TEMonsterEntities.GOBLIN_SORCERER.get(), "哥布林巫士");

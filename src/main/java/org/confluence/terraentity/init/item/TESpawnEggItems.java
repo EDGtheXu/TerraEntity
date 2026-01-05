@@ -138,6 +138,11 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> HALLOWED_MIMIC_SPAWN_EGG = registerEgg("hallowed_mimic_spawn_egg", TEMonsterEntities.HALLOWED_MIMIC, 0xffffff);
     public static final DeferredItem<SpawnEggItem> JUNGLE_MIMIC_SPAWN_EGG = registerEgg("jungle_mimic_spawn_egg", TEMonsterEntities.JUNGLE_MIMIC, 0xffffff);
 
+    public static final DeferredItem<SpawnEggItem> MUMMY_SPAWN_EGG = registerEgg("mummy_spawn_egg", TEMonsterEntities.MUMMY, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> DARK_MUMMY_SPAWN_EGG = registerEgg("dark_mummy_spawn_egg", TEMonsterEntities.DARK_MUMMY, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> BLOOD_MUMMY_SPAWN_EGG = registerEgg("blood_mummy_spawn_egg", TEMonsterEntities.BLOOD_MUMMY, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> LIGHT_MUMMY_SPAWN_EGG = registerEgg("light_mummy_spawn_egg", TEMonsterEntities.LIGHT_MUMMY, 0xffffff);
+
 
     // NPC
     public static final DeferredItem<SpawnEggItem> GUIDE_SPAWN_EGG = registerEgg("guide_spawn_egg", TENpcEntities.GUIDE, 0xffffff);

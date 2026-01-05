@@ -180,6 +180,12 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> HALLOWED_MIMIC = TEEntities.registerMonster("hallowed_mimic", CrimsonMimic::new, 1.6f, 1.6f);
     public static final DeferredHolder<EntityType<?>, EntityType<WoodenMimic>> JUNGLE_MIMIC = TEEntities.registerMonster("jungle_mimic", CrimsonMimic::new, 1.6f, 1.6f);
 
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> MUMMY = registerSimpleMonster("mummy", LandMonsterPrefab.MUMMY_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> DARK_MUMMY = registerSimpleMonster("dark_mummy", LandMonsterPrefab.EVIL_MUMMY_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> BLOOD_MUMMY = registerSimpleMonster("blood_mummy", LandMonsterPrefab.EVIL_MUMMY_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> LIGHT_MUMMY = registerSimpleMonster("light_mummy", LandMonsterPrefab.MUMMY_BUILDER, 0.75F, 1.95F);
+
+
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -317,6 +323,11 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.CORRUPT_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CORRUPT_MIMIC.getId(), false, 2f, 0));
         event.registerEntityRenderer(TEMonsterEntities.HALLOWED_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.HALLOWED_MIMIC.getId(), false, 2f, 0));
         event.registerEntityRenderer(TEMonsterEntities.JUNGLE_MIMIC.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.JUNGLE_MIMIC.getId(), false, 2f, 0));
+
+        event.registerEntityRenderer(TEMonsterEntities.MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.MUMMY.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.DARK_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DARK_MUMMY.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.BLOOD_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.BLOOD_MUMMY.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.LIGHT_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.LIGHT_MUMMY.getId()));
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -452,6 +463,10 @@ public class TEMonsterEntities {
         event.put(HALLOWED_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
         event.put(JUNGLE_MIMIC.get(), AttBuilder.createAttributes(1820, 34, 47, 32, 1, 0.9f).build());
 
+        event.put(MUMMY.get(), AttBuilder.createAttributes(67,16,26,48,1,0.46f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(DARK_MUMMY.get(), AttBuilder.createAttributes(93,18,32,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(BLOOD_MUMMY.get(), AttBuilder.createAttributes(93,18,32,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(LIGHT_MUMMY.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
     }
 
 
@@ -575,6 +590,11 @@ public class TEMonsterEntities {
         event.register(CORRUPT_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(HALLOWED_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(JUNGLE_MIMIC.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkCaveMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        event.register(MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(DARK_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(BLOOD_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(LIGHT_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
     }
 
