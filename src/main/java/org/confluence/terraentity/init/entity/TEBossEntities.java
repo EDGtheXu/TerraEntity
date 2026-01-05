@@ -94,8 +94,8 @@ public class TEBossEntities {
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(TEBossEntities.KING_SLIME.get(), KingSlime.createSlimeAttributes().build());
         event.put(TEBossEntities.EYE_OF_CTHULHU.get(), AttBuilder.createBoss(4, 728, 12).build());
-        event.put(TEBossEntities.EATER_OF_WORLDS_SEGMENT.get(), AttBuilder.createBoss(4, 50, 1).build());
-        event.put(TEBossEntities.EATER_OF_WORLDS.get(), AttBuilder.createBoss(11.5, 54, 0).build());
+        event.put(TEBossEntities.EATER_OF_WORLDS_SEGMENT.get(), AttBuilder.createBoss(4, 50, 6).build());
+        event.put(TEBossEntities.EATER_OF_WORLDS.get(), AttBuilder.createBoss(11.5, 54, 4).build());
         event.put(TEBossEntities.BRAIN_OF_CTHULHU.get(), AttBuilder.createBoss(14, 552, 14).knockResistance(0.5f).build());
 
         event.put(TEBossEntities.BRAIN_FAKE.get(), AbstractTerraBossBase.createAttributes().build());
@@ -113,8 +113,8 @@ public class TEBossEntities {
         event.put(TEBossEntities.RETINAZER.get(), AttBuilder.createBoss(19, 7800, 10).build());
         event.put(TEBossEntities.THE_TWINS.get(), AttBuilder.createBoss(0, 16770, 0).build());
 
-        event.put(TEBossEntities.SKELETRON_PRIME.get(), AttBuilder.createBoss(1, 100, 0).build());
-        event.put(TEBossEntities.SKELETRON_PRIME_PART.get(), AttBuilder.createBoss(1, 100, 0).build());
+        event.put(TEBossEntities.SKELETRON_PRIME.get(), AttBuilder.createBoss(21, 10920, 6).build());
+        event.put(TEBossEntities.SKELETRON_PRIME_PART.get(), AttBuilder.createBoss(8, 2080, 26).build());
 
 
         event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(26, 10920, 36).build());

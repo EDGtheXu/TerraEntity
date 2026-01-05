@@ -148,6 +148,8 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEBossEntities.RETINAZER.get(), "激光眼");
         add(TEBossEntities.SPAZMATISM.get(), "魔焰眼");
         add(TEBossEntities.THE_TWINS.get(), "双子魔眼");
+        add(TEBossEntities.SKELETRON_PRIME.get(), "机械骷髅王");
+        add(TEBossEntities.SKELETRON_PRIME_PART.get(), "机械骷髅王（机械臂）");
         add(TEBossEntities.PLANTERA.get(), "世纪之花");
         add(TEBossEntities.PLANTERA_HOOK.get(), "世纪之花钩");
         add(TEBossEntities.PLANTERA_TENTACLE.get(), "世纪之花触手");
