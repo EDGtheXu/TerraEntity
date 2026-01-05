@@ -2,6 +2,7 @@ package org.confluence.terraentity.npc.trade.drawer;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -21,7 +22,7 @@ public class BiomeLockRecipeDrawer extends TradeLockRecipeDrawer {
         var size = getRecipeSize();
         for (var biomeResource : biomeLock.values()) {
             guiGraphics.blitSprite(getBiomeSprite(biomeResource), x, y, size, size);
-            drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.biome.title") + ": " + biomeResource.location().getPath());
+            drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.biome.title") + ": " + I18n.get(biomeResource.location().toLanguageKey(Registries.BIOME.location().getPath())));
             x += size;
         }
 

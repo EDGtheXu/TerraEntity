@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -44,7 +43,7 @@ public abstract class TradeLockRecipeDrawer {
         }
     }
 
-    protected void drawTooltip(GuiGraphics guiGraphics, int x, int y, int width, int height, int mouseX, int mouseY, List<MutableComponent> lines) {
+    protected void drawTooltip(GuiGraphics guiGraphics, int x, int y, int width, int height, int mouseX, int mouseY, List<Component> lines) {
         if (mouseX > x && mouseX <= x + width && mouseY > y && mouseY <= y + height) {
             Font font = Minecraft.getInstance().font;
             int longestLineWidth = 0;
@@ -55,8 +54,7 @@ public abstract class TradeLockRecipeDrawer {
                 }
             }
 
-            List<Component> components = lines.stream().map(c -> (Component)c).toList();
-            guiGraphics.renderTooltip(font, components, Optional.empty(), mouseX - longestLineWidth, mouseY);
+            guiGraphics.renderTooltip(font, lines, Optional.empty(), mouseX - longestLineWidth, mouseY);
         }
     }
 
