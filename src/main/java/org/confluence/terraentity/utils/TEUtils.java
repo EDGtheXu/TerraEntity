@@ -739,16 +739,19 @@ public final class TEUtils {
      * 测试攻击驯养动物
      */
     public static BiPredicate<Entity, Entity> attackTamableTest = (owner, target) -> {
+        Entity actualTarget = target instanceof PartEntity<?> part ? part.getParent() : target;
+        if(actualTarget == null) return false;
+
         if(
                 owner != null && (
-                        target instanceof TamableAnimal animal &&
+                        actualTarget instanceof TamableAnimal animal &&
                                 owner instanceof LivingEntity living &&
                                 animal.isOwnedBy(living)
                 )
         ){
             return false;
         }
-        if(target instanceof ISummonMob) {
+        if(actualTarget instanceof ISummonMob) {
             return false;
         }
 

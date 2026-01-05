@@ -14,18 +14,19 @@
         "ServerBossEventMixin",
         "ServerEntityMixin",
         "ZombieMixin",
+        "ChunkMapMixin",
         "accessor.EntityAccessor",
         "accessor.GeoRendererAccessor",
         "accessor.MobAccessor",
         "accessor.ProjectileWeaponAccessor",
         "accessor.SlimeAccessor",
-        "azurelib.AzurelibFileLoaderMixin",
-        "client.ServerChunkLoadingManagerMixin"
+        "azurelib.AzurelibFileLoaderMixin"
     ],
     "client": [
         "accessor.CameraAccessor",
         "accessor.GameRendererAccessor",
         "accessor.LevelRendererAccessor",
+        "accessor.GeoEntityRendererAccessor",
         "client.BossHealthOverlayMixin",
         "client.EntityRenderDispatcherMixin",
         "client.GameRendererMixin",

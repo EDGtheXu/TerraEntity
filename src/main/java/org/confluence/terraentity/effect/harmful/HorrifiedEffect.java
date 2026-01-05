@@ -48,7 +48,7 @@ public class HorrifiedEffect extends MobEffect {
 
                 // 如果没有找到合适的嘴，返回最近的嘴
                 if (targetMouth == null && !nearest20.isEmpty()) {
-                    targetMouth = nearest20.get(0);
+                    targetMouth = nearest20.getFirst();
                 }
 
                 if (targetMouth != null) {

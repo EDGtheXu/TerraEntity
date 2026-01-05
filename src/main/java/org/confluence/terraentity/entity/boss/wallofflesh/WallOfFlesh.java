@@ -25,7 +25,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.DimensionDefaults;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -56,9 +57,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLET_VEC3_INT_LIST_SERIALIZER;
 import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLE_INT_VEC3_LIST_SERIALIZER;
 
-public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtendedTracking {
+public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtendedTracking {
     boolean genSegments = true;
-    int genTick = 20;
+    int genTick = 5;
     boolean shouldMove = true;
     final float baseMoveSpeed = 0.125f;
     Vec3 InitPos = Vec3.ZERO;
@@ -73,14 +74,21 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     private static final int summonCDAll = 1200; //饿鬼召唤cd
     private int summonCD = summonCDAll;
 
+    private static final int NO_PLAYER_DESPAWN_TIME = 600;
+    private int noPlayerTimer = 0;
+
     List<LivingEntity> nearbyLivings;
 
     private static final double FINISH_LINE_DISTANCE = 2000;
+    private static final int MAX_ASSIGNED_MOUTHS = 2;
+    private static final int MAX_ASSIGNED_EYES = 4;
 
     public List<WallOfFleshPart> subEntities = new CopyOnWriteArrayList<>();
 
     public final List<Tuple<Integer, Vec3>> localOffsets = new CopyOnWriteArrayList<>(); // 存储子实体相对坐标
     public final List<Tuple<Vec3, Integer>> theHungryList = new CopyOnWriteArrayList<>();
+    private final Map<WallOfFleshMouth, Player> mouseToPlayerMap = new HashMap<>();
+    private final Map<WallOfFleshEye, Player> eyeToPlayerMap = new HashMap<>();
 
     private static final EntityDataAccessor<List<Tuple<Integer, Vec3>>> DATA_LOCAL_OFFSETS =
             SynchedEntityData.defineId(WallOfFlesh.class, TUPLE_INT_VEC3_LIST_SERIALIZER.get());
@@ -92,6 +100,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         super(type, level);
         this.nearbyLivings = new ArrayList<>();
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(baseMoveSpeed);
+        this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(999);
         genGridWall();
         explosionResistance = switch (this.level().getDifficulty()) {
             case EASY -> 0.25f;
@@ -110,7 +119,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         super.defineSynchedData(builder);
         builder.define(DATA_LOCAL_OFFSETS, new CopyOnWriteArrayList<>());
         builder.define(DATA_HUNGRY_OFFSETS, new CopyOnWriteArrayList<>());
-
     }
 
     public List<Tuple<Integer, Vec3>> getLocalOffsets() {
@@ -162,7 +170,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
             }
         }else if(child instanceof TheHungry hungry && !this.level().isClientSide){
             this.setHungryOffsets(localOffset, hungry.getId());
-            // 应用旋转到初始位置
             Vec3 rotatedOffset = rotateLocalOffset(localOffset);
             hungry.setInitPos(this.position().add(rotatedOffset).toVector3f());
         }
@@ -172,7 +179,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     }
 
     private void genGridWall() {
-        Vec3 baseOffset = new Vec3(0, 0, 7.0F);
+        float zOffset = 0.0F;
 
         final int MAX_DEPTH = 6;
         final double EYE_CHANCE = 0.4;
@@ -180,7 +187,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         final double HUNGRY_CHANCE = 0.3;
         final double SUBDIVISION_CHANCE = 0.85; // 细分概率
 
-        // 存储生成的位置
         List<Vec3> eyePositions = new ArrayList<>();
         List<Vec3> mouthPositions = new ArrayList<>();
         List<Vec3> hungryPositions = new ArrayList<>();
@@ -188,10 +194,10 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         // 使用四叉树生成眼睛、嘴巴和饿鬼位置
         generateAllEntitiesQuadTree(0, 0, gridSizeX, gridSizeY, 0, MAX_DEPTH,
                 EYE_CHANCE, MOUTH_CHANCE, HUNGRY_CHANCE, SUBDIVISION_CHANCE,
-                eyePositions, mouthPositions, hungryPositions, baseOffset);
+                eyePositions, mouthPositions, hungryPositions, zOffset);
 
         // 额外在眼睛之间生成嘴巴
-        generateMouthsBetweenEyes(eyePositions, mouthPositions, hungryPositions, baseOffset);
+        generateMouthsBetweenEyes(eyePositions, mouthPositions, hungryPositions);
 
         // 生成眼睛
         for (int i = 0; i < eyePositions.size(); i++) {
@@ -224,14 +230,13 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
                 }
             }
         }
-
         this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.size() + 1) + 1);
     }
 
     //四叉树
     private void generateAllEntitiesQuadTree(int x, int y, int width, int height, int depth, int maxDepth,
                                              double eyeChance, double mouthChance, double hungryChance, double subdivisionChance,
-                                             List<Vec3> eyePositions, List<Vec3> mouthPositions, List<Vec3> hungryPositions, Vec3 baseOffset) {
+                                             List<Vec3> eyePositions, List<Vec3> mouthPositions, List<Vec3> hungryPositions, float zOffset) {
 
         if (width <= 0 || height <= 0) {
             return;
@@ -247,8 +252,8 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         Vec3 worldPos = new Vec3(
                 (centerX - gridSizeX / 2.0) * gridSpacing + offsetX,
                 (centerY - gridSizeY / 2.0) * gridSpacing + offsetY,
-                0
-        ).add(baseOffset);
+                zOffset
+        );
 
         boolean shouldSubdivide = depth < maxDepth &&
                 width > 1 && height > 1 &&
@@ -264,19 +269,19 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
 
             generateAllEntitiesQuadTree(x, y, halfWidth, halfHeight, depth + 1, maxDepth,
                     eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
-                    eyePositions, mouthPositions, hungryPositions, baseOffset);
+                    eyePositions, mouthPositions, hungryPositions, zOffset);
 
             generateAllEntitiesQuadTree(x + halfWidth, y, width - halfWidth, halfHeight, depth + 1, maxDepth,
                     eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
-                    eyePositions, mouthPositions, hungryPositions, baseOffset);
+                    eyePositions, mouthPositions, hungryPositions, zOffset);
 
             generateAllEntitiesQuadTree(x, y + halfHeight, halfWidth, height - halfHeight, depth + 1, maxDepth,
                     eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
-                    eyePositions, mouthPositions, hungryPositions, baseOffset);
+                    eyePositions, mouthPositions, hungryPositions, zOffset);
 
             generateAllEntitiesQuadTree(x + halfWidth, y + halfHeight, width - halfWidth, height - halfHeight, depth + 1, maxDepth,
                     eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
-                    eyePositions, mouthPositions, hungryPositions, baseOffset);
+                    eyePositions, mouthPositions, hungryPositions, zOffset);
         } else {
             double rand = random.nextDouble();
 
@@ -323,11 +328,11 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     /**
      * 在上下相邻且空间足够的眼睛中间生成嘴巴
      */
-    private void generateMouthsBetweenEyes(List<Vec3> eyePositions, List<Vec3> mouthPositions, List<Vec3> hungryPositions, Vec3 baseOffset) {
+    private void generateMouthsBetweenEyes(List<Vec3> eyePositions, List<Vec3> mouthPositions, List<Vec3> hungryPositions) {
         Map<Integer, List<Vec3>> eyesByGridX = new HashMap<>();
 
         for (Vec3 eyePos : eyePositions) {
-            int gridX = (int) Math.round((eyePos.x - baseOffset.x) / gridSpacing + gridSizeX / 2.0);
+            int gridX = (int) Math.round(eyePos.x / gridSpacing + gridSizeX / 2.0);
 
             if (gridX >= 0 && gridX < gridSizeX) {
                 eyesByGridX.computeIfAbsent(gridX, k -> new ArrayList<>()).add(eyePos);
@@ -373,16 +378,15 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
                 Vec3 eye1 = eyesInColumn.get(i);
                 Vec3 eye2 = eyesInColumn.get(i + 1);
 
-                double distance = Math.abs(eye2.y - eye1.y);
-                if (distance >= gridSpacing * 1.5) {
-                    double midY = (eye1.y + eye2.y) / 2.0;
+                    double distance = Math.abs(eye2.y - eye1.y);
+                    if (distance >= gridSpacing * 1.5) {
+                        double midY = (eye1.y + eye2.y) / 2.0;
 
-                    // 统一使用局部坐标系，移除基于移动方向的条件逻辑
-                    Vec3 mouthPos = new Vec3(
-                            (gridX - gridSizeX / 2.0) * gridSpacing,
-                            midY,
-                            0
-                    ).add(baseOffset);
+                        Vec3 mouthPos = new Vec3(
+                                (gridX - gridSizeX / 2.0) * gridSpacing,
+                                midY,
+                                eye1.z
+                        );
 
                     double conflictDistance = gridSpacing * 0.6;
 
@@ -421,9 +425,8 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     }
 
     protected void dropAllDeathLoot(ServerLevel level, DamageSource damageSource) {
-        super.dropAllDeathLoot(level, damageSource);
-
-        BlockPos centerPos = this.blockPosition().below(1);
+        // 使用实体实际位置计算中心方块位置，确保从真正的中心点蔓延
+        BlockPos centerPos = BlockPos.containing(this.position()).below(1);
 
         Block targetBlock = Blocks.OBSIDIAN;
         if (ModChecker.confluence.isLoaded()) {
@@ -441,12 +444,22 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
             for (int y = -4; y <= 4; y++) {
                 for (int z = -4; z <= 4; z++) {
                     BlockPos framePos = centerPos.offset(x, y, z);
-                    if ((Math.abs(x) == 4 || Math.abs(y) == 4 || Math.abs(z) == 4) && level.getBlockState(framePos).isAir()) {
-                        level.setBlockAndUpdate(framePos, block.defaultBlockState());
+                    boolean isFrame = Math.abs(x) == 4 || Math.abs(y) == 4 || Math.abs(z) == 4;
+                    BlockState blockState = level.getBlockState(framePos);
+
+                    if (isFrame) {
+                        // 框架位置：可以替换可破坏的方块（getDestroySpeed != -1 表示可破坏）
+                        if (blockState.getDestroySpeed(level, framePos) != -1.0f || blockState.canBeReplaced()) {
+                            level.setBlockAndUpdate(framePos, block.defaultBlockState());
+                        }
+                    } else if(!blockState.isAir() &&blockState.getDestroySpeed(level, framePos) != -1.0f){
+                        level.setBlockAndUpdate(framePos, Blocks.AIR.defaultBlockState());
                     }
                 }
             }
         }
+
+        super.dropAllDeathLoot(level, damageSource);
 
         for(LivingEntity nearbyLiving : nearbyLivings) {
             if(nearbyLiving instanceof Player player) {
@@ -475,18 +488,13 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         return false;
     }
 
-    @Override
-    public boolean shouldDoCollision(){
-        return getTarget() != null && this.isAlive();
-    }
-
     public boolean isMovingAlongX() {
         Direction dir = this.getDirection();
         return dir == Direction.EAST || dir == Direction.WEST;
     }
 
     @Override
-    public Vec3 getForward() {
+    public @NotNull Vec3 getForward() {
         float yaw = this.getYRot();
         float normalizedYaw = Math.round(yaw / 90.0f) * 90.0f;
         float yawRad = (float) Math.toRadians(normalizedYaw);
@@ -504,23 +512,53 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     }
 
     /**
-     * 根据血肉墙的旋转角度旋转相对位置向量
-     * @param localOffset 原始相对位置
-     * @return 旋转后的相对位置
+     * 根据实体方向旋转相对位置向量。此方法调用{@link #rotateLocalOffset(Vec3, boolean)}，并将{@code isAbs}参数设为{@code false}。
+     * 旋转逻辑针对每个具体方向（北、东、南、西）进行精确计算。
+     *
+     * @param localOffset 原始的相对位置向量
+     * @return 旋转后新的相对位置向量
+     * @see #rotateLocalOffset(Vec3, boolean)
      */
     public Vec3 rotateLocalOffset(Vec3 localOffset) {
+        return this.rotateLocalOffset(localOffset, false);
+    }
+
+    /**
+     * 根据实体方向旋转相对位置向量。该方法提供两种旋转模式：
+     * <ul>
+     *   <li>当 {@code isAbs} 为 {@code false} 时（默认），进行精确的方向转换，考虑每个方向（北、东、南、西）的特定旋转。</li>
+     *   <li>当 {@code isAbs} 为 {@code true} 时，进行绝对对称处理，将方向简化为南北轴向或东西轴向的转换。</li>
+     * </ul>
+     *
+     * @param localOffset 原始的相对位置向量
+     * @param isAbs 是否启用绝对对称处理模式：
+     *              {@code true} 表示启用，简化方向处理；
+     *              {@code false} 表示禁用，进行精确方向转换
+     * @return 旋转后新的相对位置向量
+     */
+    public Vec3 rotateLocalOffset(Vec3 localOffset, boolean isAbs) {
         Direction direction = this.getDirection();
-        return switch (direction) {
-            case NORTH -> // 北方向：Z轴负向
-                    new Vec3(localOffset.x, localOffset.y, -localOffset.z);
-            case EAST -> // 东方向：X轴正向
-                    new Vec3(localOffset.z, localOffset.y, localOffset.x);
-            case SOUTH -> // 南方向：Z轴正向
-                    new Vec3(-localOffset.x, localOffset.y, localOffset.z);
-            case WEST -> // 西方向：X轴负向
-                    new Vec3(-localOffset.z, localOffset.y, -localOffset.x);
-            default -> localOffset; // 默认情况下不进行变换
-        };
+        if (isAbs) {
+            return switch (direction) {
+                case NORTH, SOUTH -> // 北方向,南方向
+                        new Vec3(localOffset.x, localOffset.y, -localOffset.z);
+                case EAST, WEST -> // 东方向,西方向
+                        new Vec3(localOffset.z, localOffset.y, localOffset.x);
+                default -> localOffset;
+            };
+        } else {
+            return switch (direction) {
+                case NORTH -> // 北方向：Z轴负向
+                        new Vec3(localOffset.x, localOffset.y, -localOffset.z);
+                case EAST -> // 东方向：X轴正向
+                        new Vec3(localOffset.z, localOffset.y, localOffset.x);
+                case SOUTH -> // 南方向：Z轴正向
+                        new Vec3(-localOffset.x, localOffset.y, localOffset.z);
+                case WEST -> // 西方向：X轴负向
+                        new Vec3(-localOffset.z, localOffset.y, -localOffset.x);
+                default -> localOffset;
+            };
+        }
     }
 
     private void updateChildPosition(Entity child) {
@@ -637,6 +675,18 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
                 this.nearbyLivings.clear();
                 this.nearbyLivings.addAll(nearbyTargets);
 
+                if (nearbyPlayers.isEmpty()) {
+                    noPlayerTimer += 5;//5tick检查一次
+                    if (noPlayerTimer >= NO_PLAYER_DESPAWN_TIME) {
+                        nearbyLivings.stream().filter(entity -> entity.hasEffect(TEEffects.HORRIFIED)).forEach(LivingEntity::kill);
+                        theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
+                        this.discard();
+                        return;
+                    }
+                } else {
+                    noPlayerTimer = 0;
+                }
+
                 DeferredHolder<MobEffect, HorrifiedEffect> horrifiedHolder = TEEffects.HORRIFIED;
                 MobEffectInstance horrifiedEffect = new MobEffectInstance(horrifiedHolder, 200, 3, false, true);
 
@@ -647,6 +697,10 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
                             horrifiedHolder.get().setWallOfFlesh(this);
                             player.addEffect(horrifiedEffect);
                         });
+            }
+
+            if (this.tickCount % 10 == 0) {
+                updatePlayerMouseAssignments();
             }
 
             for (LivingEntity nearbyLiving : this.nearbyLivings) {
@@ -696,47 +750,21 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         }
     }
 
-    @Override
-    protected void tickDeath() {
-        ++this.deathTime;
-
-        if (this.deathTime == this.getMaxDeathTime() && this.level() instanceof ServerLevel) {
-            subEntities.forEach(Entity::discard);
-            localOffsets.clear();
-            theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
-            theHungryList.clear();
-            this.remove(RemovalReason.KILLED);
-            this.gameEvent(GameEvent.ENTITY_DIE);
-        }
-    }
-
-    public int getMaxDeathTime() {
-        return 120;
-    }
-
-    public float getFadeProgress() {
-        float deathProgress = (float) this.deathTime / this.getMaxDeathTime();
-        return 1.0f - Math.min(deathProgress, 1.0f);
-    }
-
     public AABB getInsideBox() {
         Direction dir = this.getDirection();
         boolean isReverse = dir == Direction.WEST || dir == Direction.SOUTH;
         int completion = isReverse?0:5;
+        Vec3 vec3 =  new Vec3(gridSizeX * gridSpacing / 2,gridSizeY * gridSpacing / 2,completion);
+        Vec3 rotVec = this.rotateLocalOffset(vec3, true);
+
         if(isMovingAlongX()) {
-            double x = completion;
-            double y = gridSizeY * gridSpacing / 2;
-            double z = gridSizeX * gridSpacing / 2;
             insideCollisionBox = new AABB(
-                    this.position().subtract(x, y, z + gridSpacing / 2),
-                    this.position().add(x + 150 * this.getForward().x, y, z + 150 * this.getForward().z - gridSpacing / 2));
+                    this.position().subtract(rotVec.x, rotVec.y, rotVec.z + gridSpacing / 2),
+                    this.position().add(rotVec.x + 150 * this.getForward().x, rotVec.y, rotVec.z + 150 * this.getForward().z - gridSpacing / 2));
         }else {
-            double x = gridSizeX * gridSpacing / 2;
-            double y = gridSizeY * gridSpacing / 2;
-            double z = completion;
             insideCollisionBox = new AABB(
-                    this.position().subtract(x + gridSpacing / 2, y, z),
-                    this.position().add(x, y, z + 120 * this.getForward().z - gridSpacing / 2));
+                    this.position().subtract(rotVec.x + gridSpacing / 2, rotVec.y, rotVec.z),
+                    this.position().add(rotVec.x, rotVec.y, rotVec.z + 120 * this.getForward().z - gridSpacing / 2));
         }
         return this.insideCollisionBox;
     }
@@ -744,27 +772,24 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     public AABB getOutsideCollisionBox() {
         Direction dir = this.getDirection();
         boolean isReverse = dir == Direction.WEST || dir == Direction.SOUTH;
-        int completion1 = isReverse?-200:200;
+        int completion = isReverse?-200:200;
+        Vec3 vec3 =  new Vec3(gridSizeX * gridSpacing / 2 + 150,gridSizeY * gridSpacing / 2 + 150,completion);
+        Vec3 rotVec = this.rotateLocalOffset(vec3, true);
+
         if(isMovingAlongX()) {
-            double x = completion1;
-            double y = gridSizeY * gridSpacing / 2 + 150;
-            double z = gridSizeX * gridSpacing / 2 + 150;
             outsideCollisionBox = new AABB(
-                    this.position().subtract(x, y, z + gridSpacing / 2),
-                    this.position().add(x, y, z - gridSpacing / 2));
+                    this.position().subtract(rotVec.x, rotVec.y, rotVec.z + gridSpacing / 2),
+                    this.position().add(rotVec.x, rotVec.y, rotVec.z - gridSpacing / 2));
         }else {
-            double x = gridSizeX * gridSpacing / 2 + 120;
-            double y = gridSizeY * gridSpacing/2 + 150;
-            double z = completion1;
             outsideCollisionBox = new AABB(
-                    this.position().subtract(x + gridSpacing / 2, y, z),
-                    this.position().add(x - gridSpacing / 2, y, z));
+                    this.position().subtract(rotVec.x -30 + gridSpacing / 2, rotVec.y, rotVec.z),
+                    this.position().add(rotVec.x -30 - gridSpacing / 2, rotVec.y, rotVec.z));
         }
         return this.outsideCollisionBox;
     }
 
     @Override
-    public AABB getBoundingBoxForCulling() {
+    public @NotNull AABB getBoundingBoxForCulling() {
         return this.getOutsideCollisionBox();
     }
 
@@ -814,6 +839,21 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
 
     @Override
     public void die(DamageSource damageSource) {
+        if (!this.level().isClientSide) {
+            Vec3 centerPos = this.position();
+            // 如果在地狱维度，确保中心位置在 NETHER_GENERATION_HEIGHT 以下
+            if (this.level().dimension() == Level.NETHER) {
+                int maxY = DimensionDefaults.NETHER_GENERATION_HEIGHT - 10; // 留出框架的空间
+                if (centerPos.y() > maxY) {
+                    this.setPos(new Vec3(centerPos.x(), maxY, centerPos.z()));
+                }
+            }
+
+            subEntities.forEach(Entity::discard);
+            localOffsets.clear();
+            theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
+            theHungryList.clear();
+        }
         super.die(damageSource);
     }
 
@@ -861,7 +901,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     @Override
     protected BossEvent.BossBarColor getBossBarColor(){
         return BossEvent.BossBarColor.RED;
-    };
+    }
 
     @Override
     public boolean shouldEscape() {
@@ -902,6 +942,114 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         for (int i = 0; i < this.subEntities.size(); ++i) {
             this.subEntities.get(i).setId(id + i + 1);
         }
+    }
+
+    /**
+     * 更新玩家与嘴/眼的分配关系，确保每个玩家都分配到最近的部位，
+     * 并限制最多参与分配的嘴为2个、眼睛为4个
+     */
+    private void updatePlayerMouseAssignments() {
+        mouseToPlayerMap.clear();
+        eyeToPlayerMap.clear();
+
+        // 收集所有存活的玩家和部位
+        List<Player> alivePlayers = new ArrayList<>();
+        List<WallOfFleshMouth> aliveMice = new ArrayList<>();
+        List<WallOfFleshEye> aliveEyes = new ArrayList<>();
+
+        for (LivingEntity living : this.nearbyLivings) {
+            if (living instanceof Player player && player.isAlive()) {
+                alivePlayers.add(player);
+            }
+        }
+
+        for (WallOfFleshPart part : this.subEntities) {
+            if (part instanceof WallOfFleshMouth mouse && mouse.isAlive()) {
+                aliveMice.add(mouse);
+            } else if (part instanceof WallOfFleshEye eye && eye.isAlive()) {
+                aliveEyes.add(eye);
+            }
+        }
+
+        if (alivePlayers.isEmpty() || (aliveMice.isEmpty() && aliveEyes.isEmpty())) {
+            return;
+        }
+
+        assignNearestParts(alivePlayers, aliveMice, MAX_ASSIGNED_MOUTHS, mouseToPlayerMap);
+        assignNearestParts(alivePlayers, aliveEyes, MAX_ASSIGNED_EYES, eyeToPlayerMap);
+    }
+
+    private <T extends WallOfFleshPart> void assignNearestParts(List<Player> players,
+                                                                List<T> parts,
+                                                                int maxParts,
+                                                                Map<T, Player> assignment) {
+        if (parts.isEmpty() || players.isEmpty()) {
+            return;
+        }
+
+        List<T> availableParts = new ArrayList<>(parts);
+        if (maxParts > 0 && availableParts.size() > maxParts) {
+            availableParts.sort(Comparator.comparingDouble(part -> {
+                double minDistance = Double.MAX_VALUE;
+                for (Player player : players) {
+                    double distanceSqr = part.position().distanceToSqr(player.position());
+                    if (distanceSqr < minDistance) {
+                        minDistance = distanceSqr;
+                    }
+                }
+                return minDistance;
+            }));
+            availableParts = new ArrayList<>(availableParts.subList(0, maxParts));
+        }
+
+        Map<T, Player> partToNearestPlayer = new HashMap<>();
+
+        for (T part : availableParts) {
+            Player nearestPlayer = findNearestPlayer(part, players);
+            if (nearestPlayer != null) {
+                partToNearestPlayer.put(part, nearestPlayer);
+            }
+        }
+
+        assignment.putAll(partToNearestPlayer);
+    }
+
+    private <T extends WallOfFleshPart> Player findNearestPlayer(T part, List<Player> players) {
+        Player nearestPlayer = null;
+        double nearestDistanceSqr = Double.MAX_VALUE;
+        for (Player player : players) {
+            double distanceSqr = part.position().distanceToSqr(player.position());
+            if (distanceSqr < nearestDistanceSqr) {
+                nearestDistanceSqr = distanceSqr;
+                nearestPlayer = player;
+            }
+        }
+        return nearestPlayer;
+    }
+
+    /**
+     * 检查指定的嘴是否是分配给指定玩家的嘴
+     */
+    public boolean isNearestMouthForPlayer(WallOfFleshMouth mouse, Player player) {
+        if (!player.isAlive() || !mouse.isAlive()) {
+            return false;
+        }
+
+        // 检查这个嘴是否分配给了这个玩家
+        Player assignedPlayer = mouseToPlayerMap.get(mouse);
+        return assignedPlayer != null && assignedPlayer == player;
+    }
+
+    /**
+     * 检查指定的眼睛是否是分配给指定玩家的眼
+     */
+    public boolean isNearestEyeForPlayer(WallOfFleshEye eye, Player player) {
+        if (!player.isAlive() || !eye.isAlive()) {
+            return false;
+        }
+
+        Player assignedPlayer = eyeToPlayerMap.get(eye);
+        return assignedPlayer != null && assignedPlayer == player;
     }
 
     /**

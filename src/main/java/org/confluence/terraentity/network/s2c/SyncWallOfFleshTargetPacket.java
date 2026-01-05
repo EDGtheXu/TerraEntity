@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SyncWallOfFleshTargetPacket implements CustomPacketPayload {
     public static final Type<SyncWallOfFleshTargetPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "sync_wall_of_flesh_target"));
-    
+
     private final int wallOfFleshId;  // 父实体ID
     private final int partIndex;      // 子实体在subEntities中的索引
     private final int targetId;       // 目标实体ID
@@ -38,7 +38,7 @@ public class SyncWallOfFleshTargetPacket implements CustomPacketPayload {
         buf.writeInt(targetId);
     }
 
-    public static final StreamCodec<FriendlyByteBuf, SyncWallOfFleshTargetPacket> STREAM_CODEC = 
+    public static final StreamCodec<FriendlyByteBuf, SyncWallOfFleshTargetPacket> STREAM_CODEC =
         StreamCodec.of(
             (buf, packet) -> packet.write(buf),
             SyncWallOfFleshTargetPacket::new
@@ -52,7 +52,7 @@ public class SyncWallOfFleshTargetPacket implements CustomPacketPayload {
     public static void handle(SyncWallOfFleshTargetPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             Level level = context.player().level();
-            
+
             // 先获取父实体
             Entity wallEntity = level.getEntity(packet.wallOfFleshId);
             if (wallEntity instanceof WallOfFlesh wall) {
@@ -60,15 +60,15 @@ public class SyncWallOfFleshTargetPacket implements CustomPacketPayload {
                 if (packet.partIndex >= 0 && packet.partIndex < wall.subEntities.size()) {
                     WallOfFleshPart part = wall.subEntities.get(packet.partIndex);
                     if (packet.targetId == 0) {
-                        part.target = null;
+                        part.changeTarget(null);
                     } else {
                         Entity targetEntity = level.getEntity(packet.targetId);
                         if (targetEntity instanceof LivingEntity livingEntity) {
-                            part.target =  livingEntity;
+                            part.changeTarget(livingEntity);
                         }
                     }
                 }
             }
         });
     }
-} 
+}

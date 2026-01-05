@@ -1,14 +1,14 @@
 package org.confluence.terraentity.entity.summon;
 
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.terraentity.api.entity.IMeleeAttackPartGoal;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 
@@ -166,7 +166,7 @@ public class SummonSlime extends AbstractSummonMob {
         }
     }
 
-    static class SlimeAttackGoal extends Goal {
+    static class SlimeAttackGoal extends Goal implements IMeleeAttackPartGoal {
         private final SummonSlime slime;
         private int growTiredTimer;
 
@@ -176,14 +176,14 @@ public class SummonSlime extends AbstractSummonMob {
         }
 
         public boolean canUse() {
-            LivingEntity livingentity = this.slime.getTarget();
-            if (livingentity == null) {
+            Entity target = this.getActualTarget(slime);
+            if (target == null) {
                 return false;
             } else {
                 if(slime.getOwner() == null) return false;
                 if(slime.distanceToOwner > slime.distanceToFlyToOwner) return false;
 
-                return this.slime.canAttack(livingentity) && this.slime.getMoveControl() instanceof SlimeMoveControl;
+                return this.canMeleeAttackTarget(target) && this.slime.getMoveControl() instanceof SlimeMoveControl;
             }
         }
 
@@ -193,14 +193,14 @@ public class SummonSlime extends AbstractSummonMob {
         }
 
         public boolean canContinueToUse() {
-            LivingEntity livingentity = this.slime.getTarget();
-            if (livingentity == null) {
+            Entity target = this.getActualTarget(slime);
+            if (target == null) {
                 return false;
             } else {
                 if(slime.getOwner() == null) return false;
                 if(slime.distanceToOwner > slime.distanceToFlyToOwner) return false;
 
-                return this.slime.canAttack(livingentity) && --this.growTiredTimer > 0;
+                return this.canMeleeAttackTarget(target) && --this.growTiredTimer > 0;
             }
         }
 
@@ -209,10 +209,9 @@ public class SummonSlime extends AbstractSummonMob {
         }
 
         public void tick() {
-
-            LivingEntity livingentity = this.slime.getTarget();
-            if (livingentity != null) {
-                this.slime.lookAt(livingentity, 20.0F, 20.0F);
+            Entity target = this.getActualTarget(slime);
+            if (target != null) {
+                this.slime.lookAt(target, 20.0F, 20.0F);
             }
 
             MoveControl var3 = this.slime.getMoveControl();
@@ -221,6 +220,17 @@ public class SummonSlime extends AbstractSummonMob {
                 control.setWantedMovement(1.5);
             }
 
+        }
+
+        @Override
+        public boolean canMeleeAttackTarget(Entity target) {
+            if(target instanceof PartEntity<?> part && part.getParent() instanceof LivingEntity living) {
+                return this.slime.canAttack(living);
+            }
+            if(target instanceof LivingEntity living) {
+                return this.slime.canAttack(living);
+            }
+            return false;
         }
     }
 

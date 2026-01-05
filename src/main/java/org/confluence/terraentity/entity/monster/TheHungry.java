@@ -477,6 +477,14 @@ public class   TheHungry extends AbstractMonster implements IMinion, Boss.BossPa
     }
 
     @Override
+    public boolean shouldBeSaved(){
+        if(owner!=null){
+            return owner.shouldBeSaved();
+        }
+        return super.shouldBeSaved();
+    }
+
+    @Override
     public boolean fireImmune() {
         return true;
     }

@@ -1,4 +1,4 @@
-package org.confluence.terraentity.mixin.client;
+package org.confluence.terraentity.mixin;
 
 
 import net.minecraft.server.level.ChunkMap;
@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin({ChunkMap.class})
-public abstract class ServerChunkLoadingManagerMixin {
+public abstract class ChunkMapMixin {
 
-    public ServerChunkLoadingManagerMixin() {
+    public ChunkMapMixin() {
     }
     //控制肉山的渲染距离
     @ModifyVariable(

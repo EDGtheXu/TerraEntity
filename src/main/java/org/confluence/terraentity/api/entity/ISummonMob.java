@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import org.confluence.terraentity.api.event.SummonEvent;
+import org.confluence.terraentity.entity.ai.goal.summon.SummonAttackPartEntityGoal;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonFollowOwnerGoal;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonOwnerHurtByTargetGoal;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonOwnerHurtTargetGoal;
@@ -277,6 +278,7 @@ public interface ISummonMob extends OwnableEntity {
         asEntity().targetSelector.addGoal(1, new SummonPriorAttackGoal<>(asEntity(), false));
         asEntity().targetSelector.addGoal(2, new SummonOwnerHurtByTargetGoal(asEntity()));
         asEntity().targetSelector.addGoal(3, new SummonOwnerHurtTargetGoal(asEntity()));
+        asEntity().targetSelector.addGoal(4, new SummonAttackPartEntityGoal(asEntity()));
         asEntity().targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(asEntity(), Monster.class, 10, true, true, living -> (living instanceof Enemy && !(living instanceof NeutralMob))));
         asEntity().targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(asEntity(), Slime.class, 10, true, true, living -> (living instanceof Enemy && !(living instanceof NeutralMob))));
     }

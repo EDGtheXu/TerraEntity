@@ -24,9 +24,9 @@ public class TheTongueEffect extends MobEffect {
             WallOfFlesh wall = mouth.parentMob;
             Vec3 mouthPos = mouth.position();
 
-            //当狂卷之舌减益激活时，若玩家和匹配的嘴间的欧几里得距离大于 200(原作187.5) 格，玩家会立即死亡
+            //当狂卷之舌减益激活时，若玩家和匹配的嘴间的欧几里得距离大于 2000(原作187.5) 格，玩家会立即死亡
             double distanceToMouth = living.position().distanceTo(mouthPos);
-            if (distanceToMouth > 200.0) {
+            if (distanceToMouth > 2000.0) {
                 living.kill();
                 return true;
             }

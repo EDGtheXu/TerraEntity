@@ -12,16 +12,17 @@ import org.confluence.terraentity.entity.monster.BaseWormPart;
 import org.confluence.terraentity.entity.monster.prefab.AbstractPrefab;
 import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("all")
 public class WallOfFleshMouth extends WallOfFleshPart {
-    private int pendingSpawns = 0;
-    private int spawnInterval = 0;
+    int pendingSpawns = 0;
+    int spawnInterval = 0;
 
-    private static final int BASE_SUMMON_CD = 800;
-    private int summonCDAll = BASE_SUMMON_CD + random.nextInt(400) - 200;
-    private int summonCD = summonCDAll;
-
+    static final int BASE_SUMMON_CD = 400;
+    int summonCDAll = BASE_SUMMON_CD + random.nextInt(100) - 100;
+    int summonCD = summonCDAll;
+    int summonCount = 1;
 
     public WallOfFleshMouth(WallOfFlesh parentMob, String name, float width, float height) {
         super(parentMob, name, width, height);
@@ -56,19 +57,10 @@ public class WallOfFleshMouth extends WallOfFleshPart {
         }
         if (--summonCD <= 0) {
             summonCD = summonCDAll + random.nextInt(200) - 100;
-            float healthPercent = parentMob.getHealthPercentage();
-            int count;
-            if (healthPercent > 0.5F) {
-                count = 1;
-            } else {
-                float scaleFactor = Mth.clamp((0.5F - healthPercent) / 0.5F, 0.0F, 1.0F);
-
-                count = 1 + (int) (scaleFactor * 4);
-            }
-            count = Mth.clamp(count, 1, 5);
+            summonCount = Mth.clamp(summonCount, 1, 5);
 
             if (pendingSpawns == 0) {
-                pendingSpawns = count;
+                pendingSpawns = summonCount;
                 spawnInterval = 10; // 恢复固定间隔
             }
         }
@@ -128,4 +120,26 @@ public class WallOfFleshMouth extends WallOfFleshPart {
         if(this.parentMob != null)return this.parentMob.shouldBeSaved();
         return  false;
     }
+
+    @Override
+    protected void onParentChangeState(int state) {
+        if(parentMob == null)return;
+
+        float healthPercent = parentMob.getHealthPercentage();
+        if(state == 2 && healthPercent <= 0.5F){
+            float scaleFactor = Mth.clamp((0.5F - healthPercent) / 0.5F, 0.0F, 1.0F);
+            summonCount = 1 + (int) (scaleFactor * 4);
+        }else{
+            summonCount = 1;
+        }
+    }
+
+    @Override
+    public boolean canBeAttack(@NotNull LivingEntity target) {
+        if (!(target instanceof Player player)) {
+            return true;
+        }
+        return this.parentMob != null && this.parentMob.isNearestMouthForPlayer(this, player);
+    }
 }
+

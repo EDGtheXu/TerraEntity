@@ -1,280 +1,82 @@
 package org.confluence.terraentity.client.boss.renderer;
 
-import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.client.boss.model.GeoBossModel;
 import org.confluence.terraentity.client.entity.renderer.GeoNormalRenderer;
-import org.confluence.terraentity.client.post.WallOfFleshTranslucent;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshEye;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouth;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshPart;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.util.Tuple;
+import javax.annotation.Nonnull;
+import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.jetbrains.annotations.Nullable;
+import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
-import software.bernie.geckolib.animation.Animation;
-import software.bernie.geckolib.animation.AnimationState;
+import org.joml.Vector3d;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
-    static RenderBuffers bf = new RenderBuffers(Runtime.getRuntime().availableProcessors());
+
+    private static final String[] VARIANT_BONES = {"bone0", "bone1", "bone2", "bone3", "bone4"};
+    private static final int[] MODEL_WEIGHTS = {1, 1, 1, 1, 5};
+
+    private static final float CELL_SIZE = 240f;
+    private static final float CELL_HALF = CELL_SIZE / 2.0f;
+    private static final Pattern GRID_BONE = Pattern.compile("bone-?\\d+_-?\\d+");
+    private final Map<String, Integer> cellVariantCache = new HashMap<>();
+
+    private boolean modelMerged = false;
 
     public WallOfFleshRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new GeoBossModel<>(MODEL_NAMES[0]), false, 1.0f, 0.5f);
+        super(renderManager, new GeoBossModel<>(TEBossEntities.WALL_OF_FLESH), false, 1.0f, 0.5f);
     }
-
-    GeoBossModel<WallOfFlesh> currentModel;
-    private static final String[] MODEL_NAMES = {
-            "wall_of_flesh0",
-            "wall_of_flesh1",
-            "wall_of_flesh2",
-            "wall_of_flesh3",
-            "wall_of_flesh4"
-    };
-
-    private static final int[] MODEL_WEIGHTS = {
-            1,  // wall_of_flesh0
-            1,  // wall_of_flesh1
-            1,  // wall_of_flesh2
-            1,  // wall_of_flesh3
-            5   // wall_of_flesh4
-    };
 
     @Override
     public void preRender(PoseStack poseStack, WallOfFlesh animatable, BakedGeoModel model, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
         this.entityRenderTranslations = new Matrix4f(poseStack.last().pose());
+        GeoModel<WallOfFlesh> geoModel = super.getGeoModel();
+        getOrBuildMergedRoot(animatable, geoModel);
+        GeoBone mergedRoot = geoModel.getBone("All").orElse(null);
+        if (mergedRoot != null && !model.topLevelBones().contains(mergedRoot)) {
+            model.topLevelBones().clear();
+            model.topLevelBones().add(mergedRoot);
+        }
         scaleModelForRender(this.scaleWidth, this.scaleHeight, poseStack, animatable, model, isReRender, partialTick, packedLight, packedOverlay);
     }
 
-    private final Map<String, GeoBossModel<WallOfFlesh>> modelCache = new HashMap<>();
-
     @Override
-    public void render(WallOfFlesh entity, float entityYaw, float partialTick,
+    public void render(WallOfFlesh wall, float entityYaw, float partialTick,
                        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        float alpha = Math.clamp(entity.getFadeProgress(), 0, 1);
-
-        if (alpha < 0.98f && entity.isDeadOrDying()) {
-            TextureTarget target;
-            WallOfFleshTranslucent.tuple tuple = WallOfFleshTranslucent.entityMap.get(entity);
-            if (tuple == null) {
-                target = new TextureTarget(Minecraft.getInstance().getMainRenderTarget().width, Minecraft.getInstance().getMainRenderTarget().height, true, false);
-                tuple = new WallOfFleshTranslucent.tuple(target, packedLight);
-                WallOfFleshTranslucent.entityMap.put(entity, tuple);
-            } else {
-                target = WallOfFleshTranslucent.entityMap.get(entity).target;
-                if (target.width != Minecraft.getInstance().getMainRenderTarget().width || target.height != Minecraft.getInstance().getMainRenderTarget().height) {
-                    target = new TextureTarget(Minecraft.getInstance().getMainRenderTarget().width, Minecraft.getInstance().getMainRenderTarget().height, true, false);
-                    tuple.target = target;
-                }
-            }
-            tuple.light = packedLight;
-            target.setClearColor(0, 0, 0, 0);
-            target.copyDepthFrom(Minecraft.getInstance().getMainRenderTarget());
-            target.bindWrite(false);
-            renderToTarget(entity, entityYaw, partialTick, poseStack, bf.bufferSource(), packedLight);
-            bf.bufferSource().endBatch();
-
-            target.unbindWrite();
-            Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-        } else {
-            renderToTarget(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-        }
-    }
-
-    public void renderToTarget(WallOfFlesh wall, float entityYaw, float partialTick,
-                               PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        int collisionWidth = Mth.floor(150 * 2 / wall.gridSpacing);
-        int collisionHeight = Mth.floor(150 * 2 / wall.gridSpacing);
-        final int gridX = wall.getGridSizeX() + collisionWidth;
-        final int gridY = wall.getGridSizeY() + collisionHeight;
-
         poseStack.pushPose();
-        for (int x = 0; x < gridX; x++) {
-            for (int y = 0; y < gridY; y++) {
-                Vec3 offset;
-                if (wall.isMovingAlongX()) {
-                    offset = new Vec3(
-                            0,
-                            (y - gridY / 2.0) * wall.gridSpacing,
-                            (x - gridX / 2.0) * wall.gridSpacing
-                    );
-                } else {
-                    offset = new Vec3(
-                            (x - gridX / 2.0) * wall.gridSpacing,
-                            (y - gridY / 2.0) * wall.gridSpacing,
-                            0
-                    );
-                }
-                poseStack.pushPose();
-                poseStack.translate(offset.x, offset.y, offset.z);
-
-                GeoBossModel<WallOfFlesh> cellModel;
-                String key = x + ":" + y;
-                if (!modelCache.containsKey(key)) {
-                    // 根据权重随机选择模型
-                    int totalWeight = 0;
-                    for (int weight : MODEL_WEIGHTS) {
-                        totalWeight += weight;
-                    }
-
-                    int randomWeight = wall.getRandom().nextInt(totalWeight);
-                    int selectedIndex = 0;
-                    int cumulativeWeight = MODEL_WEIGHTS[0];
-
-                    while (randomWeight >= cumulativeWeight && selectedIndex < MODEL_NAMES.length - 1) {
-                        selectedIndex++;
-                        cumulativeWeight += MODEL_WEIGHTS[selectedIndex];
-                    }
-
-                    cellModel = new GeoBossModel<>(MODEL_NAMES[selectedIndex]);
-                    currentModel = cellModel;
-                    modelCache.put(key, cellModel);
-                } else {
-                    cellModel = modelCache.get(key);
-                    currentModel = cellModel;
-                }
-                poseStack.scale(3.0f, 3.0f, 3.0f);
-                super.render(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-                poseStack.popPose();
-            }
-        }
-
-        WallOfFleshPart @NotNull [] part = wall.getParts();
-
-        for (WallOfFleshPart modelPart : part) {
-            if (modelPart != null && modelPart.isAlive()) {
-                Vec3 localOffset = null;
-
-                int partIndex = -1;
-                for (int i = 0; i < wall.subEntities.size(); i++) {
-                    if (wall.subEntities.get(i) == modelPart) {
-                        partIndex = i;
-                        break;
-                    }
-                }
-
-                if (partIndex >= 0) {
-                    List<Tuple<Integer, Vec3>> offsets = wall.getLocalOffsets();
-                    if (partIndex < offsets.size()) {
-                        localOffset = offsets.get(partIndex).getB();
-                    }
-                }
-
-                if (localOffset != null) {
-                    Vec3 rotatedOffset = wall.rotateLocalOffset(localOffset);
-
-                    poseStack.pushPose();
-                    poseStack.translate(rotatedOffset.x, rotatedOffset.y, rotatedOffset.z);
-
-                    if (modelPart instanceof WallOfFleshEye eye) {
-                        currentModel = new GeoBossModel<>("wall_of_flesh_eye") {
-                            @Override
-                            public void setCustomAnimations(WallOfFlesh animatable, long instanceId,
-                                                            AnimationState<WallOfFlesh> animationState) {
-                                GeoBone head = this.getAnimationProcessor().getBone("Head");
-                                if (head != null) {
-                                    head.setRotX(0);
-                                    head.setRotY(0);
-                                    head.setRotZ(0);
-
-                                    LivingEntity target = eye.target;
-                                    if (target == null || !target.isAlive() || target.isRemoved()) {
-                                        return;
-                                    }
-                                    WallOfFlesh parentMob = eye.parentMob;
-                                    if (parentMob == null || !parentMob.isAlive()) {
-                                        return;
-                                    }
-
-                                    Vec3 wallForward = parentMob.getForward();
-                                    Vec3 targetPos = target.getEyePosition();
-                                    Vec3 entityPos = eye.getEyePosition();
-
-                                    Vec3 toTarget = targetPos.subtract(entityPos);
-
-                                    double horizontalDistance = Math.sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
-
-                                    if (horizontalDistance > 0.001) {
-                                        float pitch = (float) Math.toDegrees(Math.atan2(-toTarget.y, horizontalDistance));
-                                        pitch = Mth.clamp(pitch, -45.0F, 45.0F);
-
-                                        float yaw = (float) Math.toDegrees(Math.atan2(toTarget.z, toTarget.x));
-
-                                        float wallYaw = (float) Math.toDegrees(Math.atan2(wallForward.z, wallForward.x));
-
-                                        float relativeYaw = yaw - wallYaw;
-                                        relativeYaw = Mth.wrapDegrees(relativeYaw);
-
-                                        relativeYaw = Mth.clamp(relativeYaw, -60.0F, 60.0F);
-
-                                        float finalYaw = relativeYaw * 0.017453292F;
-                                        float finalPitch = pitch * 0.017453292F;
-
-                                        head.setRotY(-finalYaw);
-                                        head.setRotX(-finalPitch);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public ResourceLocation getModelResource(WallOfFlesh animatable) {
-                                return TerraEntity.space("geo/entity/boss/wall_of_flesh_eye.geo.json");
-                            }
-
-                            @Override
-                            public ResourceLocation getTextureResource(WallOfFlesh animatable) {
-                                return TerraEntity.space("textures/entity/boss/wall_of_flesh_eye.png");
-                            }
-
-                            @Override
-                            public ResourceLocation getAnimationResource(WallOfFlesh animatable) {
-                                return null;
-                            }
-
-                            @Override
-                            public @Nullable Animation getAnimation(WallOfFlesh animatable, String name) {
-                                return null;
-                            }
-
-                        };
-                    } else if (modelPart instanceof WallOfFleshMouth) {
-                        currentModel = new GeoBossModel<>("wall_of_flesh_mouth");
-                    }
-
-                    poseStack.scale(1.75f, 1.75f, 1.75f);
-                    super.render(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
-                    poseStack.popPose();
-                }
-            }
-        }
-
-        boolean renderHitBoxes = Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes();
-
-        if (renderHitBoxes && !wall.isInvisible() && !Minecraft.getInstance().showOnlyReducedInfo() && !wall.isRemoved()) {
+        poseStack.pushPose();
+        super.render(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+        poseStack.popPose();
+        if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()
+                && !wall.isInvisible()
+                && !Minecraft.getInstance().showOnlyReducedInfo()
+                && !wall.isRemoved()) {
             AABB aabb = wall.getOutsideCollisionBox().move(-wall.getX(), -wall.getY(), -wall.getZ());
             LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.lines()), aabb, 1, 0, 0, 1.0F);
             AABB bbaa = wall.getInsideBox().move(-wall.getX(), -wall.getY(), -wall.getZ());
@@ -284,7 +86,291 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         poseStack.popPose();
     }
 
-    public boolean shouldRender(WallOfFlesh wall, Frustum camera, double camX, double camY, double camZ) {
+    @Override
+    public void renderRecursively(PoseStack poseStack, WallOfFlesh animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
+                                  int packedOverlay, int colour) {
+
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        if (bone.getName() != null) {
+            Vec3 camPos = camera.getPosition();
+            Vector3d pos3d = bone.getWorldPosition();
+            Vec3 pos = new Vec3(pos3d.x, pos3d.y, pos3d.z);
+            double distSq = camPos.distanceToSqr(pos);
+
+            if (bone.getName().endsWith("_b") && distSq > 100*100) {
+                return;
+            }else if (bone.getName().endsWith("_c") && distSq > 200*200) {
+                return;
+            }else if (bone.getName().endsWith("_d") && distSq > 400*400) {
+                return;
+            }else if (distSq > 1200*1200) {
+                return;
+            }
+        }
+
+        Frustum frustum = Minecraft.getInstance().levelRenderer.getFrustum();
+
+        AABB worldAabb = null;
+        // 只对网格骨骼进行网格索引解析和视锥体剔除
+        if (isGridBone(bone)) {
+            int[] idx = parseGridIndex(bone.getName());
+            if (idx == null) {
+                return;
+            }
+            float c = CELL_HALF / 16f;
+            // 相对坐标（Gecko 单位 1/16 方块），保持当前 poseStack 变换，这样 AABB 随实体移动
+            double cx = (idx[0] * CELL_SIZE + CELL_HALF) / 16.0;
+            double cy = (idx[1] * CELL_SIZE + CELL_HALF) / 16.0;
+            double cz = 0;
+            AABB cellAabb = new AABB(cx, cy, cz, cx, cy, cz).inflate(c).inflate(8);
+            worldAabb = cellAabb.move(animatable.getX(), animatable.getY(), animatable.getZ());
+            //if (renderHitBoxes && !animatable.isInvisible() && !Minecraft.getInstance().showOnlyReducedInfo() && !animatable.isRemoved()) {
+            //    LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.lines()), cellAabb, 1, 0, 0, 1.0F);
+            //}
+        }
+
+        if (worldAabb != null && cubeInFrustum(frustum, worldAabb.minX, worldAabb.minY, worldAabb.minZ, worldAabb.maxX, worldAabb.maxY, worldAabb.maxZ)) {
+            //return;
+        }
+
+        if ("Head_eye".equals(bone.getName())) {
+            GeoBone parent = bone.getParent();
+            if (parent != null) {
+                for (WallOfFleshPart part : animatable.subEntities) {
+                    String partName = part.name;
+                    if (part instanceof WallOfFleshEye eyePart && parent.getName().equals(partName)) {
+                        adjustEyePose(bone, eyePart, animatable, partialTick);
+                    }
+                }
+            }
+        }
+        super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
+    }
+
+    private boolean cubeInFrustum(Frustum frustum,double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        float f = (float)(minX - frustum.camX);
+        float f1 = (float)(minY - frustum.camY);
+        float f2 = (float)(minZ - frustum.camZ);
+        float f3 = (float)(maxX - frustum.camX);
+        float f4 = (float)(maxY - frustum.camY);
+        float f5 = (float)(maxZ - frustum.camZ);
+
+        // 使用 intersectAab 方法获取更详细的相交结果
+        int intersectResult = frustum.intersection.intersectAab(f, f1, f2, f3, f4, f5);
+
+        // INTERSECT: AABB与视锥体相交（包括部分相交）
+        // INSIDE: AABB完全在视锥体内
+        // 这两种情况都表示AABB是可见的
+        return intersectResult != FrustumIntersection.INTERSECT && intersectResult != FrustumIntersection.INSIDE;
+    }
+
+    private int[] parseGridIndex(String name) {
+        // 解析 boneX_Y 或 bone-3_5
+        int split = name.indexOf('_');
+        if (!name.startsWith("bone") || split < 0) return null;
+        String xs = name.substring(4, split);
+        String ys = name.substring(split + 1);
+        if (xs.isEmpty() || ys.isEmpty()) return null;
+        int x = Integer.parseInt(xs);
+        int y = Integer.parseInt(ys);
+        return new int[]{x, y};
+    }
+
+    private void adjustEyePose(GeoBone bone, WallOfFleshEye eyePart, WallOfFlesh parentMob, float partialTick) {
+
+        if (parentMob == null || !parentMob.isAlive() || parentMob.deathTime > 0) {
+            return;
+        }
+
+        LivingEntity target = eyePart.target;
+        if (target != null && target.isAlive() && !target.isRemoved()) {
+            Vec3 targetEyePos = new Vec3(target.xo, target.yo, target.zo)
+                    .lerp(target.position(), partialTick)
+                    .add(0.0, target.getEyeHeight(), 0.0);
+            Vec3 eyePos = new Vec3(eyePart.xo, eyePart.yo, eyePart.zo)
+                    .lerp(eyePart.position(), partialTick)
+                    .add(0.0, eyePart.getBbHeight() * 0.5, 0.0);
+            Vec3 dist = targetEyePos.subtract(eyePos);
+
+            Vec3 forward = parentMob.getForward().normalize();
+            Vec3 toTargetHorizontal = new Vec3(dist.x, 0, dist.z);
+            double hLenSqr = toTargetHorizontal.lengthSqr();
+
+            if (hLenSqr <= 1.0E-6 && forward.dot(toTargetHorizontal.normalize()) >= -0.02) {
+                float yaw = (float) (Math.atan2(dist.z, dist.x));
+                float pitch = (float) (Math.atan2(dist.y, Math.sqrt(dist.x * dist.x + dist.z * dist.z)));
+                eyePart.stareYaw = (float) (Math.PI / 2 - yaw);
+                eyePart.starePitch = pitch;
+            }
+        }
+
+        float lerpYaw = eyePart.lerpYaw(partialTick);
+        float lerpPitch = eyePart.lerpPitch(partialTick);
+
+        float clampedYaw = Mth.clamp(lerpYaw, (float) Math.toRadians(-60), (float) Math.toRadians(60));
+        float clampedPitch = Mth.clamp(lerpPitch, (float) Math.toRadians(-45), (float) Math.toRadians(45));
+
+        bone.setRotY(clampedYaw);
+        bone.setRotX(clampedPitch);
+    }
+
+    private int pickVariantIndex(WallOfFlesh wall, int x, int y) {
+        String key = wall.getId() + ":" + x + ":" + y;
+        Integer cached = cellVariantCache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+        int totalWeight = 0;
+        for (int weight : MODEL_WEIGHTS) {
+            totalWeight += weight;
+        }
+        int randomWeight = wall.getRandom().nextInt(Math.max(totalWeight, 1));
+        int selectedIndex = 0;
+        int cumulativeWeight = MODEL_WEIGHTS[0];
+
+        while (randomWeight >= cumulativeWeight && selectedIndex < MODEL_WEIGHTS.length - 1) {
+            selectedIndex++;
+            cumulativeWeight += MODEL_WEIGHTS[selectedIndex];
+        }
+        cellVariantCache.put(key, selectedIndex);
+        return selectedIndex;
+    }
+
+    private void getOrBuildMergedRoot(WallOfFlesh animatable, GeoModel<WallOfFlesh> model) {
+        int collisionWidth = Mth.floor(150 * 2 / animatable.gridSpacing);
+        int collisionHeight = Mth.floor(150 * 2 / animatable.gridSpacing);
+        final int gridX = animatable.getGridSizeX() + collisionWidth;
+        final int gridY = animatable.getGridSizeY() + collisionHeight;
+
+        // 检查缓存是否有效
+        if (modelMerged) {
+            return;
+        }
+
+        GeoBone baseRoot = model.getBone("All").orElse(null);
+        if (baseRoot == null) {
+            return;
+        }
+
+        GeoBone[] variants = new GeoBone[VARIANT_BONES.length];
+        for (int i = 0; i < VARIANT_BONES.length; i++) {
+            variants[i] = model.getBone(VARIANT_BONES[i]).orElse(null);
+        }
+        GeoBone eyeBone = model.getBone("bone_eye").orElse(null);
+        GeoBone mouthBone = model.getBone("bone_mouth").orElse(null);
+
+        baseRoot.getChildBones().clear();
+
+        int halfGridX = gridX / 2;
+        int halfGridY = gridY / 2;
+        float size = CELL_SIZE;
+        float halfSize = CELL_HALF;
+
+        // 预计算常量以减少循环内的计算
+        for (int x = -halfGridX; x < gridX - halfGridX; x++) {
+            for (int y = -halfGridY; y < gridY - halfGridY; y++) {
+                int variantIndex = pickVariantIndex(animatable, x, y);
+                GeoBone variant = variantIndex >= 0 && variantIndex < variants.length ? variants[variantIndex] : null;
+
+                if (variant != null) {
+                    Vec3 offset = new Vec3(x * size + halfSize, y * size + halfSize, 0);
+                    String boneName = "bone" + x + "_" + y;
+                    GeoBone clone = copyBone(variant, offset, boneName, baseRoot);
+                    baseRoot.getChildBones().add(clone);
+                }
+            }
+        }
+
+        List<Tuple<Integer, Vec3>> localOffsets = animatable.getLocalOffsets();
+        WallOfFleshPart[] parts = animatable.getParts();
+        for (WallOfFleshPart modelPart : parts) {
+            if (modelPart == null || !modelPart.isAlive()) {
+                continue;
+            }
+
+            int partIndex = -1;
+            for (int i = 0; i < animatable.subEntities.size(); i++) {
+                if (animatable.subEntities.get(i) == modelPart) {
+                    partIndex = i;
+                    break;
+                }
+            }
+            if (partIndex < 0 || partIndex >= localOffsets.size()) {
+                continue;
+            }
+
+            Vec3 localOffset = localOffsets.get(partIndex).getB();
+            localOffset = animatable.rotateLocalOffset(localOffset).scale(16.0F);
+
+            if (modelPart instanceof WallOfFleshEye && eyeBone != null) {
+                GeoBone eyeClone = copyBone(eyeBone, localOffset, modelPart.name, baseRoot);
+                baseRoot.getChildBones().add(eyeClone);
+            } else if (modelPart instanceof WallOfFleshMouth && mouthBone != null) {
+                GeoBone mouthClone = copyBone(mouthBone, localOffset, modelPart.name, baseRoot);
+                baseRoot.getChildBones().add(mouthClone);
+            }
+        }
+
+        modelMerged = true;
+    }
+
+    /**
+     * geckolib 1.21.1 的构造器手动拷贝骨骼（递归拷贝子骨骼），使用指定的新名称。
+     */
+    private GeoBone copyBone(GeoBone template, Vec3 offset, String newName, GeoBone parent) {
+        GeoBone copy = new GeoBone(parent,
+                newName,
+                template.getMirror(),
+                template.getInflate(),
+                template.shouldNeverRender(),
+                template.getReset());
+
+        float scaleX = template.getScaleX();
+        float scaleY = template.getScaleY();
+        float scaleZ = template.getScaleZ();
+        float offsetX = (float) (offset.x * scaleX);
+        float offsetY = (float) (offset.y * scaleY);
+
+        copy.setPivotX(template.getPivotX() + offsetX);
+        copy.setPivotY(template.getPivotY() + offsetY);
+        copy.setPivotZ(template.getPivotZ());
+
+        copy.setPosX(template.getPosX() + offsetX);
+        copy.setPosY(template.getPosY() + offsetY);
+        copy.setPosZ(template.getPosZ());
+
+        copy.setRotX(template.getRotX());
+        copy.setRotY(template.getRotY());
+        copy.setRotZ(template.getRotZ());
+
+        Double inflate = template.getInflate();
+        float inflateScale = inflate == null ? 1.0f : (1.0f + (float)(inflate / 16.0));
+        copy.updateScale(scaleX * inflateScale, scaleY * inflateScale, scaleZ * inflateScale);
+
+        copy.getCubes().addAll(template.getCubes());
+
+        if (!template.getChildBones().isEmpty()) {
+            for (GeoBone child : template.getChildBones()) {
+                GeoBone childCopy = copyBone(child, Vec3.ZERO, child.getName(), copy);
+                copy.getChildBones().add(childCopy);
+            }
+        }
+
+        return copy;
+    }
+
+    private boolean isGridBone(GeoBone bone) {
+        String name = bone.getName();
+        return name != null && GRID_BONE.matcher(name).matches();
+    }
+
+    @Override
+    public GeoModel<WallOfFlesh> getGeoModel() {
+        return super.getGeoModel();
+    }
+
+    @Override
+    public boolean shouldRender(@Nonnull WallOfFlesh wall, @Nonnull Frustum camera, double camX, double camY, double camZ) {
         return true;
     }
 
@@ -303,19 +389,15 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     }
 
     @Override
-    protected int getSkyLightLevel(WallOfFlesh entity, BlockPos pos) {
+    protected int getSkyLightLevel(@Nonnull WallOfFlesh entity, @Nonnull BlockPos pos) {
         Vec3 potionPos = new Vec3(pos.getX(), entity.level().getMaxBuildHeight()+1, pos.getZ());
         return super.getSkyLightLevel(entity, BlockPos.containing(potionPos));
     }
 
     @Override
-    protected int getBlockLightLevel(WallOfFlesh entity, BlockPos pos) {
+    protected int getBlockLightLevel(@Nonnull WallOfFlesh entity, @Nonnull BlockPos pos) {
         Vec3 potionPos = new Vec3(pos.getX(), entity.level().getMaxBuildHeight()+1, pos.getZ());
         return super.getBlockLightLevel(entity, BlockPos.containing(potionPos));
     }
 
-    @Override
-    public GeoModel<WallOfFlesh> getGeoModel() {
-        return this.currentModel;
-    }
 }
