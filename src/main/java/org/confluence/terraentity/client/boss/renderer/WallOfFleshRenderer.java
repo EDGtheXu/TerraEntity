@@ -90,13 +90,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     public void renderRecursively(PoseStack poseStack, WallOfFlesh animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
                                   int packedOverlay, int colour) {
 
-        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         if (bone.getName() != null) {
-            Vec3 camPos = camera.getPosition();
-            Vector3d pos3d = bone.getWorldPosition();
-            Vec3 pos = new Vec3(pos3d.x, pos3d.y, pos3d.z);
-            double distSq = camPos.distanceToSqr(pos);
 
+            double distSq = getDistSq(poseStack);
             if (bone.getName().endsWith("_b") && distSq > 100*100) {
                 return;
             }else if (bone.getName().endsWith("_c") && distSq > 200*200) {
@@ -145,6 +141,21 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
             }
         }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
+    }
+
+    // 获取骨骼距离摄像机距离平方
+    private double getDistSq(PoseStack poseStack) {
+        // 1. 从当前的矩阵栈中提取变换矩阵
+        // Matrix4f 包含了当前骨骼的所有平移、旋转和缩放信息
+        Matrix4f matrix = poseStack.last().pose();
+
+        // 2. 提取平移分量 (m30, m31, m32)
+        float x = matrix.m30();
+        float y = matrix.m31();
+        float z = matrix.m32();
+
+        // 3. 计算该骨骼距离摄像机的平方距离
+        return x * x + y * y + z * z;
     }
 
     private boolean cubeInFrustum(Frustum frustum,double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
