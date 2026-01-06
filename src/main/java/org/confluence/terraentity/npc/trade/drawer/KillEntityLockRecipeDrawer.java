@@ -17,7 +17,7 @@ public class KillEntityLockRecipeDrawer extends TradeLockRecipeDrawer {
         }
         var size = getRecipeSize();
         guiGraphics.blitSprite(ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "shop_lock/kill_entity"), x, y, size, size);
-        drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.kill_entity.title") + ": " + killEntityLock.entityType().getDescription());
+        drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.kill_entity.title") + ": " + I18n.get(killEntityLock.entityType().getDescriptionId()));
         return y + size;
     }
 }

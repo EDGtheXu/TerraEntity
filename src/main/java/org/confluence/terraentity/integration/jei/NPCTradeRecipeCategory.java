@@ -21,7 +21,6 @@ import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.npc.trade.ITradeLock;
 import org.confluence.terraentity.init.item.TESpawnEggItems;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -68,11 +67,11 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
 //        List<ITrade> trades = recipe.getRawTrades().getAllSupportedTrades();
 
         List<Ingredient> ingredients = recipe.trade.normalizeCost();
-        if(ingredients.isEmpty()){
+        if (ingredients.isEmpty()) {
 //            return;
         }
         List<ItemStack> outputs = recipe.trade.normalizeResult();
-        if(outputs.isEmpty()){
+        if (outputs.isEmpty()) {
 //            return;
         }
         // input
@@ -136,7 +135,7 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
         drawLock(guiGraphics, recipe.trade.lock(), 88, 0, (int) mouseX, (int) mouseY);
     }
 
-    private void drawLock(GuiGraphics guiGraphics, @NotNull ITradeLock lock, int x, int y, int mouseX, int mouseY) {
+    private void drawLock(GuiGraphics guiGraphics, ITradeLock lock, int x, int y, int mouseX, int mouseY) {
         var drawer = lock.getCodec().drawer();
         if (drawer == null) {
             return;
@@ -147,9 +146,9 @@ public class NPCTradeRecipeCategory implements IRecipeCategory<NPCRecipe> {
     @Override
     public @Nullable ResourceLocation getRegistryName(NPCRecipe recipe) {
         List<ItemStack> outputs = recipe.trade.normalizeResult();
-        if(outputs.isEmpty()){
+        if (outputs.isEmpty()) {
             return null;
         }
-        return ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "npc_trade/" + recipe.id.getPath() + "/" + BuiltInRegistries.ITEM.getKey(outputs.get(0).getItem()).getPath());
+        return TerraEntity.space("npc_trade/" + recipe.id.getPath() + "/" + BuiltInRegistries.ITEM.getKey(outputs.get(0).getItem()).getPath());
     }
 }

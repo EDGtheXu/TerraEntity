@@ -333,6 +333,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.RETINAZER_SPAWN_EGG.get(), "激光眼刷怪蛋");
         add(TESpawnEggItems.SPAZMATISM_SPAWN_EGG.get(), "魔焰眼刷怪蛋");
         add(TESpawnEggItems.THE_TWINS_SPAWN_EGG.get(), "双子魔眼刷怪蛋");
+        add(TESpawnEggItems.SKELETRON_PRIME_SPAWN_EGG.get(), "机械骷髅王刷怪蛋");
         add(TESpawnEggItems.PLANTERA_SPAWN_EGG.get(), "世纪之花刷怪蛋");
 
 

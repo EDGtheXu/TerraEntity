@@ -17,7 +17,7 @@ public class NPCExistLockRecipeDrawer extends TradeLockRecipeDrawer {
         }
         var size = getRecipeSize();
         guiGraphics.blitSprite(ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, "shop_lock/npc_exist"), x, y, size, size);
-        drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.npc_exist.title", npcExistLock.entityType().getDescription()));
+        drawTooltip(guiGraphics, x, y, size, size, mouseX, mouseY, I18n.get("terra_entity.trade_lock.drawer.npc_exist.title", I18n.get(npcExistLock.entityType().getDescriptionId())));
         return y + size;
     }
 }

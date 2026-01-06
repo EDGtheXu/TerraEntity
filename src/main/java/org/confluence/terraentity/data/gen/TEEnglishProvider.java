@@ -37,6 +37,9 @@ public class TEEnglishProvider extends LanguageProvider {
         TEWhipItems.ITEMS.getEntries().forEach(itemAction);
         TEBoomerangItems.ITEMS.getEntries().forEach(itemAction);
         TERideableItems.ITEMS.getEntries().forEach(itemAction);
+        TEPetItems.ITEMS.getEntries().forEach(itemAction);
+        TEBossSummonsItems.ITEMS.getEntries().forEach(itemAction);
+        TEYoyosItems.ITEMS.getEntries().forEach(itemAction);
         add(TEItems.HOUSE_DETECTOR.get(), "House Detector");
         TEEntities.ENTITIES.getEntries().forEach(entity -> add(entity.get(), toTitleCase(entity.getId().getPath())));
         TEEffects.EFFECTS.getEntries().forEach(effect -> add(effect.get(), toTitleCase(effect.getId().getPath())));
@@ -46,7 +49,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.trade_lock.drawer.npc_exist.title", "%s is nearby");
         add("terra_entity.trade_lock.drawer.mood.title", "Mood");
         add("terra_entity.trade_lock.drawer.kill_entity.title", "Kill");
-        add("terra_entity.trade_lock.drawer.biome.title", "Biome");
+        add("terra_entity.trade_lock.drawer.biome.title", "Any of Biomes");
         add("terra_entity.trade_lock.drawer.biome.title.tag", "Biome Tag");
         add("terra_entity.trade_lock.drawer.and.title", "All should be satisfied");
         add("terra_entity.trade_lock.drawer.not.title", "None should be satisfied");
@@ -185,6 +188,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.effect.strategy.hunting_4_sec", "Hunting 4 seconds");
         add("terra_entity.effect.strategy.hell_fire_5_sec", "Hell fire 5 seconds");
         add("terra_entity.effect.strategy.set_fire_5_sec", "Set fire 5 seconds");
+        add("terra_entity.effect.strategy.forzen_burn_5_sec", "Forzen Burn 5 seconds");
         add("terra_entity.effect.strategy.blood_butchered", "Blood Butchered");
         add("terra_entity.effect.strategy.bei_dou", "Random 5 effects:\\nfrozen burn IV 10 seconds\\nhell fire IV 10 seconds\\nwither IV 10 seconds\\npoison ⅳ 10 seconds\\ninstant harm VIII");
 
@@ -206,6 +210,8 @@ public class TEEnglishProvider extends LanguageProvider {
         add("enchantment.terra_entity.multi_boomerang.desc", "Fires an additional boomerang");
         add("enchantment.terra_entity.whip_sweep", "Whip Sweep");
         add("enchantment.terra_entity.whip_sweep.desc", "Chance to deal a wide area of damage");
+        add("enchantment.terra_entity.summoner_pact", "Summoner's Pact");
+        add("enchantment.terra_entity.summoner_pact.desc", "Summons additional minions");
 
 
         // npc
