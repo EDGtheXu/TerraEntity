@@ -90,13 +90,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     public void renderRecursively(PoseStack poseStack, WallOfFlesh animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
                                   int packedOverlay, int colour) {
 
-        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         if (bone.getName() != null) {
-            Vec3 camPos = camera.getPosition();
-            Vector3d pos3d = bone.getWorldPosition();
-            Vec3 pos = new Vec3(pos3d.x, pos3d.y, pos3d.z);
-            double distSq = camPos.distanceToSqr(pos);
 
+            double distSq = getDistSq(poseStack);
             if (bone.getName().endsWith("_b") && distSq > 100*100) {
                 return;
             }else if (bone.getName().endsWith("_c") && distSq > 200*200) {
@@ -145,6 +141,21 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
             }
         }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
+    }
+
+    // 获取骨骼距离摄像机距离平方
+    private double getDistSq(PoseStack poseStack) {
+        // 1. 从当前的矩阵栈中提取变换矩阵
+        // Matrix4f 包含了当前骨骼的所有平移、旋转和缩放信息
+        Matrix4f matrix = poseStack.last().pose();
+
+        // 2. 提取平移分量 (m30, m31, m32)
+        float x = matrix.m30();
+        float y = matrix.m31();
+        float z = matrix.m32();
+
+        // 3. 计算该骨骼距离摄像机的平方距离
+        return x * x + y * y + z * z;
     }
 
     private boolean cubeInFrustum(Frustum frustum,double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
@@ -322,17 +333,25 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
                 template.shouldNeverRender(),
                 template.getReset());
 
-        // 设置位置 (Pos)
-        copy.setPosX((float) offset.x);
-        copy.setPosY((float) offset.y);
-        copy.setPosZ((float) offset.z);
+        // 只有传入了有效 offset 的顶层骨骼（嘴巴根部）才使用 offset
+        // 递归产生的子骨骼（牙齿等）必须保留 template 原始的 Pos 和 Pivot
+        if (offset != Vec3.ZERO) {
+            copy.setPosX((float) offset.x);
+            copy.setPosY((float) offset.y);
+            copy.setPosZ((float) offset.z);
+            copy.setPivotX((float) offset.x);
+            copy.setPivotY((float) offset.y);
+            copy.setPivotZ((float) offset.z);
+        } else {
+            // 保留子骨骼在 Blockbench 里定义的相对位置
+            copy.setPosX(template.getPosX());
+            copy.setPosY(template.getPosY());
+            copy.setPosZ(template.getPosZ());
+            copy.setPivotX(template.getPivotX());
+            copy.setPivotY(template.getPivotY());
+            copy.setPivotZ(template.getPivotZ());
+        }
 
-        // 必须同步设置 Pivot，否则眼球旋转会发生位移
-        copy.setPivotX((float) offset.x);
-        copy.setPivotY((float) offset.y);
-        copy.setPivotZ((float) offset.z);
-
-        // 保持原骨骼的旋转和缩放
         copy.setRotX(template.getRotX());
         copy.setRotY(template.getRotY());
         copy.setRotZ(template.getRotZ());
@@ -340,9 +359,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         copy.getCubes().addAll(template.getCubes());
 
-        // 递归拷贝子骨骼 (偏移量归零，因为是相对于父骨骼)
         if (!template.getChildBones().isEmpty()) {
             for (GeoBone child : template.getChildBones()) {
+                // 递归时保持 Vec3.ZERO，这样子骨骼就会走上面的 else 分支，保留原始坐标
                 GeoBone childCopy = copyBone(child, Vec3.ZERO, child.getName(), copy);
                 copy.getChildBones().add(childCopy);
             }
