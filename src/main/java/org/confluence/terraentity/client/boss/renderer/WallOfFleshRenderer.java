@@ -322,17 +322,25 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
                 template.shouldNeverRender(),
                 template.getReset());
 
-        // 设置位置 (Pos)
-        copy.setPosX((float) offset.x);
-        copy.setPosY((float) offset.y);
-        copy.setPosZ((float) offset.z);
+        // 只有传入了有效 offset 的顶层骨骼（嘴巴根部）才使用 offset
+        // 递归产生的子骨骼（牙齿等）必须保留 template 原始的 Pos 和 Pivot
+        if (offset != Vec3.ZERO) {
+            copy.setPosX((float) offset.x);
+            copy.setPosY((float) offset.y);
+            copy.setPosZ((float) offset.z);
+            copy.setPivotX((float) offset.x);
+            copy.setPivotY((float) offset.y);
+            copy.setPivotZ((float) offset.z);
+        } else {
+            // 保留子骨骼在 Blockbench 里定义的相对位置
+            copy.setPosX(template.getPosX());
+            copy.setPosY(template.getPosY());
+            copy.setPosZ(template.getPosZ());
+            copy.setPivotX(template.getPivotX());
+            copy.setPivotY(template.getPivotY());
+            copy.setPivotZ(template.getPivotZ());
+        }
 
-        // 必须同步设置 Pivot，否则眼球旋转会发生位移
-        copy.setPivotX((float) offset.x);
-        copy.setPivotY((float) offset.y);
-        copy.setPivotZ((float) offset.z);
-
-        // 保持原骨骼的旋转和缩放
         copy.setRotX(template.getRotX());
         copy.setRotY(template.getRotY());
         copy.setRotZ(template.getRotZ());
@@ -340,9 +348,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         copy.getCubes().addAll(template.getCubes());
 
-        // 递归拷贝子骨骼 (偏移量归零，因为是相对于父骨骼)
         if (!template.getChildBones().isEmpty()) {
             for (GeoBone child : template.getChildBones()) {
+                // 递归时保持 Vec3.ZERO，这样子骨骼就会走上面的 else 分支，保留原始坐标
                 GeoBone childCopy = copyBone(child, Vec3.ZERO, child.getName(), copy);
                 copy.getChildBones().add(childCopy);
             }
