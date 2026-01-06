@@ -46,7 +46,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.trade_lock.drawer.npc_exist.title", "%s is nearby");
         add("terra_entity.trade_lock.drawer.mood.title", "Mood");
         add("terra_entity.trade_lock.drawer.kill_entity.title", "Kill");
-        add("terra_entity.trade_lock.drawer.biome.title", "Biome");
+        add("terra_entity.trade_lock.drawer.biome.title", "Any of Biomes");
         add("terra_entity.trade_lock.drawer.biome.title.tag", "Biome Tag");
         add("terra_entity.trade_lock.drawer.and.title", "All should be satisfied");
         add("terra_entity.trade_lock.drawer.not.title", "None should be satisfied");
