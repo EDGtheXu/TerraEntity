@@ -46,7 +46,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     private static final float CELL_HALF = CELL_SIZE / 2.0f;
     private static final Pattern GRID_BONE = Pattern.compile("bone-?\\d+_-?\\d+");
     private final Map<String, Integer> cellVariantCache = new HashMap<>();
-
+    private int cachedPartCount = -1; //记录缓存 part 数量
     private boolean modelMerged = false;
 
     public WallOfFleshRenderer(EntityRendererProvider.Context renderManager) {
@@ -237,13 +237,14 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     }
 
     private void getOrBuildMergedRoot(WallOfFlesh animatable, GeoModel<WallOfFlesh> model) {
-        int collisionWidth = Mth.floor(150 * 2 / animatable.gridSpacing);
-        int collisionHeight = Mth.floor(150 * 2 / animatable.gridSpacing);
-        final int gridX = animatable.getGridSizeX() + collisionWidth;
-        final int gridY = animatable.getGridSizeY() + collisionHeight;
-
         // 检查缓存是否有效
-        if (modelMerged) {
+        List<Tuple<Integer, Vec3>> localOffsets = animatable.getLocalOffsets();
+
+        // 数据未同步则跳过
+        if (localOffsets.isEmpty()) return;
+
+        // 数量未变化则不重构
+        if (modelMerged && cachedPartCount == localOffsets.size()) {
             return;
         }
 
@@ -252,6 +253,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
             return;
         }
 
+        // 清理旧骨骼
+        baseRoot.getChildBones().clear();
+
         GeoBone[] variants = new GeoBone[VARIANT_BONES.length];
         for (int i = 0; i < VARIANT_BONES.length; i++) {
             variants[i] = model.getBone(VARIANT_BONES[i]).orElse(null);
@@ -259,58 +263,51 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         GeoBone eyeBone = model.getBone("bone_eye").orElse(null);
         GeoBone mouthBone = model.getBone("bone_mouth").orElse(null);
 
-        baseRoot.getChildBones().clear();
+        float geckoScale = 16.0f;
+        int gridX = animatable.getGridSizeX();
+        int gridY = animatable.getGridSizeY();
+        float spacing = animatable.gridSpacing;
 
-        int halfGridX = gridX / 2;
-        int halfGridY = gridY / 2;
-        float size = CELL_SIZE;
-        float halfSize = CELL_HALF;
-
-        // 预计算常量以减少循环内的计算
-        for (int x = -halfGridX; x < gridX - halfGridX; x++) {
-            for (int y = -halfGridY; y < gridY - halfGridY; y++) {
-                int variantIndex = pickVariantIndex(animatable, x, y);
-                GeoBone variant = variantIndex >= 0 && variantIndex < variants.length ? variants[variantIndex] : null;
+        // 绘制背景墙网格
+        for (int ix = 0; ix < gridX; ix++) {
+            for (int iy = 0; iy < gridY; iy++) {
+                int vIdx = pickVariantIndex(animatable, ix, iy);
+                GeoBone variant = (vIdx >= 0 && vIdx < variants.length) ? variants[vIdx] : null;
 
                 if (variant != null) {
-                    Vec3 offset = new Vec3(x * size + halfSize, y * size + halfSize, 0);
-                    String boneName = "bone" + x + "_" + y;
-                    GeoBone clone = copyBone(variant, offset, boneName, baseRoot);
-                    baseRoot.getChildBones().add(clone);
+                    // 对齐中心点
+                    double lx = (ix - gridX / 2.0) * spacing * geckoScale;
+                    double ly = (iy - gridY / 2.0) * spacing * geckoScale;
+
+                    // X 轴取反以对齐渲染器的局部坐标系
+                    Vec3 renderPos = new Vec3(-lx, ly, 0);
+                    String boneName = "grid_" + ix + "_" + iy;
+                    baseRoot.getChildBones().add(copyBone(variant, renderPos, boneName, baseRoot));
                 }
             }
         }
 
-        List<Tuple<Integer, Vec3>> localOffsets = animatable.getLocalOffsets();
-        WallOfFleshPart[] parts = animatable.getParts();
-        for (WallOfFleshPart modelPart : parts) {
-            if (modelPart == null || !modelPart.isAlive()) {
-                continue;
-            }
+        // 直接遍历 localOffsets，确保位置与部件对应
+        for (Tuple<Integer, Vec3> entry : localOffsets) {
+            int partIndex = entry.getA();
+            Vec3 rawOffset = entry.getB();
 
-            int partIndex = -1;
-            for (int i = 0; i < animatable.subEntities.size(); i++) {
-                if (animatable.subEntities.get(i) == modelPart) {
-                    partIndex = i;
-                    break;
+            if (partIndex >= 0 && partIndex < animatable.subEntities.size()) {
+                WallOfFleshPart part = animatable.subEntities.get(partIndex);
+                if (part == null || !part.isAlive()) continue;
+
+                // X轴取反 和 缩放
+                Vec3 renderOffset = new Vec3(-rawOffset.x * geckoScale, rawOffset.y * geckoScale, rawOffset.z * geckoScale);
+
+                if (part instanceof WallOfFleshEye && eyeBone != null) {
+                    baseRoot.getChildBones().add(copyBone(eyeBone, renderOffset, part.name, baseRoot));
+                } else if (part instanceof WallOfFleshMouth && mouthBone != null) {
+                    baseRoot.getChildBones().add(copyBone(mouthBone, renderOffset, part.name, baseRoot));
                 }
-            }
-            if (partIndex < 0 || partIndex >= localOffsets.size()) {
-                continue;
-            }
-
-            Vec3 localOffset = localOffsets.get(partIndex).getB();
-            localOffset = animatable.rotateLocalOffset(localOffset).scale(16.0F);
-
-            if (modelPart instanceof WallOfFleshEye && eyeBone != null) {
-                GeoBone eyeClone = copyBone(eyeBone, localOffset, modelPart.name, baseRoot);
-                baseRoot.getChildBones().add(eyeClone);
-            } else if (modelPart instanceof WallOfFleshMouth && mouthBone != null) {
-                GeoBone mouthClone = copyBone(mouthBone, localOffset, modelPart.name, baseRoot);
-                baseRoot.getChildBones().add(mouthClone);
             }
         }
 
+        this.cachedPartCount = localOffsets.size();
         modelMerged = true;
     }
 
@@ -325,30 +322,25 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
                 template.shouldNeverRender(),
                 template.getReset());
 
-        float scaleX = template.getScaleX();
-        float scaleY = template.getScaleY();
-        float scaleZ = template.getScaleZ();
-        float offsetX = (float) (offset.x * scaleX);
-        float offsetY = (float) (offset.y * scaleY);
+        // 设置位置 (Pos)
+        copy.setPosX((float) offset.x);
+        copy.setPosY((float) offset.y);
+        copy.setPosZ((float) offset.z);
 
-        copy.setPivotX(template.getPivotX() + offsetX);
-        copy.setPivotY(template.getPivotY() + offsetY);
-        copy.setPivotZ(template.getPivotZ());
+        // 必须同步设置 Pivot，否则眼球旋转会发生位移
+        copy.setPivotX((float) offset.x);
+        copy.setPivotY((float) offset.y);
+        copy.setPivotZ((float) offset.z);
 
-        copy.setPosX(template.getPosX() + offsetX);
-        copy.setPosY(template.getPosY() + offsetY);
-        copy.setPosZ(template.getPosZ());
-
+        // 保持原骨骼的旋转和缩放
         copy.setRotX(template.getRotX());
         copy.setRotY(template.getRotY());
         copy.setRotZ(template.getRotZ());
-
-        Double inflate = template.getInflate();
-        float inflateScale = inflate == null ? 1.0f : (1.0f + (float)(inflate / 16.0));
-        copy.updateScale(scaleX * inflateScale, scaleY * inflateScale, scaleZ * inflateScale);
+        copy.updateScale(template.getScaleX(), template.getScaleY(), template.getScaleZ());
 
         copy.getCubes().addAll(template.getCubes());
 
+        // 递归拷贝子骨骼 (偏移量归零，因为是相对于父骨骼)
         if (!template.getChildBones().isEmpty()) {
             for (GeoBone child : template.getChildBones()) {
                 GeoBone childCopy = copyBone(child, Vec3.ZERO, child.getName(), copy);
