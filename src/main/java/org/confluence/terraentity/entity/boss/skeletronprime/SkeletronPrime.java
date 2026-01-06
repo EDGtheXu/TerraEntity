@@ -206,7 +206,7 @@ public class SkeletronPrime extends AbstractTerraBossBase implements ISharedFlag
             @Override
             public BTStatus execute() {
                 this.mob.setDeltaMovement(this.mob.getDeltaMovement().scale(efficiency));
-                System.out.println("slowdown: " + mob.tickCount);
+//                System.out.println("slowdown: " + mob.tickCount);
                 return BTStatus.RUNNING;
             }
         }

@@ -14,4 +14,9 @@ public class TargetExistCondition implements Condition {
     public boolean check() {
         return mob.getTarget() != null;
     }
+
+    @Override
+    public String getDesc() {
+        return "Target Exist";
+    }
 }

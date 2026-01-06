@@ -27,6 +27,7 @@ public abstract class BTRoot extends BTNode {
 
     @Override
     public void start() {
+        super.start();
         if(this.child == null) {
             this.child = this.createBehaviorTree();
         }
@@ -40,11 +41,16 @@ public abstract class BTRoot extends BTNode {
 
     @Override
     public void stop() {
+        super.stop();
         child.stop();
     }
 
     @Override
     public BTStatus execute() {
         return child.execute();
+    }
+
+    public BTNode getChild() {
+        return child;
     }
 }

@@ -5,14 +5,10 @@ import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 选择节点（执行直到一个子节点成功）
  */
-public class SelectorNode extends BTNode {
-    private final List<BTNode> children = new ArrayList<>();
+public class SelectorNode extends CompositeNode {
     private int currentIndex = 0;
 
     public SelectorNode addChild(BTNode child) {
@@ -22,6 +18,11 @@ public class SelectorNode extends BTNode {
 
     public SelectorNode addWithCondition(Condition condition, BTNode child) {
         children.add(BTFactory.condition(condition, child));
+        return this;
+    }
+
+    public SelectorNode addWithCondition(Condition condition, String desc, BTNode child) {
+        children.add(BTFactory.condition(condition, child).setDesc(desc));
         return this;
     }
 
@@ -75,5 +76,9 @@ public class SelectorNode extends BTNode {
                 child.stop();
 //            }
         }
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
     }
 }

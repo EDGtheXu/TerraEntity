@@ -13,4 +13,9 @@ public record DistanceCondition(Mob mob, double distance) implements Condition {
         }
         return entity.distanceToSqr(mob) <= distance * distance;
     }
+
+    @Override
+    public String getDesc() {
+        return "Distance to target <= ";
+    }
 }

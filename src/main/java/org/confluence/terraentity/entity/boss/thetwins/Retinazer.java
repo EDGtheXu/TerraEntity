@@ -53,9 +53,9 @@ public class Retinazer extends Spazmatism {
         ).apply(instance, SkillParams::new));
 
         public static SkillParams getDefaultParams() {
-            return new SkillParams(1500, 1.5f, 1f,
+            return new SkillParams(1500, 1f, 1f,
                     5, 6, 20, 20,
-                    5, 10, 5,1.5f,
+                    5, 10, +5,1.5f,
                     7, 1f);
         }
     }

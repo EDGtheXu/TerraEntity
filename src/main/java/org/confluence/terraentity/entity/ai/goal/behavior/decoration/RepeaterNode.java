@@ -59,4 +59,16 @@ public class RepeaterNode extends DecorationNode {
         super.cleanup();
         currentCount = 0;
     }
+
+    public int getRepeatCount() {
+        return repeatCount;
+    }
+
+    public boolean isInfinite() {
+        return infinite;
+    }
+
+    public int getCurrentCount() {
+        return currentCount;
+    }
 }

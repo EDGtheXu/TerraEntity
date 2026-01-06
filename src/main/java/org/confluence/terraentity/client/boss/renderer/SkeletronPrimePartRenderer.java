@@ -22,7 +22,7 @@ public class SkeletronPrimePartRenderer extends GeoNormalRenderer<SkeletronPrime
 
 
     public SkeletronPrimePartRenderer(EntityRendererProvider.Context renderManager, ResourceLocation path) {
-        super(renderManager, path, true, 1, 0);
+        super(renderManager, path, true, 1, 0.5F);
     }
 
 
@@ -32,6 +32,7 @@ public class SkeletronPrimePartRenderer extends GeoNormalRenderer<SkeletronPrime
 
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
 
+        this.offsetY = 0.5F;
     }
 
     // 在类中添加辅助方法

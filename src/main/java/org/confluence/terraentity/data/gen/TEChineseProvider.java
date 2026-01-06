@@ -535,6 +535,7 @@ public class TEChineseProvider extends LanguageProvider {
         add("terra_entity.configuration.enemy_spawn_chance_apply_all", "所有怪物的生成几率");
         add("terra_entity.configuration.enemy_spawn_chance", "Terra Entity怪物生成几率");
         add("terra_entity.configuration.enable_entity_motion_blur", "启用实体移动模糊");
+        add("terra_entity.configuration.behavior_tree_web_viewer_server_port", "行为树可视化服务器端口");
 
 
         add("terra_entity.configuration.boss_bar_style", "BOSS血条样式");

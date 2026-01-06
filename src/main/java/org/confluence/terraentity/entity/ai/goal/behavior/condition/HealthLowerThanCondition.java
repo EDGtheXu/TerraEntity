@@ -11,4 +11,9 @@ public record HealthLowerThanCondition(Mob mob, float percentage) implements Con
     public boolean check() {
         return mob.getHealth() / mob.getMaxHealth() < percentage;
     }
+
+    @Override
+    public String getDesc() {
+        return "Health lower than " + percentage * 100 + "%";
+    }
 }

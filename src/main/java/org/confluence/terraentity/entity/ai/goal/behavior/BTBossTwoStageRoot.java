@@ -66,9 +66,9 @@ public abstract class BTBossTwoStageRoot<T extends PathfinderMob & IBlackboardHo
     protected BTNode createAttackBehavior() {
         return BTFactory.selector()
                 // 一阶段
-                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 1), BTFactory.infinite(this.createStageOneAttack()))
+                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 1), "STAGE == 1" , BTFactory.infinite(this.createStageOneAttack().setDesc("一阶段AI")))
                 // 二阶段
-                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 3), BTFactory.infinite(this.createStageTwoAttack()));
+                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 3), "STAGE == 3" , BTFactory.infinite(this.createStageTwoAttack().setDesc("二阶段AI")));
     }
 
 }

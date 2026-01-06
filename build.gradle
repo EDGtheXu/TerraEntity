@@ -188,6 +188,10 @@ boolean dev = project.hasProperty('dev')
 // Or if using this mod individually, please use ./gradlew build -Pdev=false
 
 dependencies {
+    // lombok
+//    compileOnly "org.projectlombok:lombok:1.18.30"
+//    annotationProcessor "org.projectlombok:lombok:1.18.30"
+
     if (dev) {
         implementation project(":Confluence-Magic-Lib")
         implementation("software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}")

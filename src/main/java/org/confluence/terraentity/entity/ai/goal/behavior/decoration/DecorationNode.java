@@ -23,4 +23,8 @@ public abstract class DecorationNode extends BTNode {
 //        }
     }
 
+    public BTNode getChild() {
+        return child;
+    }
+
 }

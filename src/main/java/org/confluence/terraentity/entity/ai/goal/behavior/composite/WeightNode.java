@@ -6,9 +6,7 @@ import org.confluence.terraentity.utils.TEUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeightNode extends BTNode {
-
-    private final List<BTNode> children;
+public class WeightNode extends CompositeNode {
     private final List<Integer> weights;
     private BTNode currentChild;
 

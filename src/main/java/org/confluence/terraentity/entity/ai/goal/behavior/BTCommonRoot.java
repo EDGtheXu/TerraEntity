@@ -5,6 +5,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.TargetExistCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.RandomStrollAction;
+import org.confluence.terraentity.entity.ai.goal.behavior.webviewer.BTServer;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -38,13 +39,22 @@ public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot {
     protected @NotNull BTNode createBehaviorTree() {
         return BTFactory.parallel(ParallelNode.Policy.REQUIRE_ALL, ParallelNode.Policy.REQUIRE_ALL)
                 // 阶段触发器
-                .addChild(BTFactory.infinite(this.createStageTrigger()))
+                .addChild(BTFactory.infinite(this.createStageTrigger().setDesc("阶段触发器")))
                 // AI
                 .addChild(BTFactory.infinite(BTFactory.selector()
                         // 游走
                         .addWithCondition(Condition.not(new TargetExistCondition(mob)), BTFactory.infinite(this.createWonderBehavior()))
                         // 攻击
-                        .addWithCondition(new TargetExistCondition(mob), this.createAttackBehavior())
+                        .addWithCondition(new TargetExistCondition(mob), this.createAttackBehavior().setDesc("阶段选择器"))
+                        .setDesc("AI")
                 ));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if(BTServer.isServerRunning() && BTServer.updateMob == mob) {
+            BTServer.updateBehaviorTree(this);
+        }
     }
 }

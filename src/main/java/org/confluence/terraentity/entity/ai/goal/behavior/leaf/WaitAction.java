@@ -25,4 +25,12 @@ public class WaitAction extends BTNode {
     protected void cleanup() {
         currentTicks = 0;
     }
+
+    public int getWaitTicks() {
+        return waitTicks;
+    }
+
+    public int getCurrentTicks() {
+        return currentTicks;
+    }
 }

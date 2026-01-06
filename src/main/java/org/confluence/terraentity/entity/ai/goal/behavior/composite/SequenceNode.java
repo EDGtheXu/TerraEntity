@@ -3,14 +3,10 @@ package org.confluence.terraentity.entity.ai.goal.behavior.composite;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 序列节点（按顺序执行，全部成功才算成功）
  */
-public class SequenceNode extends BTNode {
-    private final List<BTNode> children = new ArrayList<>();
+public class SequenceNode extends CompositeNode {
     private int currentIndex = 0;
 
     public SequenceNode addChild(BTNode child) {
@@ -46,6 +42,7 @@ public class SequenceNode extends BTNode {
 
     @Override
     public @NotNull String toString() {
+
         return children.stream().reduce(
                 new StringBuilder("SequenceNode[").append(currentIndex).append("/").append(children.size()).append("|"),
                 (sb, node)-> sb.append(",").append(node.getClass().getSimpleName()),
@@ -60,5 +57,9 @@ public class SequenceNode extends BTNode {
                 child.stop();
 //            }
         }
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
     }
 }

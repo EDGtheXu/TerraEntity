@@ -115,7 +115,7 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(5, new BTGoal(this));
+        this.goalSelector.addGoal(5, new DeerclposBT(this));
 
     }
 
@@ -248,10 +248,10 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
     }
 
 
-    private static class BTGoal extends BTRoot {
+    private static class DeerclposBT extends BTRoot {
 
         Deerclops mob;
-        public BTGoal(Deerclops mob) {
+        public DeerclposBT(Deerclops mob) {
             this.mob = mob;
 
         }
@@ -285,7 +285,7 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
             @Override
             public void start() {
                 super.start();
-                BTGoal.this.mob.sharedFlagController.setFlag(BTGoal.this.mob.sharedFlagController.attackFlag, true);
+                DeerclposBT.this.mob.sharedFlagController.setFlag(DeerclposBT.this.mob.sharedFlagController.attackFlag, true);
                 mob.navigation.stop();
                 mob.triggerAnim("Controller", "Ice");
                 tick = 0;
@@ -294,7 +294,7 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
             @Override
             public void stop() {
                 super.stop();
-                BTGoal.this.mob.sharedFlagController.setFlag(BTGoal.this.mob.sharedFlagController.attackFlag, false);
+                DeerclposBT.this.mob.sharedFlagController.setFlag(DeerclposBT.this.mob.sharedFlagController.attackFlag, false);
                 mob.stopTriggeredAnim("Controller", "Ice");
                 tick = 0;
             }
@@ -350,14 +350,14 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
             @Override
             public void start() {
                 super.start();
-                BTGoal.this.mob.sharedFlagController.setFlag(BTGoal.this.mob.sharedFlagController.roarFlag, true);
+                DeerclposBT.this.mob.sharedFlagController.setFlag(DeerclposBT.this.mob.sharedFlagController.roarFlag, true);
                 mob.triggerAnim("Controller", "Roar");
             }
 
             @Override
             public void stop() {
                 super.stop();
-                BTGoal.this.mob.sharedFlagController.setFlag(BTGoal.this.mob.sharedFlagController.roarFlag, false);
+                DeerclposBT.this.mob.sharedFlagController.setFlag(DeerclposBT.this.mob.sharedFlagController.roarFlag, false);
                 mob.stopTriggeredAnim("Controller", "Roar");
             }
 
@@ -372,14 +372,14 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
             @Override
             public void start() {
                 super.start();
-                BTGoal.this.mob.sharedFlagController.setFlag(BTGoal.this.mob.sharedFlagController.roaringFlag, true);
+                DeerclposBT.this.mob.sharedFlagController.setFlag(DeerclposBT.this.mob.sharedFlagController.roaringFlag, true);
                 mob.triggerAnim("Controller", "Roaring");
             }
 
             @Override
             public void stop() {
                 super.stop();
-                BTGoal.this.mob.sharedFlagController.setFlag(BTGoal.this.mob.sharedFlagController.roaringFlag, false);
+                DeerclposBT.this.mob.sharedFlagController.setFlag(DeerclposBT.this.mob.sharedFlagController.roaringFlag, false);
                 mob.stopTriggeredAnim("Controller", "Roaring");
             }
 

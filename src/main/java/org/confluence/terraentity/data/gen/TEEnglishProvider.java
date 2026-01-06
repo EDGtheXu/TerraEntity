@@ -93,12 +93,12 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.configuration.enhance_all_monster", "Enhance All Monster");
         add("terra_entity.configuration.monster_attributes_multiplier_health", "Monster Attributes Multiplier-Health");
         add("terra_entity.configuration.monster_attributes_multiplier_damage", "Monster Attributes Multiplier-Damage");
-
         add("terra_entity.configuration.spawn_without_light", "Spawn monsters without light");
         add("terra_entity.configuration.chance_to_spawn_slime_on_zombie_head", "Chance to Spawn Slime on Zombie Head");
         add("terra_entity.configuration.enemy_spawn_chance_apply_all", "Enemy Spawn Chance Apply to all monsters");
         add("terra_entity.configuration.enemy_spawn_chance", "Enemy of Terra Entity Spawn Chance ");
-
+        add("terra_entity.configuration.enable_entity_motion_blur", "Enable Entity Motion Blur");
+        add("terra_entity.configuration.behavior_tree_web_viewer_server_port", "Behavior Tree Web Viewer Server Port");
 
 
         add("terra_entity.configuration.boss_bar_style", "Boss Health Bar Style");
