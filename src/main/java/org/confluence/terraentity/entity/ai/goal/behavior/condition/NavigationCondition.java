@@ -5,7 +5,7 @@ import net.minecraft.world.entity.PathfinderMob;
 /**
  * 是否寻路完成
  */
-public class NavigationCondition implements Condition {
+public class NavigationCondition  extends AbstractConditionLeaf {
     PathfinderMob mob;
 
     public NavigationCondition(PathfinderMob mob) {

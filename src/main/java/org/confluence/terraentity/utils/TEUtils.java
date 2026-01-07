@@ -7,8 +7,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -819,6 +822,10 @@ public final class TEUtils {
         return true;
 
     };
+
+    public static boolean isPassInvulnerableDamageSource(DamageSource source, DamageSources sources) {
+        return source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source == sources.genericKill();
+    }
 
     /**
      * 获取向量从v1指向v2的旋转四元数

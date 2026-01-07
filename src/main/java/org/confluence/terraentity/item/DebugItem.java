@@ -74,7 +74,7 @@ public class DebugItem extends Item {
                                             }
                                         });
                                     }
-//                            BTServer.startServer();
+
                                 }else{
                                     BTServer.updateBehaviorTree(root);
                                     BTServer.updateMob = mob;

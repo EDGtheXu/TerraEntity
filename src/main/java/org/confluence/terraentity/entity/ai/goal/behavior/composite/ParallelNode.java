@@ -1,6 +1,8 @@
 package org.confluence.terraentity.entity.ai.goal.behavior.composite;
 
+import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
+import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,6 +19,16 @@ public class ParallelNode extends CompositeNode {
 
     public ParallelNode addChild(BTNode child) {
         children.add(child);
+        return this;
+    }
+
+    public ParallelNode addWithCondition(Condition condition, BTNode child) {
+        children.add(BTFactory.condition(condition, child));
+        return this;
+    }
+
+    public ParallelNode addWithCondition(Condition condition, String desc, BTNode child) {
+        children.add(BTFactory.condition(condition, child).setDesc(desc));
         return this;
     }
 

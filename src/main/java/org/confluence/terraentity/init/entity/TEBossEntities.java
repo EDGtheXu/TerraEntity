@@ -69,7 +69,7 @@ public class TEBossEntities {
         event.registerEntityRenderer(TEBossEntities.BRAIN_OF_CTHULHU.get(), c -> new BrainOfCthulhuRenderer(c, new GeoBossModel<>(TEBossEntities.BRAIN_OF_CTHULHU)));
         event.registerEntityRenderer(TEMonsterEntities.VISUAL_NEURON.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true));
         event.registerEntityRenderer(TEBossEntities.BRAIN_FAKE.get(), c -> new BrainOfCthulhuRenderer(c, new GeoBossModel<>(TEBossEntities.BRAIN_OF_CTHULHU)));
-        event.registerEntityRenderer(TEBossEntities.DEERCLOPS.get(), c -> new GeoNormalRenderer<>(c, new GeoBossModel<>(TEBossEntities.DEERCLOPS), false, 1, 0));
+        event.registerEntityRenderer(TEBossEntities.DEERCLOPS.get(), c -> new DeerclopsRenderer(c, new GeoBossModel<>(TEBossEntities.DEERCLOPS)));
         event.registerEntityRenderer(TEBossEntities.QUEEN_BEE.get(), c -> new QueenBeeRenderer(c, new GeoBossModel<>(TEBossEntities.QUEEN_BEE)));
         event.registerEntityRenderer(TEBossEntities.SKELETRON.get(), c -> new SkeletronRenderer(c, new GeoBossModel<>(TEBossEntities.SKELETRON)));
         event.registerEntityRenderer(TEBossEntities.SKELETRON_HAND.get(), c -> new SkeletronHandRenderer(c, new SkeletronHandModel()));

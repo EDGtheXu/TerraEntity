@@ -5,8 +5,8 @@ import net.minecraft.world.entity.Mob;
 /**
  * 目标存在条件
  */
-public class TargetExistCondition implements Condition {
-    Mob mob;
+public class TargetExistCondition extends AbstractConditionLeaf {
+    final Mob mob;
     public TargetExistCondition(Mob mob) {
         this.mob = mob;
     }

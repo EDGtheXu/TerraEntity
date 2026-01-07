@@ -22,6 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.terraentity.api.entity.IAutoLeaveMob;
 import org.confluence.terraentity.api.entity.ISharedFlagControllerHolder;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTBossTwoStageRoot;
@@ -54,7 +56,7 @@ import java.util.UUID;
 /**
  * 魔焰眼
  */
-public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagControllerHolder, FlyingAnimal, IBlackboardHolder, OwnableEntity {
+public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagControllerHolder, FlyingAnimal, IBlackboardHolder, OwnableEntity, Boss, IAutoLeaveMob {
 
     private static final EntityDataAccessor<Integer> DATA_SHARE_FLAG = SynchedEntityData.defineId(Spazmatism.class, EntityDataSerializers.INT);
     private static final RawAnimation move1 = RawAnimation.begin().thenLoop("type_1");
@@ -98,6 +100,11 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
     @Override
     public @Nullable UUID getOwnerUUID() {
         return this.ownerUUID;
+    }
+
+    @Override
+    public void doLeave() {
+        this.setDeltaMovement(0, 5, 0);
     }
 
 
@@ -391,5 +398,10 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
             }
         }
         super.die(damageSource);
+    }
+
+    @Override
+    public boolean shouldShowMessage() {
+        return false;
     }
 }

@@ -20,15 +20,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.terraentity.api.entity.ISharedFlagControllerHolder;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
+import org.confluence.terraentity.entity.ai.goal.behavior.condition.DistanceLowerThanCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.TargetExistCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.LandRandomStrollAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.MoveToTargetAction;
+import org.confluence.terraentity.entity.ai.goal.behavior.leaf.SyncFlagAction;
 import org.confluence.terraentity.entity.util.SharedFlagController;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
@@ -40,7 +43,7 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 
-public class Deerclops extends AbstractTerraBossBase implements Boss {
+public class Deerclops extends AbstractTerraBossBase implements Boss, ISharedFlagControllerHolder {
 
     private static final RawAnimation WALK = RawAnimation.begin().thenLoop("Walk");
     private static final RawAnimation STAND = RawAnimation.begin().thenLoop("Stand");
@@ -60,6 +63,8 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
     int rangeDamage;
     int thrownIceCount;
 
+    public int transitionTicks = 20;
+
     public Deerclops(EntityType<? extends AbstractTerraBossBase> type, Level level) {
         super(type, level);
         this.sharedFlagController = new DeerSharedFlagController(this.entityData, DATA_SHARE_FLAG);
@@ -75,6 +80,11 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
 
     public Deerclops(Level level) {
         this(TEBossEntities.DEERCLOPS.get(), level);
+    }
+
+    @Override
+    public SharedFlagController getSharedFlagController() {
+        return sharedFlagController;
     }
 
     public record SkillParams(int xpReward, int attackDamage, int attackRange, int rangeDamage, int thrownIceCount, int blackHandDamage) {
@@ -97,6 +107,7 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
         SharedFlag attackFlag = this.registerFlag();
         SharedFlag roarFlag = this.registerFlag();
         SharedFlag roaringFlag = this.registerFlag();
+        SharedFlag invulnerableFlag = this.registerFlag();
 
         public DeerSharedFlagController(SynchedEntityData entityData, EntityDataAccessor<Integer> DATA_SHARE_FLAG) {
             super(entityData, DATA_SHARE_FLAG);
@@ -110,6 +121,13 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
         private boolean isRoaring(){
             return this.getFlag(roaringFlag);
         }
+    }
+
+    /**
+     * 距离目标过远时无敌
+     */
+    public boolean isFarForInvulnerable(){
+        return this.sharedFlagController.getFlag(sharedFlagController.invulnerableFlag);
     }
 
     @Override
@@ -126,6 +144,15 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
             this.scheduler.tick(1L);
         }else{
             this.setYBodyRot(this.getYRot());
+            if(this.isFarForInvulnerable()) {
+                if(this.transitionTicks < 30) {
+                    this.transitionTicks++;
+                }
+            }else{
+                if(this.transitionTicks > 0) {
+                    this.transitionTicks--;
+                }
+            }
         }
 
     }
@@ -247,7 +274,6 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
         }
     }
 
-
     private static class DeerclposBT extends BTRoot {
 
         Deerclops mob;
@@ -263,10 +289,15 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
                             .addChild(BTFactory.withTimer(10, new RoarPre()))
                             .addChild(BTFactory.withTimer(10, new Roaring()))
                             .addChild(BTFactory.condition(new TargetExistCondition(mob), BTFactory.infinite(BTFactory.sequence()
+                                    .addChild(BTFactory.selector()
+                                            // 距离过远则无敌
+                                            .addWithCondition(new DistanceLowerThanCondition(this.mob, 15), new SyncFlagAction<>(this.mob, this.mob.sharedFlagController.invulnerableFlag, false))
+                                            .addChild(new SyncFlagAction<>(this.mob, this.mob.sharedFlagController.invulnerableFlag, true))
+                                    )
                                     .addChild(BTFactory.parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ONE)
                                             .addChild(new MoveToTargetAction(this.mob, 7, 20))
                                             .addChild(BTFactory.wait(30)))
-                                    .addChild(BTFactory.withTimer(15, new IceAttack()))
+                                    .addChild(BTFactory.withTimer(15, new IceAttack().setDesc("巨鹿攻击行为集成")))
                             )))
                     )
                     .addWithCondition(Condition.not(new TargetExistCondition(mob)), BTFactory.infinite(BTFactory.selector()
@@ -455,8 +486,8 @@ public class Deerclops extends AbstractTerraBossBase implements Boss {
     @Override
     public boolean hurt(DamageSource source, float amount) {
         // 距离过远不可被攻击
-        if(source.getDirectEntity() instanceof LivingEntity living && living.distanceTo(this) > skillParams.attackRange * 1.5f) {
-            return false;
+        if(this.isFarForInvulnerable()) {
+            return !TEUtils.isPassInvulnerableDamageSource(source, damageSources());
         }
         return super.hurt(source, amount);
     }

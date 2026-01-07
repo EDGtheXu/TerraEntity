@@ -3,7 +3,15 @@ package org.confluence.terraentity.entity.ai.goal.behavior.condition;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 
-public record DistanceCondition(Mob mob, double distance) implements Condition {
+public class DistanceLowerThanCondition extends AbstractConditionLeaf  {
+
+    final Mob mob;
+    final double distance;
+
+    public DistanceLowerThanCondition(Mob mob, double distance) {
+        this.mob = mob;
+        this.distance = distance;
+    }
 
     @Override
     public boolean check() {
@@ -16,6 +24,6 @@ public record DistanceCondition(Mob mob, double distance) implements Condition {
 
     @Override
     public String getDesc() {
-        return "Distance to target <= ";
+        return "Distance to target lower than ";
     }
 }

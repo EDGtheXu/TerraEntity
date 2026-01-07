@@ -45,7 +45,7 @@ public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot {
                         // 游走
                         .addWithCondition(Condition.not(new TargetExistCondition(mob)), BTFactory.infinite(this.createWonderBehavior()))
                         // 攻击
-                        .addWithCondition(new TargetExistCondition(mob), this.createAttackBehavior().setDesc("阶段选择器"))
+                        .addWithCondition(new TargetExistCondition(mob), this.createAttackBehavior())
                         .setDesc("AI")
                 ));
     }

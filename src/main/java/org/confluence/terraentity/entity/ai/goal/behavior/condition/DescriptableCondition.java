@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class DescriptableCondition implements Condition {
     private String description;
 
-    public Condition setDesc(String description) {
+    public Condition setConDesc(String description) {
         this.description = description;
         return this;
     }

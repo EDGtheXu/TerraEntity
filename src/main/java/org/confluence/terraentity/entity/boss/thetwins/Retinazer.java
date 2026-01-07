@@ -15,7 +15,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.BTRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.SequenceNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
-import org.confluence.terraentity.entity.ai.goal.behavior.condition.DistanceCondition;
+import org.confluence.terraentity.entity.ai.goal.behavior.condition.DistanceLowerThanCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.HealthLowerThanCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.*;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
@@ -101,7 +101,7 @@ public class Retinazer extends Spazmatism {
                             .addChild(new LookAtTargetAction(mob))
                             .addChild(BTFactory.repeater(this.mob.skillParams.shootCount1(), BTFactory.sequence()
                                     .addChild(BTFactory.wait(this.mob.skillParams.shootInterval1()))
-                                    .addChild(BTFactory.condition(new DistanceCondition(this.mob, 20), new IntervalShootAction(mob, 30f))) // 离太远不能发射激光
+                                    .addChild(BTFactory.condition(new DistanceLowerThanCondition(this.mob, 20), new IntervalShootAction(mob, 30f))) // 离太远不能发射激光
                             ))
                     )
                     .addChild(new AnimCtrlAction<>(mob, "Controller", "run1", mob.run_1_Flag, true))

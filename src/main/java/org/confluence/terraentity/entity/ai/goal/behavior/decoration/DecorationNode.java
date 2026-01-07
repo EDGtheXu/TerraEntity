@@ -12,7 +12,7 @@ public abstract class DecorationNode extends BTNode {
         child.start();
     }
 
-    protected DecorationNode(BTNode child) {
+    public DecorationNode(BTNode child) {
         this.child = child;
     }
 

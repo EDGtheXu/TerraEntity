@@ -5,9 +5,11 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -16,16 +18,20 @@ import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.terraentity.TerraEntity;
+import org.confluence.terraentity.api.entity.Boss;
 import org.confluence.terraentity.api.entity.ISharedFlagControllerHolder;
 import org.confluence.terraentity.api.entity.ITrackType;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTCommonRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode;
-import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
+import org.confluence.terraentity.entity.ai.goal.behavior.condition.AngleLowerThanCondition;
+import org.confluence.terraentity.entity.ai.goal.behavior.condition.TimeCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.decoration.RepeatUntilNode;
-import org.confluence.terraentity.entity.ai.goal.behavior.leaf.ConditionAction;
+import org.confluence.terraentity.entity.ai.goal.behavior.leaf.AttributeModifierAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.FlyTowardTargetAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.LookAtTargetAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.SyncFlagAction;
@@ -35,12 +41,13 @@ import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.registries.track.variant.SimpleTrack;
 import org.confluence.terraentity.utils.TEUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class SkeletronPrime extends AbstractTerraBossBase implements ISharedFlagControllerHolder {
+public class SkeletronPrime extends AbstractTerraBossBase implements ISharedFlagControllerHolder, Boss {
 
 
     protected static final EntityDataAccessor<Integer> DATA_SHARE_FLAG = SynchedEntityData.defineId(SkeletronPrime.class, EntityDataSerializers.INT);
@@ -134,32 +141,29 @@ public class SkeletronPrime extends AbstractTerraBossBase implements ISharedFlag
 
         @Override
         protected BTNode createAttackBehavior() {
-            return BTFactory.sequence()
-
-                    .addChild(BTFactory.withTimer(200, BTFactory.parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ALL)
-                            .addChild(new LerpTrackAction(mob))
-                            .addChild(BTFactory.infinite(BTFactory.sequence()
-                                    .addChild(BTFactory.wait(30))
-                                    .addChild(new RepeatUntilNode(BTStatus.FAILURE, new ConditionAction(new AngleLowerThanCondition(mob, Math.PI * 0.3f))))
-                                    .addChild(BTFactory.withTimer(20, new SlowdownAction(this.mob, 0.8)))
+            return BTFactory.selector()
+                    .addWithCondition(TimeCondition.isDay(this.mob.level()), BTFactory.sequence()
+                            .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, true))
+                            .addChild(new AttributeModifierAction.Add(this.mob, Attributes.ATTACK_DAMAGE, TerraEntity.space("day"), 999, AttributeModifier.Operation.ADD_VALUE))
+                            .addChild(BTFactory.withTimer(99999,new FlyTowardTargetAction(mob, 2.0f)))
+                    )
+                    .addWithCondition(TimeCondition.isNight(this.mob.level()), BTFactory.sequence()
+                            .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, false))
+                            .addChild(new AttributeModifierAction.Remove(this.mob, Attributes.ATTACK_DAMAGE, TerraEntity.space("day")))
+                            .addChild(BTFactory.withTimer(200, BTFactory.parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ALL)
+                                    .addChild(new LerpTrackAction(mob))
+                                    .addChild(BTFactory.infinite(BTFactory.sequence()
+                                            .addChild(BTFactory.wait(30))
+                                            .addChild(new RepeatUntilNode(BTStatus.FAILURE, new AngleLowerThanCondition(mob, Math.PI * 0.3f)))
+                                            .addChild(BTFactory.withTimer(20, new SlowdownAction(this.mob, 0.8)))
+                                    ))
                             ))
-                    ))
-                    .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, true))
-                    .addChild(BTFactory.withTimer(50,new FlyTowardTargetAction(mob, 0.8f)))
-                    .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, false))
+                            .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, true))
+                            .addChild(BTFactory.withTimer(50,new FlyTowardTargetAction(mob, 0.8f)))
+                            .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, false))
 
-                    .addChild(BTFactory.withTimer(10))
-                    ;
-        }
-
-        record AngleLowerThanCondition(Mob mob, double angle) implements Condition {
-            @Override
-            public boolean check() {
-                if (mob.getTarget() == null) {
-                    return false;
-                }
-                return TEUtils.angleBetween(mob.getDeltaMovement(), mob.getTarget().position().subtract(mob.position())) < angle;
-            }
+                            .addChild(BTFactory.withTimer(10)))
+            ;
         }
 
         private static class LerpTrackAction extends BTNode {
@@ -241,5 +245,17 @@ public class SkeletronPrime extends AbstractTerraBossBase implements ISharedFlag
             return false;
         }
         return super.canAttack(entity);
+    }
+
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+
+    }
+
+    @Override
+    public void die(DamageSource damageSource) {
+        super.die(damageSource);
+        this.parts.stream().filter(LivingEntity::isAlive).forEach(Entity::kill);
     }
 }
