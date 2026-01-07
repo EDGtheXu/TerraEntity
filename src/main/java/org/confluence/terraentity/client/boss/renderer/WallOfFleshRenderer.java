@@ -1,5 +1,6 @@
 package org.confluence.terraentity.client.boss.renderer;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -26,6 +27,10 @@ import javax.annotation.Nonnull;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector4f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
@@ -50,11 +55,19 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     public static final int LOD_DIST_SQ_B = 100 * 100;
     public static final int LOD_DIST_SQ_C = 200 * 200;
     public static final int LOD_DIST_SQ_D = 400 * 400;
+    public static final int LOD_DIST_SQ_OFF = 1200 * 1200; //完全不渲染的距离
     public static final String LOD_SUFFIX_B = "_b";
     public static final String LOD_SUFFIX_C = "_c";
     public static final String LOD_SUFFIX_D = "_d";
 
-    public static final int LOD_DIST_SQ_OFF = 1200 * 1200; //完全不渲染的距离
+    // debug 相关
+    private static final int LOG_INTERVAL = 100; // 每100帧记录一次
+    private int frameCulledCount = 0;    // 当前帧剔除数
+    private int frameRenderedCount = 0;  // 当前帧渲染数
+    private int logTimer = 0;            // 用于计时的帧计数器
+    private final boolean isPrintLog = false;     // 是否打印调试日志
+    private final boolean isDrawDebugBox = false; //是否绘制视锥调试框
+    private static final Logger LOGGER = LoggerFactory.getLogger("TerraEntity-WallOfFleshRenderer");
 
     public WallOfFleshRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new GeoBossModel<>(TEBossEntities.WALL_OF_FLESH), false, 1.0f, 0.5f);
@@ -76,6 +89,10 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     @Override
     public void render(WallOfFlesh wall, float entityYaw, float partialTick,
                        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        // 在开始渲染前，重置这一帧的计数器 用于 debug日志打印
+        this.frameCulledCount = 0;
+        this.frameRenderedCount = 0;
+
         poseStack.pushPose();
         poseStack.pushPose();
         super.render(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
@@ -91,6 +108,25 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         }
 
         poseStack.popPose();
+
+        printDebugLog(); //视锥渲染调试日志打印
+    }
+
+    // 打印视锥剔除统计日志 (代码稳定后可移除)
+    private void printDebugLog() {
+        if(!isPrintLog){
+            return;
+        }
+        this.logTimer++;
+        if (this.logTimer >= LOG_INTERVAL) {
+            int total = frameCulledCount + frameRenderedCount;
+            if (total > 0) {
+                LOGGER.info("[肉山帧分析] 当前帧统计: 总计 {} 个 Grid | 渲染: {} | 剔除: {} | 剔除率: {}%",
+                        total, frameRenderedCount, frameCulledCount,
+                        String.format("%.1f", (frameCulledCount / (float)total) * 100));
+            }
+            this.logTimer = 0; // 重置计时器
+        }
     }
 
     @Override
@@ -103,9 +139,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
             return;
         }
 
-        // 视锥体剔除 (Frustum Culling)
+        // 视锥体剔除
         Frustum frustum = Minecraft.getInstance().levelRenderer.getFrustum();
-        if (isOutsideFrustum(poseStack, animatable, bone, frustum, partialTick)) {
+        if (isOutsideFrustum(poseStack, bone, frustum, bufferSource)) {
             return;
         }
 
@@ -133,40 +169,76 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     /**
      * 判定骨骼是否在视锥体之外
      */
-    private boolean isOutsideFrustum(PoseStack poseStack, WallOfFlesh animatable, GeoBone bone, Frustum frustum, float partialTick) {
-        if (!isGridBone(bone)) return false;
+    private boolean isOutsideFrustum(PoseStack poseStack, GeoBone bone, Frustum frustum, MultiBufferSource bufferSource) {
+        if (!isGridBone(bone)) {
+            return false;
+        }
 
-        // 1. 获取骨骼在模型中的局部坐标 (GeckoLib 像素单位)
-        // 这些坐标是相对于实体中心的，且包含了动画效果
-        float localX = bone.getPosX();
-        float localY = bone.getPosY();
-        float localZ = bone.getPosZ();
+        // 获取骨骼在模型空间中的最终位置
+        float modelX = - (bone.getPivotX() + bone.getPosX()) / 32f; //因为 geo lib 的原因 x 这里要取反
+        float modelY = (bone.getPivotY() + bone.getPosY()) / 32f;
+        float modelZ = (bone.getPivotZ() + bone.getPosZ()) / 32f;
 
-        // 2. 将像素单位转换为方块单位 (1/16)
-        // 注意：GeckoLib 的 Y 轴通常是向上为正，Z 轴可能需要根据模型方向调整
-        Vec3 localPos = new Vec3(localX / 16.0, localY / 16.0, localZ / 16.0);
+        // 2. 将模型空间坐标转换到世界/相机空间
+        poseStack.pushPose();
+        // 相对于模型原点的位移
+        poseStack.translate(modelX, modelY, modelZ);
+        // 提取变换后的矩阵点
+        Matrix4f matrix = poseStack.last().pose();
+        Vector4f bonePos = new Vector4f(0, 0, 0, 1.0f);
+        matrix.transform(bonePos);
 
-        // 3. 处理实体的旋转 (关键步骤！)
-        // 获取实体当前的渲染朝向（Yaw），并让坐标绕 Y 轴旋转
-        float yaw = animatable.getViewYRot(partialTick);
-        localPos = localPos.yRot((float) Math.toRadians(-yaw));
+        float camX = bonePos.x();
+        float camY = bonePos.y();
+        float camZ = bonePos.z();
 
-        // 4. 计算平滑的世界坐标 (使用 Lerp 防止移动时抖动)
-        double worldX = Mth.lerp(partialTick, animatable.xo, animatable.getX()) + localPos.x;
-        double worldY = Mth.lerp(partialTick, animatable.yo, animatable.getY()) + localPos.y;
-        double worldZ = Mth.lerp(partialTick, animatable.zo, animatable.getZ()) + localPos.z;
+        // 3. 计算盒子半径
+        double radius = CELL_SIZE / 32f;
 
-        // 5. 构建判定 AABB
-        // 适当增大半径 (radius)，因为一块“肉”可能比一个点大得多
-        // 建议设置为单元格大小的一半，再加一点缓冲
-        double radius = (CELL_SIZE / 16.0) * 1.5;
+        // 4. 调试绘制
+        drawDebugBox(bufferSource, camX, camY, camZ, radius);
+
+        poseStack.popPose();
+
+        // 5. 视锥判定
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         AABB boneAabb = new AABB(
-                worldX - radius, worldY - radius, worldZ - radius,
-                worldX + radius, worldY + radius, worldZ + radius
+                camX + cameraPos.x - radius, camY + cameraPos.y, camZ + cameraPos.z - radius,
+                camX + cameraPos.x + radius, camY + cameraPos.y + 2 * radius, camZ + cameraPos.z + radius
         );
 
-        // 6. 视锥体判定
-        return !frustum.isVisible(boneAabb);
+        boolean result = !frustum.isVisible(boneAabb);
+
+        // debug 日志记录
+        if(isPrintLog && result){
+            this.frameCulledCount++; // 记录这一帧中被剔除的一个骨骼
+        }else {
+            this.frameRenderedCount++; // 记录这一帧中被渲染的一个骨骼
+        }
+
+        return result;
+    }
+
+    /**
+     * 绘制视锥剔除调试框(代码稳定后可移除)
+     */
+    private void drawDebugBox(MultiBufferSource bufferSource, double camX, double camY, double camZ, double radius) {
+        if(!isDrawDebugBox){
+            return;
+        }
+        // 获取专门用于绘制线条的 VertexConsumer
+        VertexConsumer builder = bufferSource.getBuffer(RenderType.lines());
+
+        // 创建一个空的 PoseStack（因为 camX/Y/Z 已经是相对于摄像机的坐标了）
+        PoseStack debugStack = new PoseStack();
+
+        // 绘制线框盒
+        LevelRenderer.renderLineBox(
+                debugStack, builder,
+                camX - radius, camY, camZ - radius,
+                camX + radius, camY + 2 * radius, camZ + radius,
+                1.0f, 1.0f, 0.0f, 1.0f // 颜色：黄色 (R, G, B, A)
+        );
     }
 
     /**
