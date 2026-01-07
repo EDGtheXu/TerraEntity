@@ -28,6 +28,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.*;
+import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshPart;
 import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
@@ -313,8 +314,7 @@ public abstract class BaseProj<T extends BaseProj<T>> extends Projectile impleme
         }
         if (hitSound != null)
             level().playSound(this, this.blockPosition(), hitSound.get(), SoundSource.AMBIENT, 1.0f, 1.0f);
-        Entity actualHurter = hurter instanceof PartEntity<?> part ? part.getParent() : hurter;
-        if (actualHurter instanceof LivingEntity living && hurter.hurt(getDamageSource(living), damage)) {
+        if (hurter instanceof LivingEntity living && hurter.hurt(getDamageSource(living), damage)) {
             if (this.getOwner() instanceof LivingEntity owner) {
                 owner.setLastHurtMob(hurter);
             }

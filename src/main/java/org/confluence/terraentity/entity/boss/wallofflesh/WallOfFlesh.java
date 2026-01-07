@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -79,6 +80,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
 
     List<LivingEntity> nearbyLivings;
 
+    private float targetHeight;
     private static final double FINISH_LINE_DISTANCE = 2000;
     private static final int MAX_ASSIGNED_MOUTHS = 2;
     private static final int MAX_ASSIGNED_EYES = 4;
@@ -597,8 +599,14 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
         this.noCulling = true;
         this.setNoGravity(true);
         double summonDir = 50;
-        Vec3 summonPos = new Vec3(this.position().x, this.level().getMinBuildHeight() + (gridSizeY * gridSpacing)/2, this.position().z).add(getForward().scale(-summonDir));
-        this.moveTo(summonPos);
+        this.targetHeight = this.level().getMinBuildHeight() + (gridSizeY * gridSpacing) / 2;
+        Vec3 summonPos = new Vec3(
+                this.position().x,
+                this.targetHeight,
+                this.position().z
+        ).add(getForward().scale(-summonDir));
+
+        this.setPos(summonPos);
         this.InitPos = summonPos;
     }
 
@@ -737,7 +745,12 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                     this.discard();
                     return;
                 }
-                this.addDeltaMovement(getForward().scale(this.getMoveSpeed()).scale(0.125F));
+                this.addDeltaMovement(getForward().scale(this.getMoveSpeed()*0.125F));
+                double yDiff = this.targetHeight == 0?0:targetHeight - this.getY();
+                if (Math.abs(yDiff) > 0.1) {
+                    float directionSign = (yDiff > 0) ? 1.0f : -1.0f;
+                    this.setDeltaMovement(this.getDeltaMovement().add(0, directionSign, 0).scale(this.getMoveSpeed()*0.1F));
+                }
             }
         }
 

@@ -207,12 +207,16 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
             Vec3 toTargetHorizontal = new Vec3(dist.x, 0, dist.z);
             double hLenSqr = toTargetHorizontal.lengthSqr();
 
-            if (hLenSqr <= 1.0E-6 && forward.dot(toTargetHorizontal.normalize()) >= -0.02) {
+            if (hLenSqr > 1.0E-6 && forward.dot(toTargetHorizontal.normalize()) >= 0.0) {
                 float yaw = (float) (Math.atan2(dist.z, dist.x));
                 float pitch = (float) (Math.atan2(dist.y, Math.sqrt(dist.x * dist.x + dist.z * dist.z)));
                 eyePart.stareYaw = (float) (Math.PI / 2 - yaw);
                 eyePart.starePitch = pitch;
             }
+        } else {
+            float backSpeed = 0.15f;
+            eyePart.stareYaw = Mth.lerp(backSpeed, eyePart.stareYaw, 0.0f);
+            eyePart.starePitch = Mth.lerp(backSpeed, eyePart.starePitch, 0.0f);
         }
 
         float lerpYaw = eyePart.lerpYaw(partialTick);
