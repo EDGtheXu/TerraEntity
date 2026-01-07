@@ -1,9 +1,9 @@
 package org.confluence.terraentity.client.boss.renderer;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -26,9 +26,11 @@ import net.minecraft.util.Tuple;
 import javax.annotation.Nonnull;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.jetbrains.annotations.Nullable;
-import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
-import org.joml.Vector3d;
+import org.joml.Quaternionf;
+import org.joml.Vector4f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
@@ -48,6 +50,24 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     private final Map<String, Integer> cellVariantCache = new HashMap<>();
     private int cachedPartCount = -1; //记录缓存 part 数量
     private boolean modelMerged = false;
+
+    // 肉墙裁剪距离平方
+    public static final int LOD_DIST_SQ_B = 100 * 100;
+    public static final int LOD_DIST_SQ_C = 200 * 200;
+    public static final int LOD_DIST_SQ_D = 400 * 400;
+    public static final int LOD_DIST_SQ_OFF = 1200 * 1200; //完全不渲染的距离
+    public static final String LOD_SUFFIX_B = "_b";
+    public static final String LOD_SUFFIX_C = "_c";
+    public static final String LOD_SUFFIX_D = "_d";
+
+    // debug 相关
+    private static final int LOG_INTERVAL = 100; // 每100帧记录一次
+    private int frameCulledCount = 0;    // 当前帧剔除数
+    private int frameRenderedCount = 0;  // 当前帧渲染数
+    private int logTimer = 0;            // 用于计时的帧计数器
+    private final boolean isPrintLog = false;     // 是否打印调试日志
+    private final boolean isDrawDebugBox = false; //是否绘制视锥调试框
+    private static final Logger LOGGER = LoggerFactory.getLogger("TerraEntity-WallOfFleshRenderer");
 
     public WallOfFleshRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new GeoBossModel<>(TEBossEntities.WALL_OF_FLESH), false, 1.0f, 0.5f);
@@ -69,6 +89,10 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     @Override
     public void render(WallOfFlesh wall, float entityYaw, float partialTick,
                        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        // 在开始渲染前，重置这一帧的计数器 用于 debug日志打印
+        this.frameCulledCount = 0;
+        this.frameRenderedCount = 0;
+
         poseStack.pushPose();
         poseStack.pushPose();
         super.render(wall, entityYaw, partialTick, poseStack, bufferSource, packedLight);
@@ -84,66 +108,157 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         }
 
         poseStack.popPose();
+
+        printDebugLog(); //视锥渲染调试日志打印
+    }
+
+    // 打印视锥剔除统计日志 (代码稳定后可移除)
+    private void printDebugLog() {
+        if(!isPrintLog){
+            return;
+        }
+        this.logTimer++;
+        if (this.logTimer >= LOG_INTERVAL) {
+            int total = frameCulledCount + frameRenderedCount;
+            if (total > 0) {
+                LOGGER.info("[肉山帧分析] 当前帧统计: 总计 {} 个 Grid | 渲染: {} | 剔除: {} | 剔除率: {}%",
+                        total, frameRenderedCount, frameCulledCount,
+                        String.format("%.1f", (frameCulledCount / (float)total) * 100));
+            }
+            this.logTimer = 0; // 重置计时器
+        }
     }
 
     @Override
     public void renderRecursively(PoseStack poseStack, WallOfFlesh animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
                                   int packedOverlay, int colour) {
 
-        if (bone.getName() != null) {
-
-            double distSq = getDistSq(poseStack);
-            if (bone.getName().endsWith("_b") && distSq > 100*100) {
-                return;
-            }else if (bone.getName().endsWith("_c") && distSq > 200*200) {
-                return;
-            }else if (bone.getName().endsWith("_d") && distSq > 400*400) {
-                return;
-            }else if (distSq > 1200*1200) {
-                return;
-            }
+        // LOD 距离裁剪
+        String name = bone.getName();
+        if (name != null && isBoneFiltered(name, getDistSq(poseStack))) {
+            return;
         }
 
+        // 视锥体剔除
         Frustum frustum = Minecraft.getInstance().levelRenderer.getFrustum();
-
-        AABB worldAabb = null;
-        // 只对网格骨骼进行网格索引解析和视锥体剔除
-        if (isGridBone(bone)) {
-            int[] idx = parseGridIndex(bone.getName());
-            if (idx == null) {
-                return;
-            }
-            float c = CELL_HALF / 16f;
-            // 相对坐标（Gecko 单位 1/16 方块），保持当前 poseStack 变换，这样 AABB 随实体移动
-            double cx = (idx[0] * CELL_SIZE + CELL_HALF) / 16.0;
-            double cy = (idx[1] * CELL_SIZE + CELL_HALF) / 16.0;
-            double cz = 0;
-            AABB cellAabb = new AABB(cx, cy, cz, cx, cy, cz).inflate(c).inflate(8);
-            worldAabb = cellAabb.move(animatable.getX(), animatable.getY(), animatable.getZ());
-            //if (renderHitBoxes && !animatable.isInvisible() && !Minecraft.getInstance().showOnlyReducedInfo() && !animatable.isRemoved()) {
-            //    LevelRenderer.renderLineBox(poseStack, bufferSource.getBuffer(RenderType.lines()), cellAabb, 1, 0, 0, 1.0F);
-            //}
-        }
-
-        if (worldAabb != null && cubeInFrustum(frustum, worldAabb.minX, worldAabb.minY, worldAabb.minZ, worldAabb.maxX, worldAabb.maxY, worldAabb.maxZ)) {
-            //return;
+        if (isOutsideFrustum(poseStack, bone, frustum, bufferSource)) {
+            return;
         }
 
         if ("Head_eye".equals(bone.getName())) {
-            GeoBone parent = bone.getParent();
-            if (parent != null) {
-                for (WallOfFleshPart part : animatable.subEntities) {
-                    String partName = part.name;
-                    if (part instanceof WallOfFleshEye eyePart && parent.getName().equals(partName)) {
-                        adjustEyePose(bone, eyePart, animatable, partialTick);
-                    }
-                }
-            }
+            handleEyeTracking(bone, animatable, partialTick);
         }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
     }
 
-    // 获取骨骼距离摄像机距离平方
+    /**
+     * 判定当前骨骼是否应基于距离被过滤（LOD 裁剪）
+     */
+    private boolean isBoneFiltered(String name, double distSq) {
+        // 1. 全局最大距离裁剪：如果超过最大渲染距离，直接剔除所有骨骼
+        if (distSq > LOD_DIST_SQ_OFF) return true;
+
+        // 2. 基于后缀的分级裁剪
+        if (name.endsWith(LOD_SUFFIX_B)) return distSq > LOD_DIST_SQ_B;
+        if (name.endsWith(LOD_SUFFIX_C)) return distSq > LOD_DIST_SQ_C;
+        if (name.endsWith(LOD_SUFFIX_D)) return distSq > LOD_DIST_SQ_D;
+
+        return false;
+    }
+
+    /**
+     * 判定骨骼是否在视锥体之外
+     */
+    private boolean isOutsideFrustum(PoseStack poseStack, GeoBone bone, Frustum frustum, MultiBufferSource bufferSource) {
+        if (!isGridBone(bone)) {
+            return false;
+        }
+
+        // 获取骨骼在模型空间中的最终位置
+        float modelX = - (bone.getPivotX() + bone.getPosX()) / 32f; //因为 geo lib 的原因 x 这里要取反
+        float modelY = (bone.getPivotY() + bone.getPosY()) / 32f;
+        float modelZ = (bone.getPivotZ() + bone.getPosZ()) / 32f;
+
+        // 2. 将模型空间坐标转换到世界/相机空间
+        poseStack.pushPose();
+        // 相对于模型原点的位移
+        poseStack.translate(modelX, modelY, modelZ);
+        // 提取变换后的矩阵点
+        Matrix4f matrix = poseStack.last().pose();
+        Vector4f bonePos = new Vector4f(0, 0, 0, 1.0f);
+        matrix.transform(bonePos);
+
+        float camX = bonePos.x();
+        float camY = bonePos.y();
+        float camZ = bonePos.z();
+
+        // 3. 计算盒子半径
+        double radius = CELL_SIZE / 32f;
+
+        // 4. 调试绘制
+        drawDebugBox(bufferSource, camX, camY, camZ, radius);
+
+        poseStack.popPose();
+
+        // 5. 视锥判定
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        AABB boneAabb = new AABB(
+                camX + cameraPos.x - radius, camY + cameraPos.y, camZ + cameraPos.z - radius,
+                camX + cameraPos.x + radius, camY + cameraPos.y + 2 * radius, camZ + cameraPos.z + radius
+        );
+
+        boolean result = !frustum.isVisible(boneAabb);
+
+        // debug 日志记录
+        if(isPrintLog && result){
+            this.frameCulledCount++; // 记录这一帧中被剔除的一个骨骼
+        }else {
+            this.frameRenderedCount++; // 记录这一帧中被渲染的一个骨骼
+        }
+
+        return result;
+    }
+
+    /**
+     * 绘制视锥剔除调试框(代码稳定后可移除)
+     */
+    private void drawDebugBox(MultiBufferSource bufferSource, double camX, double camY, double camZ, double radius) {
+        if(!isDrawDebugBox){
+            return;
+        }
+        // 获取专门用于绘制线条的 VertexConsumer
+        VertexConsumer builder = bufferSource.getBuffer(RenderType.lines());
+
+        // 创建一个空的 PoseStack（因为 camX/Y/Z 已经是相对于摄像机的坐标了）
+        PoseStack debugStack = new PoseStack();
+
+        // 绘制线框盒
+        LevelRenderer.renderLineBox(
+                debugStack, builder,
+                camX - radius, camY, camZ - radius,
+                camX + radius, camY + 2 * radius, camZ + radius,
+                1.0f, 1.0f, 0.0f, 1.0f // 颜色：黄色 (R, G, B, A)
+        );
+    }
+
+    /**
+     *  眼球追踪
+     */
+    private void handleEyeTracking(GeoBone bone, WallOfFlesh animatable, float partialTick) {
+        GeoBone parent = bone.getParent();
+        if (parent == null) return;
+
+        for (WallOfFleshPart part : animatable.subEntities) {
+            if (part instanceof WallOfFleshEye eyePart && parent.getName().equals(part.name)) {
+                adjustEyePose(bone, eyePart, animatable, partialTick);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 获取骨骼距离摄像机距离平方
+     */
     private double getDistSq(PoseStack poseStack) {
         // 1. 从当前的矩阵栈中提取变换矩阵
         // Matrix4f 包含了当前骨骼的所有平移、旋转和缩放信息
@@ -156,35 +271,6 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         // 3. 计算该骨骼距离摄像机的平方距离
         return x * x + y * y + z * z;
-    }
-
-    private boolean cubeInFrustum(Frustum frustum,double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
-        float f = (float)(minX - frustum.camX);
-        float f1 = (float)(minY - frustum.camY);
-        float f2 = (float)(minZ - frustum.camZ);
-        float f3 = (float)(maxX - frustum.camX);
-        float f4 = (float)(maxY - frustum.camY);
-        float f5 = (float)(maxZ - frustum.camZ);
-
-        // 使用 intersectAab 方法获取更详细的相交结果
-        int intersectResult = frustum.intersection.intersectAab(f, f1, f2, f3, f4, f5);
-
-        // INTERSECT: AABB与视锥体相交（包括部分相交）
-        // INSIDE: AABB完全在视锥体内
-        // 这两种情况都表示AABB是可见的
-        return intersectResult != FrustumIntersection.INTERSECT && intersectResult != FrustumIntersection.INSIDE;
-    }
-
-    private int[] parseGridIndex(String name) {
-        // 解析 boneX_Y 或 bone-3_5
-        int split = name.indexOf('_');
-        if (!name.startsWith("bone") || split < 0) return null;
-        String xs = name.substring(4, split);
-        String ys = name.substring(split + 1);
-        if (xs.isEmpty() || ys.isEmpty()) return null;
-        int x = Integer.parseInt(xs);
-        int y = Integer.parseInt(ys);
-        return new int[]{x, y};
     }
 
     private void adjustEyePose(GeoBone bone, WallOfFleshEye eyePart, WallOfFlesh parentMob, float partialTick) {
@@ -296,7 +382,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
                     // X 轴取反以对齐渲染器的局部坐标系
                     Vec3 renderPos = new Vec3(-lx, ly, 0);
-                    String boneName = "grid_" + ix + "_" + iy;
+                    String boneName = "bone" + ix + "_" + iy;
                     baseRoot.getChildBones().add(copyBone(variant, renderPos, boneName, baseRoot));
                 }
             }
