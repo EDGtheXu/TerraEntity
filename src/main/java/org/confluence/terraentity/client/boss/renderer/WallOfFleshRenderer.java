@@ -1,6 +1,5 @@
 package org.confluence.terraentity.client.boss.renderer;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -27,17 +26,13 @@ import javax.annotation.Nonnull;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.*;
 
 public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
@@ -46,7 +41,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
     private static final float CELL_SIZE = 240f;
     private static final float CELL_HALF = CELL_SIZE / 2.0f;
-    private static final Pattern GRID_BONE = Pattern.compile("bone-?\\d+_-?\\d+");
+    private final Set<GeoBone> gridBones = Collections.newSetFromMap(new IdentityHashMap<>());
     private final Map<String, Integer> cellVariantCache = new HashMap<>();
     private int cachedPartCount = -1; //记录缓存 part 数量
     private boolean modelMerged = false;
@@ -356,6 +351,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         // 清理旧骨骼
         baseRoot.getChildBones().clear();
+        gridBones.clear();
 
         GeoBone[] variants = new GeoBone[VARIANT_BONES.length];
         for (int i = 0; i < VARIANT_BONES.length; i++) {
@@ -383,7 +379,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
                     // X 轴取反以对齐渲染器的局部坐标系
                     Vec3 renderPos = new Vec3(-lx, ly, 0);
                     String boneName = "bone" + ix + "_" + iy;
-                    baseRoot.getChildBones().add(copyBone(variant, renderPos, boneName, baseRoot));
+                    GeoBone gridBone = copyBone(variant, renderPos, boneName, baseRoot);
+                    baseRoot.getChildBones().add(gridBone);
+                    gridBones.add(gridBone); //用于快速查询
                 }
             }
         }
@@ -461,8 +459,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     }
 
     private boolean isGridBone(GeoBone bone) {
-        String name = bone.getName();
-        return name != null && GRID_BONE.matcher(name).matches();
+        return gridBones.contains(bone);
     }
 
     @Override
