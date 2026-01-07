@@ -1,7 +1,9 @@
 package org.confluence.terraentity.item;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -59,7 +61,11 @@ public class DebugItem extends Item {
 
                                                 BTServer.updateBehaviorTree(root);
                                                 BTServer.updateMob = mob;
-                                                player.sendSystemMessage(Component.literal("Behavior Tree Web Viewer Server Started at http://localhost:" + ServerConfig.BEHAVIOR_TREE_WEB_VIEWER_SERVER_PORT.getAsInt()));
+                                                String text = "http://localhost:" + ServerConfig.BEHAVIOR_TREE_WEB_VIEWER_SERVER_PORT.getAsInt();
+                                                player.sendSystemMessage(Component.literal("Behavior Tree Web Viewer Server Started at ")
+                                                        .append(Component.literal(text).withStyle(style -> style
+                                                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, text))
+                                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to jump"))))));
 
                                             } catch (IOException e) {
                                                 TerraEntity.LOGGER.error("Error reading behavior tree viewer html file");
