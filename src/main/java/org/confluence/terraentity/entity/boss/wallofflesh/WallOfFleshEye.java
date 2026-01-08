@@ -20,13 +20,13 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
 
     int shootDamage;
     int _shootDelay = 10;
-    int _shootInterval = 40;
+    int _shootInterval = 20;
     final int __shootInterval = _shootInterval;
     int _shootCount = 1;
     int shootDelay;
     int shootCount;
 
-    private static final int summonCDAll = 60;
+    private static final int summonCDAll = 20;
     private int summonCD = summonCDAll;
 
     public float calculatedYaw = 0.0f;
@@ -84,10 +84,9 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
         this.findTarget();
         if (this.parentMob== null || !this.parentMob.isAlive()) return;
 
-        // 保留 forward：确保目标跑到墙体后方时，不会出现“眼睛转到背后”的突兀效果
+        // 确保目标跑到墙体后方时，不会出现眼睛转到背后的情况
         Vec3 forward = this.parentMob.getForward().normalize();
 
-        // 检查目标是否为创造模式或观察者模式的玩家
         if(this.target != null && this.target instanceof Player player) {
             if(player.isCreative() || player.isSpectator()) {
                 this.target = null;
@@ -98,14 +97,13 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
         if (this.target != null && this.target.isAlive() && !this.target.isRemoved()) {
 
             if (!this.level().isClientSide) {
-                // 采样计算目标速度
                 this.aimTracker.tick(this.target, this.level().getGameTime());
             }
 
             // 同步 Hill：直接使用「眼睛自身位置 -> 目标位置」向量计算 yaw/pitch（弧度）
             Vec3 dist = this.target.getEyePosition().subtract(this.getEyePosition());
 
-            // 如果目标在墙体后方，则不更新注视角，避免眼睛翻到背面
+            // 如果目标在墙体后方，则不更新注视角
             Vec3 toTargetHorizontal = new Vec3(dist.x, 0, dist.z);
             double hLenSqr = toTargetHorizontal.lengthSqr();
             boolean inFront = !(hLenSqr > 1.0E-6 && forward.dot(toTargetHorizontal.normalize()) < 0.0);
@@ -114,9 +112,8 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
             if (inFront && horizontalDistance > 1.0E-3) {
                 float yaw = (float) Math.atan2(dist.z, dist.x);
                 // Wall 眼睛的 X 轴方向与 Hill 相反：俯仰需要翻转符号，否则上下看会反
-                float pitch = (float) (Math.atan2(dist.y, horizontalDistance));
                 this.calculatedYaw = (float) (Math.PI / 2 - yaw);
-                this.calculatedPitch = pitch;
+                this.calculatedPitch = (float) -Math.atan2(dist.y, horizontalDistance);
 
                 // 有目标时才刷新插值目标值；无目标的回正/插值交给 WallOfFleshPart.findTarget()
                 this.stareYaw = this.calculatedYaw;
