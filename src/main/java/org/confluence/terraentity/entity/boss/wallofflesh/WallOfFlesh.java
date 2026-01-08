@@ -177,8 +177,8 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
             float zOffset = 0.0F;
 
             final int MAX_DEPTH = 6;
-            final double EYE_CHANCE = 0.4;
-            final double MOUTH_CHANCE = 0.2;
+            final double EYE_CHANCE = 0.45;
+            final double MOUTH_CHANCE = 0.4;
             final double HUNGRY_CHANCE = 0.3;
             final double SUBDIVISION_CHANCE = 0.85; // 细分概率
 
