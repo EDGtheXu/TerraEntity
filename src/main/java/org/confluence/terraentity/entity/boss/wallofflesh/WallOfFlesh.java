@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -45,10 +44,8 @@ import org.confluence.terraentity.init.entity.TEAnimals;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
 import org.confluence.terraentity.integration.ModChecker;
-import org.confluence.terraentity.utils.CameraShakeData;
-import org.confluence.terraentity.utils.CameraShakeManager;
-import org.confluence.terraentity.utils.TEUtils;
-import org.confluence.terraentity.utils.WorldChunksManager;
+import org.confluence.terraentity.network.s2c.SyncWallOfFleshPositionsPacket;
+import org.confluence.terraentity.utils.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -59,8 +56,8 @@ import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLET_VEC
 import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLE_INT_VEC3_LIST_SERIALIZER;
 
 public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtendedTracking {
-    boolean genSegments = true;
-    int genTick = 5;
+    public boolean genSegments = true;
+    int genTick = 1;
     boolean shouldMove = true;
     final float baseMoveSpeed = 0.125f;
     Vec3 InitPos = Vec3.ZERO;
@@ -128,10 +125,8 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
     }
 
     public void setLocalOffsets(int entityId, Vec3 offset) {
-        if (!this.level().isClientSide) {
-            this.localOffsets.add(new Tuple<>(entityId, offset));
-            this.entityData.set(DATA_LOCAL_OFFSETS, this.localOffsets);
-        }
+        this.localOffsets.add(new Tuple<>(entityId, offset));
+        this.entityData.set(DATA_LOCAL_OFFSETS, this.localOffsets);
     }
 
     public List<Tuple<Vec3, Integer>> getHungryOffsets() {
@@ -166,10 +161,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
     public void addChild(Entity child, Vec3 localOffset) {
         if (child instanceof WallOfFleshPart part) {
             subEntities.add(part);
-            if(!this.level().isClientSide) {
-                int index = subEntities.size() - 1;
-                this.setLocalOffsets(index, localOffset);
-            }
+            this.setLocalOffsets(subEntities.size() - 1, localOffset);
         }else if(child instanceof TheHungry hungry && !this.level().isClientSide){
             this.setHungryOffsets(localOffset, hungry.getId());
             Vec3 rotatedOffset = rotateLocalOffset(localOffset);
@@ -181,42 +173,42 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
     }
 
     private void genGridWall() {
-        float zOffset = 0.0F;
+        if (this.level() instanceof ServerLevel serverLevel) {// 只在服务端生成眼睛和嘴巴，并通过数据同步到客户端
+            float zOffset = 0.0F;
 
-        final int MAX_DEPTH = 6;
-        final double EYE_CHANCE = 0.4;
-        final double MOUTH_CHANCE = 0.2;
-        final double HUNGRY_CHANCE = 0.3;
-        final double SUBDIVISION_CHANCE = 0.85; // 细分概率
+            final int MAX_DEPTH = 6;
+            final double EYE_CHANCE = 0.4;
+            final double MOUTH_CHANCE = 0.2;
+            final double HUNGRY_CHANCE = 0.3;
+            final double SUBDIVISION_CHANCE = 0.85; // 细分概率
 
-        List<Vec3> eyePositions = new ArrayList<>();
-        List<Vec3> mouthPositions = new ArrayList<>();
-        List<Vec3> hungryPositions = new ArrayList<>();
+            List<Vec3> eyePositions = new ArrayList<>();
+            List<Vec3> mouthPositions = new ArrayList<>();
+            List<Vec3> hungryPositions = new ArrayList<>();
 
-        // 使用四叉树生成眼睛、嘴巴和饿鬼位置
-        generateAllEntitiesQuadTree(0, 0, gridSizeX, gridSizeY, 0, MAX_DEPTH,
-                EYE_CHANCE, MOUTH_CHANCE, HUNGRY_CHANCE, SUBDIVISION_CHANCE,
-                eyePositions, mouthPositions, hungryPositions, zOffset);
+            // 使用四叉树生成眼睛、嘴巴和饿鬼位置
+            generateAllEntitiesQuadTree(0, 0, gridSizeX, gridSizeY, 0, MAX_DEPTH,
+                    EYE_CHANCE, MOUTH_CHANCE, HUNGRY_CHANCE, SUBDIVISION_CHANCE,
+                    eyePositions, mouthPositions, hungryPositions, zOffset);
 
-        // 额外在眼睛之间生成嘴巴
-        generateMouthsBetweenEyes(eyePositions, mouthPositions, hungryPositions);
+            // 额外在眼睛之间生成嘴巴
+            generateMouthsBetweenEyes(eyePositions, mouthPositions, hungryPositions);
 
-        // 生成眼睛
-        for (int i = 0; i < eyePositions.size(); i++) {
-            Vec3 pos = eyePositions.get(i);
-            WallOfFleshEye eye = new WallOfFleshEye(this, "WallOfFleshEye" + (i + 1), 4.0f, 4.0f);
-            addChild(eye, pos);
-        }
+            // 生成眼睛
+            for (int i = 0; i < eyePositions.size(); i++) {
+                Vec3 pos = eyePositions.get(i);
+                WallOfFleshEye eye = new WallOfFleshEye(this, "WallOfFleshEye" + (i + 1), 4.0f, 4.0f);
+                addChild(eye, pos);
+            }
 
-        // 生成嘴巴
-        for (int i = 0; i < mouthPositions.size(); i++) {
-            Vec3 pos = mouthPositions.get(i);
-            WallOfFleshMouth mouth = new WallOfFleshMouth(this, "WallOfFleshMouth" + i, 3.0f, 4.0f);
-            addChild(mouth, pos);
-        }
+            // 生成嘴巴
+            for (int i = 0; i < mouthPositions.size(); i++) {
+                Vec3 pos = mouthPositions.get(i);
+                WallOfFleshMouth mouth = new WallOfFleshMouth(this, "WallOfFleshMouth" + i, 3.0f, 4.0f);
+                addChild(mouth, pos);
+            }
 
-        // 生成饿鬼
-        if (this.level() instanceof ServerLevel serverLevel) {
+            // 生成饿鬼（只在服务端）
             for (Vec3 pos : hungryPositions) {
                 TheHungry hungry = TEUtils.spawnEntity(() -> new TheHungry(TEMonsterEntities.THE_HUNGRY.get(), level(),
                         new AbstractPrefab().getPrefab()) {
@@ -231,6 +223,14 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                     hungry.minion_setOwner(this);
                 }
             }
+
+            serverLevel.getServer().tell(new net.minecraft.server.TickTask(serverLevel.getServer().getTickCount() + 20, () -> {
+                AdapterUtils.sendToAllPlayers(
+                    new SyncWallOfFleshPositionsPacket(
+                        this.getId(), eyePositions, mouthPositions
+                    )
+                );
+            }));
         }
         this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.size() + 1) + 1);
     }
@@ -261,7 +261,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                 width > 1 && height > 1 &&
                 random.nextDouble() < subdivisionChance;
 
-        if (depth < 3 && random.nextDouble() < 0.95) {
+        if (depth < 3 && random.nextDouble() < 1.0 - (depth * 0.3)) {
             shouldSubdivide = true;
         }
 
@@ -449,12 +449,13 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                     boolean isFrame = Math.abs(x) == 4 || Math.abs(y) == 4 || Math.abs(z) == 4;
                     BlockState blockState = level.getBlockState(framePos);
 
+                    float hardness = blockState.getDestroySpeed(level, framePos);
+
                     if (isFrame) {
-                        // 框架位置：可以替换可破坏的方块（getDestroySpeed != -1 表示可破坏）
-                        if (blockState.getDestroySpeed(level, framePos) != -1.0f || blockState.canBeReplaced()) {
+                        if (((hardness != -1.0f && hardness < 5.0f)) || blockState.canBeReplaced()) {
                             level.setBlockAndUpdate(framePos, block.defaultBlockState());
                         }
-                    } else if(!blockState.isAir() &&blockState.getDestroySpeed(level, framePos) != -1.0f){
+                    } else if (!blockState.isAir() && hardness != -1.0f && hardness < 5.0f) {
                         level.setBlockAndUpdate(framePos, Blocks.AIR.defaultBlockState());
                     }
                 }
@@ -606,7 +607,20 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                 this.position().z
         ).add(getForward().scale(-summonDir));
 
+        //确保刚生成时不会出现插值抖动和瞬移拖影
         this.setPos(summonPos);
+        this.setPosRaw(summonPos.x, summonPos.y, summonPos.z);
+        double dx = this.getX();
+        double dy = this.getY();
+        double dz = this.getZ();
+        this.xo = dx;
+        this.yo = dy;
+        this.zo = dz;
+        this.xOld = dx;
+        this.yOld = dy;
+        this.zOld = dz;
+
+        this.reapplyPosition();
         this.InitPos = summonPos;
     }
 
@@ -754,9 +768,8 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
             }
         }
 
-        if (this.tickCount > genTick && genSegments && this.dirty) {
+        if (genSegments && this.dirty) {
             genSegments = false;
-
             if (!level().isClientSide) {
                 CameraShakeManager.addCameraShake(new CameraShakeData(300, this.position(), 180));
             }
@@ -809,12 +822,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
     @Override
     public void onRemovedFromLevel() {
         subEntities.forEach(Entity::onRemovedFromLevel);
-        if(!this.isAlive()){
-            subEntities.forEach(Entity::discard);
-            localOffsets.clear();
-            theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
-            theHungryList.clear();
-        }
+        clearChildrenAndHungry();
         this.bossEvent.removeAllPlayers();
         super.onRemovedFromLevel();
     }
@@ -856,18 +864,22 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
             Vec3 centerPos = this.position();
             // 如果在地狱维度，确保中心位置在 NETHER_GENERATION_HEIGHT 以下
             if (this.level().dimension() == Level.NETHER) {
-                int maxY = DimensionDefaults.NETHER_GENERATION_HEIGHT - 10; // 留出框架的空间
+                int maxY = DimensionDefaults.NETHER_GENERATION_HEIGHT/2; // 留出框架的空间
                 if (centerPos.y() > maxY) {
                     this.setPos(new Vec3(centerPos.x(), maxY, centerPos.z()));
                 }
             }
 
-            subEntities.forEach(Entity::discard);
-            localOffsets.clear();
-            theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
-            theHungryList.clear();
+            clearChildrenAndHungry();
         }
         super.die(damageSource);
+    }
+
+    private void clearChildrenAndHungry() {
+        subEntities.forEach(Entity::discard);
+        localOffsets.clear();
+        theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
+        theHungryList.clear();
     }
 
     @Override
@@ -1069,12 +1081,9 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
      * 区块加载
      */
     private void handleChunkLoading() {
-        if (!(this.level() instanceof ServerLevel)) {
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
             return;
         }
-        ServerLevel serverLevel = (ServerLevel) this.level();
-
-
 
         int gridSizeX = this.getGridSizeX();
         float gridSpacing = this.gridSpacing;

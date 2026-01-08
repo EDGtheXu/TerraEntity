@@ -294,9 +294,15 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
             double hLenSqr = toTargetHorizontal.lengthSqr();
 
             if (hLenSqr > 1.0E-6 && forward.dot(toTargetHorizontal.normalize()) >= 0.0) {
-                float yaw = (float) (Math.atan2(dist.z, dist.x));
-                float pitch = (float) (Math.atan2(dist.y, Math.sqrt(dist.x * dist.x + dist.z * dist.z)));
-                eyePart.stareYaw = (float) (Math.PI / 2 - yaw);
+                double horizontalDist = Math.sqrt(dist.x * dist.x + dist.z * dist.z);
+                float pitch = (float) Math.atan2(dist.y, horizontalDist);
+
+                float yawOffset = (float) Math.atan2(
+                        forward.x * dist.z - forward.z * dist.x,
+                        forward.x * dist.x + forward.z * dist.z
+                );
+
+                eyePart.stareYaw = -yawOffset;
                 eyePart.starePitch = pitch;
             }
         } else {
@@ -342,7 +348,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         List<Tuple<Integer, Vec3>> localOffsets = animatable.getLocalOffsets();
 
         // 数据未同步则跳过
-        if (localOffsets.isEmpty()) return;
+        if (localOffsets.isEmpty()||animatable.subEntities.isEmpty()) return;
 
         // 数量未变化则不重构
         if (modelMerged && cachedPartCount == localOffsets.size()) {
@@ -365,8 +371,10 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         GeoBone mouthBone = model.getBone("bone_mouth").orElse(null);
 
         float geckoScale = 16.0f;
-        int gridX = animatable.getGridSizeX();
-        int gridY = animatable.getGridSizeY();
+        int collisionWidth = Mth.floor(150*2 / animatable.gridSpacing);
+        int collisionHeight = Mth.floor(150 / animatable.gridSpacing);
+        final int gridX = animatable.getGridSizeX()+collisionWidth;
+        final int gridY = animatable.getGridSizeY()+collisionHeight;
         float spacing = animatable.gridSpacing;
 
         // 绘制背景墙网格

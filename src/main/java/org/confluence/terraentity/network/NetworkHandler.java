@@ -21,6 +21,7 @@ public final class NetworkHandler {
         registrar.playToClient(SyncLevelNamePacketS2C.TYPE, SyncLevelNamePacketS2C.STREAM_CODEC, SyncLevelNamePacketS2C::handle);
         registrar.playToClient(SetAnglerDialogPacketS2C.TYPE, SetAnglerDialogPacketS2C.STREAM_CODEC, SetAnglerDialogPacketS2C::handle);
         registrar.playToClient(SyncWallOfFleshTargetPacket.TYPE, SyncWallOfFleshTargetPacket.STREAM_CODEC, SyncWallOfFleshTargetPacket::handle);
+        registrar.playToClient(SyncWallOfFleshPositionsPacket.TYPE, SyncWallOfFleshPositionsPacket.STREAM_CODEC, SyncWallOfFleshPositionsPacket::handle);
         registrar.playToClient(UpdateBlackboardPacket.TYPE, UpdateBlackboardPacket.STREAM_CODEC, UpdateBlackboardPacket::handle);
 
         registrar.playToServer(ServerBoundVehicleExtensionPacket.TYPE, ServerBoundVehicleExtensionPacket.STREAM_CODEC, ServerBoundVehicleExtensionPacket::handle);

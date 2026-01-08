@@ -314,11 +314,12 @@ public abstract class BaseProj<T extends BaseProj<T>> extends Projectile impleme
         }
         if (hitSound != null)
             level().playSound(this, this.blockPosition(), hitSound.get(), SoundSource.AMBIENT, 1.0f, 1.0f);
-        if (hurter instanceof LivingEntity living && hurter.hurt(getDamageSource(living), damage)) {
+        Entity actualHurter = hurter instanceof PartEntity<?> part ? part.getParent() : hurter;
+        if (actualHurter instanceof LivingEntity living && hurter.hurt(getDamageSource(living), damage)) {
             if (this.getOwner() instanceof LivingEntity owner) {
                 owner.setLastHurtMob(hurter);
             }
-            doKnockBack(living);
+            if(!(hurter instanceof PartEntity<?>))doKnockBack(living);
         }
 
         if (this.level() instanceof ServerLevel serverlevel) {

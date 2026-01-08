@@ -135,11 +135,9 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
                             && forwardDir.dot(toTargetHorizontal) >= 0
                             && e.position().distanceToSqr(this.position()) < r * r * 1.2
                             && e.position().subtract(this.position()).horizontalDistanceSqr() <= r * r;
-                    if(isTarget){
-                        if(isPlayer){
+                    if(isTarget &&isPlayer){
                             living = e;
                             break;
-                        }
                     }
                 }
                 this.changeTarget(living);
