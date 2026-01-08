@@ -20,13 +20,13 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
 
     int shootDamage;
     int _shootDelay = 10;
-    int _shootInterval = 40;
+    int _shootInterval = 20;
     final int __shootInterval = _shootInterval;
     int _shootCount = 1;
     int shootDelay;
     int shootCount;
 
-    private static final int summonCDAll = 60;
+    private static final int summonCDAll = 20;
     private int summonCD = summonCDAll;
 
     public float calculatedYaw = 0.0f;
