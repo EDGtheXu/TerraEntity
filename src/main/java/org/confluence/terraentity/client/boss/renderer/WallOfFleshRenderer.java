@@ -1,6 +1,5 @@
 package org.confluence.terraentity.client.boss.renderer;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -14,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terraentity.client.boss.model.GeoBossModel;
@@ -27,17 +27,13 @@ import javax.annotation.Nonnull;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.model.GeoModel;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.*;
 
 public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
@@ -46,7 +42,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
     private static final float CELL_SIZE = 240f;
     private static final float CELL_HALF = CELL_SIZE / 2.0f;
-    private static final Pattern GRID_BONE = Pattern.compile("bone-?\\d+_-?\\d+");
+    private final Set<GeoBone> gridBones = Collections.newSetFromMap(new IdentityHashMap<>());
     private final Map<String, Integer> cellVariantCache = new HashMap<>();
     private int cachedPartCount = -1; //记录缓存 part 数量
     private boolean modelMerged = false;
@@ -59,14 +55,17 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     public static final String LOD_SUFFIX_B = "_b";
     public static final String LOD_SUFFIX_C = "_c";
     public static final String LOD_SUFFIX_D = "_d";
+    private Vec3 playerEyePos;      //存储提前计算的玩家位置
 
     // debug 相关
     private static final int LOG_INTERVAL = 100; // 每100帧记录一次
     private int frameCulledCount = 0;    // 当前帧剔除数
     private int frameRenderedCount = 0;  // 当前帧渲染数
+    private int framesInInterval = 0; // 周期内实际经过的帧数
     private int logTimer = 0;            // 用于计时的帧计数器
     private final boolean isPrintLog = false;     // 是否打印调试日志
     private final boolean isDrawDebugBox = false; //是否绘制视锥调试框
+    private long lastLogTime = System.currentTimeMillis();
     private static final Logger LOGGER = LoggerFactory.getLogger("TerraEntity-WallOfFleshRenderer");
 
     public WallOfFleshRenderer(EntityRendererProvider.Context renderManager) {
@@ -92,6 +91,8 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         // 在开始渲染前，重置这一帧的计数器 用于 debug日志打印
         this.frameCulledCount = 0;
         this.frameRenderedCount = 0;
+        // 提前计算玩家位置
+        this.playerEyePos = Minecraft.getInstance().player.getEyePosition(partialTick);
 
         poseStack.pushPose();
         poseStack.pushPose();
@@ -114,21 +115,36 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
     // 打印视锥剔除统计日志 (代码稳定后可移除)
     private void printDebugLog() {
-        if(!isPrintLog){
+        if (!isPrintLog) {
             return;
         }
+
+        // 每一帧增加计数
+        this.framesInInterval++;
         this.logTimer++;
+
         if (this.logTimer >= LOG_INTERVAL) {
+            long currentTime = System.currentTimeMillis();
+            long timeElapsed = currentTime - lastLogTime; // 毫秒
+
+            // 计算平均 FPS: 帧数 / 秒数
+            double avgFps = framesInInterval / (timeElapsed / 1000.0);
+
             int total = frameCulledCount + frameRenderedCount;
             if (total > 0) {
-                LOGGER.info("[肉山帧分析] 当前帧统计: 总计 {} 个 Grid | 渲染: {} | 剔除: {} | 剔除率: {}%",
-                        total, frameRenderedCount, frameCulledCount,
+                LOGGER.info("[肉山性能分析] 平均FPS: {} | 渲染: {} | 剔除: {} | 剔除率: {}%",
+                        String.format("%.1f", avgFps),
+                        frameRenderedCount,
+                        frameCulledCount,
                         String.format("%.1f", (frameCulledCount / (float)total) * 100));
             }
-            this.logTimer = 0; // 重置计时器
+
+            // 重置所有计数器
+            this.logTimer = 0;
+            this.framesInInterval = 0;
+            this.lastLogTime = currentTime;
         }
     }
-
     @Override
     public void renderRecursively(PoseStack poseStack, WallOfFlesh animatable, GeoBone bone, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight,
                                   int packedOverlay, int colour) {
@@ -141,7 +157,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         // 视锥体剔除
         Frustum frustum = Minecraft.getInstance().levelRenderer.getFrustum();
-        if (isOutsideFrustum(poseStack, bone, frustum, bufferSource)) {
+        if (isOutsideFrustum(poseStack, bone, frustum, bufferSource, animatable)) {
             return;
         }
 
@@ -169,23 +185,19 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     /**
      * 判定骨骼是否在视锥体之外
      */
-    private boolean isOutsideFrustum(PoseStack poseStack, GeoBone bone, Frustum frustum, MultiBufferSource bufferSource) {
+    private boolean isOutsideFrustum(PoseStack poseStack, GeoBone bone, Frustum frustum, MultiBufferSource bufferSource, WallOfFlesh animatable) {
         if (!isGridBone(bone)) {
             return false;
         }
 
-        // 获取骨骼在模型空间中的最终位置
+        // 1.获取骨骼在模型空间中的最终位置
+        Matrix4f matrix = poseStack.last().pose();
         float modelX = - (bone.getPivotX() + bone.getPosX()) / 32f; //因为 geo lib 的原因 x 这里要取反
         float modelY = (bone.getPivotY() + bone.getPosY()) / 32f;
         float modelZ = (bone.getPivotZ() + bone.getPosZ()) / 32f;
 
-        // 2. 将模型空间坐标转换到世界/相机空间
-        poseStack.pushPose();
-        // 相对于模型原点的位移
-        poseStack.translate(modelX, modelY, modelZ);
-        // 提取变换后的矩阵点
-        Matrix4f matrix = poseStack.last().pose();
-        Vector4f bonePos = new Vector4f(0, 0, 0, 1.0f);
+        // 2.提取变换后的矩阵点
+        Vector4f bonePos = new Vector4f(modelX, modelY, modelZ, 1.0f);
         matrix.transform(bonePos);
 
         float camX = bonePos.x();
@@ -198,8 +210,6 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         // 4. 调试绘制
         drawDebugBox(bufferSource, camX, camY, camZ, radius);
 
-        poseStack.popPose();
-
         // 5. 视锥判定
         Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         AABB boneAabb = new AABB(
@@ -209,6 +219,11 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         boolean result = !frustum.isVisible(boneAabb);
 
+        // 6. 地狱上层基岩剔除
+        if (!result){
+            result = shouldCullByHeight(boneAabb, animatable, this.playerEyePos);
+        }
+
         // debug 日志记录
         if(isPrintLog && result){
             this.frameCulledCount++; // 记录这一帧中被剔除的一个骨骼
@@ -217,6 +232,29 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
         }
 
         return result;
+    }
+
+    /**
+     * 地狱上基岩层优化渲染
+     */
+    private boolean shouldCullByHeight(AABB aabb, WallOfFlesh entity, Vec3 playerEyePos) {
+        Level level = entity.level();
+
+        // 1. 高度判定
+        if (aabb.maxY < level.getMinBuildHeight()) return true;
+
+        // 2. 地狱基岩层逻辑
+        if (level.dimension() == Level.NETHER) {
+            double playerY = playerEyePos.y;
+            double ceilingY = 127.0;
+            if (playerY > ceilingY + 0.5) {
+                return aabb.maxY <= ceilingY;
+            } else if (playerY < 123.0) {
+                return aabb.minY >= ceilingY;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -362,6 +400,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
 
         // 清理旧骨骼
         baseRoot.getChildBones().clear();
+        gridBones.clear();
 
         GeoBone[] variants = new GeoBone[VARIANT_BONES.length];
         for (int i = 0; i < VARIANT_BONES.length; i++) {
@@ -391,7 +430,9 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
                     // X 轴取反以对齐渲染器的局部坐标系
                     Vec3 renderPos = new Vec3(-lx, ly, 0);
                     String boneName = "bone" + ix + "_" + iy;
-                    baseRoot.getChildBones().add(copyBone(variant, renderPos, boneName, baseRoot));
+                    GeoBone gridBone = copyBone(variant, renderPos, boneName, baseRoot);
+                    baseRoot.getChildBones().add(gridBone);
+                    gridBones.add(gridBone); //用于快速查询
                 }
             }
         }
@@ -469,8 +510,7 @@ public class WallOfFleshRenderer extends GeoNormalRenderer<WallOfFlesh> {
     }
 
     private boolean isGridBone(GeoBone bone) {
-        String name = bone.getName();
-        return name != null && GRID_BONE.matcher(name).matches();
+        return gridBones.contains(bone);
     }
 
     @Override
