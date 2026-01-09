@@ -50,7 +50,7 @@ public class Deerclops extends AbstractTerraBossBase implements Boss, ISharedFla
     private static final RawAnimation ICE = RawAnimation.begin().thenPlay("Ice");
     private static final RawAnimation ROAR = RawAnimation.begin().thenPlay("Roar");
     private static final RawAnimation ROARING = RawAnimation.begin().thenLoop("Roaring");
-    public static final EntityDataAccessor<Integer> DATA_SHARE_FLAG = SynchedEntityData.defineId(Deerclops.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_SHARE_FLAG = SynchedEntityData.defineId(Deerclops.class, EntityDataSerializers.INT);
     DeerSharedFlagController sharedFlagController;
     BlockPos destroyChestPos;
 
@@ -274,11 +274,10 @@ public class Deerclops extends AbstractTerraBossBase implements Boss, ISharedFla
         }
     }
 
-    private static class DeerclposBT extends BTRoot {
+    private static class DeerclposBT extends BTRoot<Deerclops> {
 
-        Deerclops mob;
         public DeerclposBT(Deerclops mob) {
-            this.mob = mob;
+            super(mob);
 
         }
 
@@ -291,13 +290,13 @@ public class Deerclops extends AbstractTerraBossBase implements Boss, ISharedFla
                             .addChild(BTFactory.condition(new TargetExistCondition(mob), BTFactory.infinite(BTFactory.sequence()
                                     .addChild(BTFactory.selector()
                                             // 距离过远则无敌
-                                            .addWithCondition(new DistanceLowerThanCondition(this.mob, 15), new SyncFlagAction<>(this.mob, this.mob.sharedFlagController.invulnerableFlag, false))
+                                            .addWithCondition(new DistanceLowerThanCondition(this.mob, 20), new SyncFlagAction<>(this.mob, this.mob.sharedFlagController.invulnerableFlag, false))
                                             .addChild(new SyncFlagAction<>(this.mob, this.mob.sharedFlagController.invulnerableFlag, true))
                                     )
                                     .addChild(BTFactory.parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ONE)
                                             .addChild(new MoveToTargetAction(this.mob, 7, 20))
                                             .addChild(BTFactory.wait(30)))
-                                    .addChild(BTFactory.withTimer(15, new IceAttack().setDesc("巨鹿攻击行为集成")))
+                                    .addChild(BTFactory.condition(new DistanceLowerThanCondition(this.mob, 20),BTFactory.withTimer(15, new IceAttack().setDesc("巨鹿攻击行为集成"))))
                             )))
                     )
                     .addWithCondition(Condition.not(new TargetExistCondition(mob)), BTFactory.infinite(BTFactory.selector()

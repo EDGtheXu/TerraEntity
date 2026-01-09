@@ -88,9 +88,8 @@ public class SkeletronPrimePart extends AbstractMonster implements GeoEntity, Ow
     protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {
     }
 
-    private static class SkeletronPrimePartBT extends BTRoot {
+    private static class SkeletronPrimePartBT extends BTRoot<SkeletronPrimePart> {
 
-        SkeletronPrimePart mob;
 
         static Vec3[] pinnedPos = {
                 new Vec3(-1, 1,  0), // 左上，激光
@@ -99,7 +98,7 @@ public class SkeletronPrimePart extends AbstractMonster implements GeoEntity, Ow
                 new Vec3(1,  1,  0)  // 右上，加农炮
          };
         public SkeletronPrimePartBT(SkeletronPrimePart mob) {
-            this.mob = mob;
+            super(mob);
         }
 
         @Override

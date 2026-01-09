@@ -69,6 +69,10 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<GoldenSlime>> GOLDEN_SLIME = TEEntities.ENTITIES.register("golden_slime", () -> EntityType.Builder.of(GoldenSlime::new, MobCategory.MONSTER).sized(0.6F, 0.6F).clientTrackingRange(10).build(TEEntities.Key("golden_slime")));
     public static final DeferredHolder<EntityType<?>, EntityType<FleshSlime>> FLESH_SLIME = TEEntities.ENTITIES.register("flesh_slime", () -> EntityType.Builder.<FleshSlime>of((entityType, level) -> new FleshSlime(entityType, level, 0xFF0000, 2), MobCategory.MONSTER).sized(0.6F, 0.6F).clientTrackingRange(10).build(TEEntities.Key("fleshed_slime")));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<SpikedSlime>> SPIKED_SLIME = TEEntities.ENTITIES.register("spiked_slime", () -> EntityType.Builder.<SpikedSlime>of((entityType, level) -> new SpikedSlime(entityType, level,  2), MobCategory.MONSTER).sized(0.6F, 0.6F).clientTrackingRange(10).build(TEEntities.Key("spiked_slime")));
+    public static final DeferredHolder<EntityType<?>, EntityType<SpikedSlime>> SPIKED_JUNGLE_SLIME = TEEntities.ENTITIES.register("spiked_jungle_slime", () -> EntityType.Builder.<SpikedSlime>of((entityType, level) -> SpikedJungleSlime.createSpikedJungleSlime(entityType, level,  2), MobCategory.MONSTER).sized(0.6F, 0.6F).clientTrackingRange(10).build(TEEntities.Key("spiked_jungle_slime")));
+    public static final DeferredHolder<EntityType<?>, EntityType<SpikedSlime>> SPIKED_ICE_SLIME = TEEntities.ENTITIES.register("spiked_ice_slime", () -> EntityType.Builder.<SpikedSlime>of((entityType, level) -> SpikedJungleSlime.createSpikedIceSlime(entityType, level,  2), MobCategory.MONSTER).sized(0.6F, 0.6F).clientTrackingRange(10).build(TEEntities.Key("spiked_ice_slime")));
+
     // 飞行怪
     public static final DeferredHolder<EntityType<?>, EntityType<DemonEye>> DEMON_EYE = TEEntities.registerMonster("demon_eye", DemonEye::new, 1.1F, 1.1F);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> CRIMERA = registerSimpleMonster("crimera", FlyMonsterPrefab.CRIMERA_BUILDER, 1.2f, 1.2f);
@@ -214,6 +218,10 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.GOLDEN_SLIME.get(), c -> new CustomSlimeRenderer(c, "yellow"));
         event.registerEntityRenderer(TEMonsterEntities.FLESH_SLIME.get(), c -> new CustomSlimeRenderer(c, "flesh"));
 
+        event.registerEntityRenderer(TEMonsterEntities.SPIKED_SLIME.get(), c -> new GeoSlimeRenderer<>(c, SPIKED_SLIME.getId().withPrefix("slime/")));
+        event.registerEntityRenderer(TEMonsterEntities.SPIKED_JUNGLE_SLIME.get(), c -> new GeoSlimeRenderer<>(c, SPIKED_JUNGLE_SLIME.getId().withPrefix("slime/")));
+        event.registerEntityRenderer(TEMonsterEntities.SPIKED_ICE_SLIME.get(), c -> new GeoSlimeRenderer<>(c, SPIKED_ICE_SLIME.getId().withPrefix("slime/")));
+
 
         event.registerEntityRenderer(TEMonsterEntities.CRIMERA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CRIMERA.getId(), true));
         event.registerEntityRenderer(TEMonsterEntities.EATER_OF_SOULS.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.EATER_OF_SOULS.getId(), true));
@@ -355,6 +363,10 @@ public class TEMonsterEntities {
         event.put(BLACK_SLIME.get(), Monster.createMonsterAttributes().add(Attributes.WATER_MOVEMENT_EFFICIENCY, BaseSlime.slimeWaterMoveSpeed).build()); // 由finalizeSpawn设置
         event.put(GOLDEN_SLIME.get(), GoldenSlime.createSlimeAttributes().build());
         event.put(FLESH_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
+
+        event.put(SPIKED_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
+        event.put(SPIKED_JUNGLE_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
+        event.put(SPIKED_ICE_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
 
         // land
         event.put(BLOOD_CRAWLER.get(), BloodCrawler.createAttributes().build());

@@ -5,7 +5,7 @@ import org.confluence.terraentity.entity.util.SharedFlagController;
 import software.bernie.geckolib.animatable.GeoEntity;
 
 /**
- * geo动画状态触发器
+ * geo动画状态触发器，并将状态绑定一个共享标志位，给客户端使用
  */
 public class AnimCtrlAction<T extends GeoEntity & ISharedFlagControllerHolder> extends SyncFlagAction<T> {
 

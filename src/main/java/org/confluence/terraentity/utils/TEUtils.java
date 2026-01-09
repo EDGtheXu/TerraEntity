@@ -357,10 +357,17 @@ public final class TEUtils {
         return Math.acos(v1.dot(v2)/v1.length()/v2.length());
     }
 
+    /**
+     * 球坐标
+     * @param r 半径
+     * @param theta yaw
+     * @param beta pitch - 90°
+     * @return 方向向量
+     */
     public static Vec3 sphere(float r, float theta, float beta){
-        double x = r * Math.sin(theta) * Math.cos(beta);
-        double y = r * Math.sin(theta) * Math.sin(beta);
-        double z = r * Math.cos(theta);
+        double x = r * Math.sin(beta) * Math.cos(theta);
+        double y = r * Math.cos(beta);
+        double z = r * Math.sin(beta) * Math.sin(theta);
         return new Vec3(x, y, z);
     }
 

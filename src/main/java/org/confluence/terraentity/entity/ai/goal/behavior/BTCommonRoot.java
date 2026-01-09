@@ -5,18 +5,16 @@ import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.TargetExistCondition;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.RandomStrollAction;
-import org.confluence.terraentity.entity.ai.goal.behavior.webviewer.BTServer;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * 带阶段的AI
  */
-public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot {
+public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot<T> {
 
-    protected final T mob;
 
     public BTCommonRoot(T mob) {
-        this.mob = mob;
+        super(mob);
     }
 
     /**
@@ -53,8 +51,6 @@ public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot {
     @Override
     public void tick() {
         super.tick();
-        if(BTServer.isServerRunning() && BTServer.updateMob == mob) {
-            BTServer.updateBehaviorTree(this);
-        }
+
     }
 }

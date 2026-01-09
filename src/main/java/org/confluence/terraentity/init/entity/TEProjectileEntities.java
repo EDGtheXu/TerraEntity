@@ -62,6 +62,11 @@ public class TEProjectileEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeeProj>> BEE_PROJ = registerProj("bee_proj", BeeProj::new, 1.2F, 1.2F);
 
+    public static final DeferredHolder<EntityType<?>, EntityType<SlimeSpikeProjectile>> SLIME_SPIKE = registerProj("slime_spike_projectile", SlimeSpikeProjectile::blueSpike, 0.5F, 0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SlimeSpikeProjectile>> JUNGLE_SPIKE = registerProj("jungle_spike_projectile", SlimeSpikeProjectile::jungleSpike, 0.5F, 0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SlimeSpikeProjectile>> ICE_SPIKE = registerProj("ice_spike_projectile", SlimeSpikeProjectile::iceSpike, 0.5F, 0.5F);
+
+
     //悠悠球
     public static final DeferredHolder<EntityType<?>, EntityType<YoyosEntity>> YOYO_PROJ = registerProj("yoyo_projectile", YoyosEntity::new, 0.5f, 0.5f);
     public static final DeferredHolder<EntityType<?>, EntityType<ThrownIceProjectile>> THROWN_ICE_PROJECTILE = registerProj("thrown_ice_projectile", ThrownIceProjectile::new, 1f, 1f);
@@ -97,6 +102,9 @@ public class TEProjectileEntities {
         event.registerEntityRenderer(TRAIL_SWORD_PROJECTILE.get(), TrailSwordProjectileRenderer::new);
 
         event.registerEntityRenderer(BEE_PROJ.get(), c->new ProjRenderer<>(c, new BeeProjModel(c.bakeLayer(BeeProjModel.LAYER_LOCATION))));
+        event.registerEntityRenderer(SLIME_SPIKE.get(), c->new ProjRenderer<>(c, new SlimeSpikedProjectlieModel<>(c.bakeLayer(SlimeSpikedProjectlieModel.LAYER_LOCATION))));
+        event.registerEntityRenderer(JUNGLE_SPIKE.get(), c->new ProjRenderer<>(c, new JungleSpikedProjectlieModel<>(c.bakeLayer(JungleSpikedProjectlieModel.LAYER_LOCATION))));
+        event.registerEntityRenderer(ICE_SPIKE.get(), c->new ProjRenderer<>(c, new IceSpikeProjectileModel<>(c.bakeLayer(IceSpikeProjectileModel.LAYER_LOCATION))));
 
         //悠悠球
         event.registerEntityRenderer(YOYO_PROJ.get(), (c)->new YoyosRenderer(c));
