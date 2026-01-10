@@ -66,6 +66,8 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.SNOW_FLINX.get(), "小雪怪");
 
         add(TEMonsterEntities.PIRANHA.get(), "食人鱼");
+        add(TEMonsterEntities.SHARK.get(), "鲨鱼");
+        add(TEMonsterEntities.ARAPAIMA.get(), "巨骨舌鱼");
         add(TEMonsterEntities.BLUE_JELLYFISH.get(), "蓝水母");
         add(TEMonsterEntities.PINK_JELLYFISH.get(), "粉水母");
         add(TEMonsterEntities.GREEN_JELLYFISH.get(), "绿水母");
@@ -248,6 +250,8 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.METEOR_HEAD_SPAWN_EGG.get(), "流星头刷怪蛋");
 
         add(TESpawnEggItems.PIRANHA_SPAWN_EGG.get(), "食人鱼刷怪蛋");
+        add(TESpawnEggItems.SHARK_SPAWN_EGG.get(), "鲨鱼刷怪蛋");
+        add(TESpawnEggItems.ARAPAIMA_SPAWN_EGG.get(), "巨骨舌鱼刷怪蛋");
         add(TESpawnEggItems.BLUE_JELLYFISH_SPAWN_EGG.get(), "蓝水母刷怪蛋");
         add(TESpawnEggItems.PINK_JELLYFISH_SPAWN_EGG.get(), "粉水母刷怪蛋");
         add(TESpawnEggItems.GREEN_JELLYFISH_SPAWN_EGG.get(), "绿水母刷怪蛋");

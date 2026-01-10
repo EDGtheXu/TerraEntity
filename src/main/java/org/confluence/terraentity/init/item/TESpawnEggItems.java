@@ -83,6 +83,8 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> METEOR_HEAD_SPAWN_EGG = registerEgg("meteor_head_spawn_egg", TEMonsterEntities.METEOR_HEAD, 0xffffff, 0xffffff);
 
     public static final DeferredItem<SpawnEggItem> PIRANHA_SPAWN_EGG = registerEgg("piranha_spawn_egg", TEMonsterEntities.PIRANHA, 0xffffff, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> SHARK_SPAWN_EGG = registerEgg("shark_spawn_egg", TEMonsterEntities.SHARK, 0xffffff, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> ARAPAIMA_SPAWN_EGG = registerEgg("arapaima_spawn_egg", TEMonsterEntities.ARAPAIMA, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> BLUE_JELLYFISH_SPAWN_EGG = registerEgg("blue_jellyfish_spawn_egg", TEMonsterEntities.BLUE_JELLYFISH, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> PINK_JELLYFISH_SPAWN_EGG = registerEgg("pink_jellyfish_spawn_egg", TEMonsterEntities.PINK_JELLYFISH, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> GREEN_JELLYFISH_SPAWN_EGG = registerEgg("green_jellyfish_spawn_egg", TEMonsterEntities.GREEN_JELLYFISH, 0xffffff, 0xffffff);

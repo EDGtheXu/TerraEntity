@@ -106,7 +106,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> PIRANHA = TEEntities.registerMonster("piranha", (e, l)->new Piranha(e,l), 0.5F, 0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> BLUE_JELLYFISH = TEEntities.registerMonster("blue_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> PINK_JELLYFISH = TEEntities.registerMonster("pink_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> GREEN_JELLYFISH = TEEntities.registerMonster("green_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> SHARK = TEEntities.registerMonster("shark", (e, l)->new Piranha(e,l), 2.5F, 1F);
 
 
     // 蜜蜂
@@ -189,6 +189,8 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> BLOOD_MUMMY = registerSimpleMonster("blood_mummy", LandMonsterPrefab.EVIL_MUMMY_BUILDER, 0.75F, 1.95F);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> LIGHT_MUMMY = registerSimpleMonster("light_mummy", LandMonsterPrefab.MUMMY_BUILDER, 0.75F, 1.95F);
 
+    public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> ARAPAIMA = TEEntities.registerMonster("arapaima", (e, l)->new Piranha(e,l), 2.2F, 0.7F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> GREEN_JELLYFISH = TEEntities.registerMonster("green_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
 
 
     @OnlyIn(Dist.CLIENT)
@@ -259,6 +261,8 @@ public class TEMonsterEntities {
         });
 
         event.registerEntityRenderer(TEMonsterEntities.PIRANHA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.PIRANHA.getId(), true));
+        event.registerEntityRenderer(TEMonsterEntities.SHARK.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.SHARK.getId(), true, 1.8f, 0.0f));
+        event.registerEntityRenderer(TEMonsterEntities.ARAPAIMA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.ARAPAIMA.getId(), true, 1.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.BLUE_JELLYFISH.get(), c -> new JellyFishRenderer(c, new GeoModelTextureDecoration<>(new GeoNormalModel<>(TerraEntity.space("jellyfish")), TerraEntity.space("blue_jellyfish") )));
         event.registerEntityRenderer(TEMonsterEntities.PINK_JELLYFISH.get(), c -> new JellyFishRenderer(c, new GeoModelTextureDecoration<>(new GeoNormalModel<>(TerraEntity.space("jellyfish")), TerraEntity.space("pink_jellyfish") )));
         event.registerEntityRenderer(TEMonsterEntities.GREEN_JELLYFISH.get(), c -> new JellyFishRenderer(c, new GeoModelTextureDecoration<>(new GeoNormalModel<>(TerraEntity.space("jellyfish")), TerraEntity.space("green_jellyfish") )));
@@ -404,10 +408,12 @@ public class TEMonsterEntities {
         event.put(METEOR_HEAD.get(), AttBuilder.fly(AttBuilder.createAttributes(13, 6, 21, 32, 1f, 0.64f)).build());
 
         // swim
-        event.put(PIRANHA.get(), AttBuilder.createAttributes(15,2,13,16,0.1f,0.5f).build());
+        event.put(PIRANHA.get(), AttBuilder.createAttributes(15,2,13,20,0.1f,0.5f).build());
         event.put(BLUE_JELLYFISH.get(), AttBuilder.createAttributes(17,4,13,16,0.1f,0.5f).build());
         event.put(PINK_JELLYFISH.get(), AttBuilder.createAttributes(36,6,15,16,0.1f,0.5f).build());
         event.put(GREEN_JELLYFISH.get(), AttBuilder.createAttributes(62,18,41,20,0.1f,0.5f).build());
+        event.put(SHARK.get(), AttBuilder.createAttributes(156,2,20,48,0.1f,0.37f).build());
+        event.put(ARAPAIMA.get(), AttBuilder.createAttributes(104,30,39,32,0.1f,0.1f).build());
 
 
         // bat
@@ -536,9 +542,11 @@ public class TEMonsterEntities {
 
         // swim
         event.register(PIRANHA.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(SHARK.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(BLUE_JELLYFISH.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(PINK_JELLYFISH.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, WaterAnimal::checkSurfaceWaterAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(GREEN_JELLYFISH.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(WaterAnimal::checkSurfaceWaterAnimalSpawnRules), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ARAPAIMA.get(), SpawnPlacementTypes.IN_WATER, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(WaterAnimal::checkSurfaceWaterAnimalSpawnRules), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
 
         // worm
