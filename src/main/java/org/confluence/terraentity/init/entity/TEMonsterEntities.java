@@ -364,9 +364,9 @@ public class TEMonsterEntities {
         event.put(GOLDEN_SLIME.get(), GoldenSlime.createSlimeAttributes().build());
         event.put(FLESH_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
 
-        event.put(SPIKED_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
-        event.put(SPIKED_JUNGLE_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
-        event.put(SPIKED_ICE_SLIME.get(), BaseSlime.createSlimeAttributes(14.0F, 6, 50.0F).build());
+        event.put(SPIKED_SLIME.get(), BaseSlime.createSlimeAttributes(7.0F, 5, 26.0F).build());
+        event.put(SPIKED_JUNGLE_SLIME.get(), BaseSlime.createSlimeAttributes(15.0F, 8, 33.0F).build());
+        event.put(SPIKED_ICE_SLIME.get(), BaseSlime.createSlimeAttributes(6.0F, 8, 31.0F).build());
 
         // land
         event.put(BLOOD_CRAWLER.get(), BloodCrawler.createAttributes().build());
@@ -499,6 +499,9 @@ public class TEMonsterEntities {
         event.register(SWAMP_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BaseSlime::checkSlimeSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(DUNGEON_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BaseSlime::checkSlimeSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(GREEN_DUMPLING_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BaseSlime::checkSlimeSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        event.register(SPIKED_ICE_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(SPIKED_JUNGLE_SLIME.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
 
 
