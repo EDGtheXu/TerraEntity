@@ -218,7 +218,7 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
         return this.house;
     }
 
-    public @org.jetbrains.annotations.Nullable BlockPos getSpawnAtPos() {
+    public @Nullable BlockPos getSpawnAtPos() {
         return spawnAtPos;
     }
 
@@ -230,7 +230,7 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
         }
     }
 
-    public void setSpawnAtPos(@org.jetbrains.annotations.Nullable BlockPos spawnAtPos) {
+    public void setSpawnAtPos(@Nullable BlockPos spawnAtPos) {
         this.spawnAtPos = spawnAtPos;
     }
 
@@ -734,6 +734,11 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
                 }
             });
         }
+    }
+
+    @Override
+    public boolean canChangeDimensions(Level oldLevel, Level newLevel) {
+        return false;
     }
 
     public static boolean checkRoutineMonsterSpawn(EntityType<? extends Mob> type, ServerLevelAccessor pLevel, MobSpawnType pSpawnType, BlockPos pPos, RandomSource pRandom) {
