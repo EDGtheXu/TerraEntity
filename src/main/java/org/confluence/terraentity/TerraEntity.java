@@ -21,13 +21,16 @@ public class TerraEntity {
     public static final String MODID = "terra_entity";
     public static final Logger LOGGER = LoggerFactory.getLogger("TerraEntity");
     public static ResourceLocation space(String path) {return ResourceLocation.fromNamespaceAndPath(MODID, path);}
-    public static ResourceLocation parse(String path){return ResourceLocation.parse(path);}
-    public static ResourceLocation fromSpaceAndPath(String space, String path){return ResourceLocation.fromNamespaceAndPath(space, path);}
-    public static ResourceLocation defaultPath(String path){return ResourceLocation.withDefaultNamespace(path);}
 
-    public static String toLang(ResourceLocation location){return location.toLanguageKey().replace("/",".");}
+    public static ResourceLocation parse(String path) {return ResourceLocation.parse(path);}
 
-    public TerraEntity (IEventBus modEventBus, ModContainer modContainer) {
+    public static ResourceLocation fromSpaceAndPath(String space, String path) {return ResourceLocation.fromNamespaceAndPath(space, path);}
+
+    public static ResourceLocation defaultPath(String path) {return ResourceLocation.withDefaultNamespace(path);}
+
+    public static String toLang(ResourceLocation location) {return location.toLanguageKey().replace("/", ".");}
+
+    public TerraEntity(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(TERegistries::newRegistry);
 
         TEEntities.register(modEventBus);
