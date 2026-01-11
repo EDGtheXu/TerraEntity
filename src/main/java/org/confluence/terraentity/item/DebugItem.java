@@ -1,6 +1,6 @@
 package org.confluence.terraentity.item;
 
-import net.minecraft.client.Minecraft;
+//import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.function.TriFunction;
 import org.confluence.terraentity.TerraEntity;
-import org.confluence.terraentity.client.gui.DebugScreen;
+//import org.confluence.terraentity.client.gui.DebugScreen;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.webviewer.BTServer;
@@ -116,7 +116,7 @@ public class DebugItem extends Item {
             return player.getData(TEAttachments.UNSYNC).getDebugMode().apply(level, player, usedHand);
         }
         if(player.level().isClientSide && player.isShiftKeyDown()){
-            Minecraft.getInstance().setScreen(new DebugScreen(Component.literal("Debug Screen")));
+            // Minecraft.getInstance().setScreen(new DebugScreen(Component.literal("Debug Screen")));
         }
         return super.use(level, player, usedHand);
     }
