@@ -129,6 +129,8 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<BoneSerpent<BaseWormPart>>> WITHER_BONE_SERPENT = TEEntities.registerMonster("wither_bone_serpent", (e, l) -> new BoneSerpent<>(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight().setNoGravity()), 2F, 2F);
     // 卷壳怪
     public static final DeferredHolder<EntityType<?>, EntityType<GiantShelly>> GIANT_SHELLY = TEEntities.registerMonster("giant_shelly", GiantShelly::new, 1F, 1F);
+
+    public static final DeferredHolder<EntityType<?>, EntityType<Crawdad>> CRAWDAD = TEEntities.registerMonster("crawdad", Crawdad::new, 1F, 1F);
     // 宁芙
     public static final DeferredHolder<EntityType<?>, EntityType<Nymph>> NYMPH = TEEntities.registerMonster("nymph", Nymph::new, 0.8F, 1.95F);
     // 抓人草
@@ -191,6 +193,9 @@ public class TEMonsterEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> ARAPAIMA = TEEntities.registerMonster("arapaima", (e, l)->new Piranha(e,l), 2.2F, 0.7F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> GREEN_JELLYFISH = TEEntities.registerMonster("green_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
+
+    public static final DeferredHolder<EntityType<?>, EntityType<JumpAttackMonster>> DERPLING = TEEntities.registerMonster("derpling", (e, l)->new JumpAttackMonster(e,l), 2F, 2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JumpAttackMonster>> HERPLING = TEEntities.registerMonster("herpling", (e, l)->new JumpAttackMonster(e,l), 1F, 1F);
 
 
     @OnlyIn(Dist.CLIENT)
@@ -275,6 +280,8 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.LEECH.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.LEECH.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.TOMB_CRAWLER.get(), c -> new GeoWormRenderer<>(c, TEMonsterEntities.TOMB_CRAWLER.getId(), 2.0f, 0.0f));
         event.registerEntityRenderer(TEMonsterEntities.GIANT_SHELLY.get(), c -> new GeoNormalRenderer<>(c, new VariantTexModel<>(TEMonsterEntities.GIANT_SHELLY.getId()), false, 1, 0));
+        event.registerEntityRenderer(TEMonsterEntities.CRAWDAD.get(), c -> new GeoNormalRenderer<>(c, new VariantTexModel<>(TEMonsterEntities.CRAWDAD.getId()), false, 1, 0));
+
         // bat
         event.registerEntityRenderer(TEMonsterEntities.CAVE_BAT.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CAVE_BAT.getId(), false));
         event.registerEntityRenderer(TEMonsterEntities.JUNGLE_BAT.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.JUNGLE_BAT.getId(), false));
@@ -340,6 +347,9 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.DARK_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DARK_MUMMY.getId()));
         event.registerEntityRenderer(TEMonsterEntities.BLOOD_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.BLOOD_MUMMY.getId()));
         event.registerEntityRenderer(TEMonsterEntities.LIGHT_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.LIGHT_MUMMY.getId()));
+
+        event.registerEntityRenderer(TEMonsterEntities.DERPLING.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DERPLING.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.HERPLING.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.HERPLING.getId()));
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -385,6 +395,8 @@ public class TEMonsterEntities {
         event.put(SNOW_FLINX.get(), AttBuilder.createAttributes(36,12,13,60,0.1f,0.1f).build());
 
         event.put(GIANT_SHELLY.get(), AttBuilder.createAttributes(26,12,9,10,0,0.4f).moveSpeed(0.1).build());
+        event.put(CRAWDAD.get(), AttBuilder.createAttributes(26,12,9,10,0,0.4f).jumpHeight(0.8).build());
+
         event.put(NYMPH.get(), AttBuilder.createAttributes(156,16,15,5,1,0.5f).build());
         event.put(SNATCHER.get(), AttBuilder.createAttributes(31, 10, 13, 20, 1, 1).build());
         event.put(MAN_EATER.get(), AttBuilder.createAttributes(57, 10, 15, 20, 1, 1).build());
@@ -485,6 +497,10 @@ public class TEMonsterEntities {
         event.put(DARK_MUMMY.get(), AttBuilder.createAttributes(93,18,32,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
         event.put(BLOOD_MUMMY.get(), AttBuilder.createAttributes(93,18,32,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
         event.put(LIGHT_MUMMY.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
+
+
+        event.put(DERPLING.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(HERPLING.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
     }
 
 
@@ -521,6 +537,7 @@ public class TEMonsterEntities {
         event.register(HAT_SPORE_ZOMBIE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkGroundSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(DECAYEDER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkRoutineMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(GIANT_SHELLY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(CRAWDAD.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(NYMPH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(SNATCHER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkGroundSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(MAN_EATER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkUndergroundMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
@@ -620,6 +637,9 @@ public class TEMonsterEntities {
         event.register(DARK_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(BLOOD_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(LIGHT_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+
+        event.register(DERPLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(HERPLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
     }
 

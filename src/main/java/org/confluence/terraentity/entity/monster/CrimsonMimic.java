@@ -25,7 +25,8 @@ public class CrimsonMimic extends WoodenMimic {
         super(type, level);
     }
 
-    protected BTRoot createBehaviorTree() {
+    @Override
+    protected BTRoot<WoodenMimic> createBehaviorTree() {
         return new CrimsonMimicBT(this);
     }
 
