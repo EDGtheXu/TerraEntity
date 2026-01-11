@@ -596,6 +596,8 @@ public class TEMonsterEntities {
         event.register(GOBLIN_SCOUT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkGoblinScoutSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(ANGER_GOBLIN.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkGroundSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
+        // 本体没有生成但是字模块需要的
+        event.register(WANDERING_EYE_FISH.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks::checkNetherMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         /* *********肉后***************** */
         event.register(WYVERN.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkHighLevelMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(PIXIE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkGroundSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
