@@ -27,6 +27,7 @@ public class SDHelper {
             }
             return 0;
         });
+        DynamicLightHandlers.registerDynamicLightHandler(TEProjectileEntities.DESTROYER_LASER_PROJ.get(), e -> 10);
 
     }
 }

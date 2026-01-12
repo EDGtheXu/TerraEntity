@@ -44,6 +44,8 @@ public class TEProjectileEntities {
             (DemonScytheProj) new DemonScytheProj(e,l, null).setTexture(TerraEntity.space("textures/entity/model/demon_scythe_projectile.png")),1.2F,1.2F);
     public static final DeferredHolder<EntityType<?>, EntityType<LavaPillar>> LAVA_PILLAR = registerProj("lava_pillar",(e, l)->
             new LavaPillar(e,l).setEffectStrategy(TEEffectStrategies.SET_FIRE_EFFECT.get()),1.2F,1.2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<ParticleLineProj>> DESTROYER_LASER_PROJ = registerProj("destroyer_laser",(e, l)->
+            new ParticleLineProj(e,l),0.75F,0.75F);
     public static final DeferredHolder<EntityType<?>, EntityType<SeedProjectile>> SEED = registerProj("seed_proj", SeedProjectile::new,0.5F,0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<SporeProjectile>> SPORE = registerProj("spore_proj", (e,l) ->
             new SporeProjectile(e, l).setCanBeHurt(),0.5F,0.5F);
@@ -90,6 +92,8 @@ public class TEProjectileEntities {
         event.registerEntityRenderer(DEMON_SCYTHE_PROJ.get(), c -> new DemonScytheProjRenderer(c, new DemonScytheModel(c.bakeLayer(DemonScytheModel.LAYER_LOCATION))));
 //        RegisterUtils.registerBaseProjRenderer(event, LAVA_PILLAR.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
         event.registerEntityRenderer(LAVA_PILLAR.get(), c->new LavaPillarRenderer(c, LAVA_PILLAR.getId().withPrefix("proj/")));
+
+        RegisterUtils.registerBaseProjRenderer(event, DESTROYER_LASER_PROJ.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
 
         RegisterUtils.registerBaseProjRenderer(event, SEED.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
         RegisterUtils.registerBaseProjRenderer(event, SPORE.get(), c->new Stinger<>(c.bakeLayer(Stinger.LAYER_LOCATION)));
