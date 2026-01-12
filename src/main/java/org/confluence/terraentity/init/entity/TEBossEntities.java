@@ -130,10 +130,6 @@ public class TEBossEntities {
         event.put(TEBossEntities.DESTROYER_SEGMENT.get(), AttBuilder.createBoss(66, 23333, 2).build());
         event.put(TEBossEntities.DESTROYER_PROBE.get(), AttBuilder.createBoss(12, 100, 10).build());
 
-        event.put(TEBossEntities.DESTROYER.get(), AttBuilder.createBoss(35, 23333, 2).build());
-        event.put(TEBossEntities.DESTROYER_SEGMENT.get(), AttBuilder.createBoss(66, 23333, 2).build());
-        event.put(TEBossEntities.DESTROYER_PROBE.get(), AttBuilder.createBoss(12, 100, 10).build());
-
         event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(26, 10920, 36).build());
         event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(15.6, 1040, 24).build());
         event.put(TEBossEntities.PLANTERA_TENTACLE.get(), AttBuilder.createBoss(15.6, PlanteraTentacle.MAX_HEALTH, 20).build());
