@@ -1,6 +1,5 @@
 package org.confluence.terraentity.item;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -28,29 +27,26 @@ import java.util.Optional;
 
 
 public class DebugItem extends Item {
-
     public DebugItem(Properties properties) {
         super(properties);
     }
 
     public enum DebugMode implements TriFunction<Level, Player, InteractionHand, InteractionResultHolder<ItemStack>> {
-        /**
-         * 行为树Web查看工具：右键带有行为树的生物会启动web服务器，打开web端口实时预览行为树。再次右键空白位置关闭服务器。右键另一个生物会绑定到新的生物。
-         */
-        BT_WEB_VIEWER{
+        /// 行为树Web查看工具：右键带有行为树的生物会启动web服务器，打开web端口实时预览行为树。再次右键空白位置关闭服务器。右键另一个生物会绑定到新的生物。
+        BT_WEB_VIEWER {
             @Override
             public InteractionResultHolder<ItemStack> apply(Level level, Player player, InteractionHand interactionHand) {
                 if (!level.isClientSide) {
                     var ray = TEUtils.getEyeTraceHitResult(player, 100);
-                    if(ray!= null && ray.getEntity() instanceof Mob mob) {
-                        for(var goal : mob.goalSelector.getAvailableGoals()){
-                            if(goal.getGoal() instanceof BTRoot root) {
-                                if(!BTServer.isServerRunning()) {
+                    if (ray != null && ray.getEntity() instanceof Mob mob) {
+                        for (var goal : mob.goalSelector.getAvailableGoals()) {
+                            if (goal.getGoal() instanceof BTRoot root) {
+                                if (!BTServer.isServerRunning()) {
                                     if (ServerLifecycleHooks.getCurrentServer() != null) {
                                         Optional<Resource> opt = ServerLifecycleHooks.getCurrentServer().getResourceManager()
                                                 .getResource(TerraEntity.space("behaviorviewer/behavior_tree_viewer.html"));
-                                        opt.ifPresent(r->{
-                                            try (InputStream inputStream = r.open()){
+                                        opt.ifPresent(r -> {
+                                            try (InputStream inputStream = r.open()) {
 
                                                 byte[] bytes = new byte[inputStream.available()];
                                                 inputStream.read(bytes);
@@ -75,7 +71,7 @@ public class DebugItem extends Item {
                                         });
                                     }
 
-                                }else{
+                                } else {
                                     BTServer.updateBehaviorTree(root);
                                     BTServer.updateMob = mob;
                                     player.sendSystemMessage(Component.literal("Behavior Tree Updated"));
@@ -85,11 +81,11 @@ public class DebugItem extends Item {
                                 return InteractionResultHolder.success(player.getItemInHand(interactionHand));
                             }
                         }
-                    }else{
-                        if(BTServer.isServerRunning()) {
+                    } else {
+                        if (BTServer.isServerRunning()) {
                             player.sendSystemMessage(Component.literal("Behavior Tree Web Viewer Server Stopped"));
                             BTServer.stopServer();
-                        }else{
+                        } else {
                             System.out.println("Behavior Tree Web Viewer Server is not running");
                         }
 
@@ -98,10 +94,8 @@ public class DebugItem extends Item {
                 return InteractionResultHolder.pass(player.getItemInHand(interactionHand));
             }
         },
-        /**
-         * 热重载保留功能
-         */
-        TEMP{
+        /// 热重载保留功能
+        TEMP {
             @Override
             public InteractionResultHolder<ItemStack> apply(Level level, Player player, InteractionHand interactionHand) {
                 return InteractionResultHolder.pass(player.getItemInHand(interactionHand));
@@ -115,8 +109,8 @@ public class DebugItem extends Item {
         if (!player.isShiftKeyDown()) {
             return player.getData(TEAttachments.UNSYNC).getDebugMode().apply(level, player, usedHand);
         }
-        if(player.level().isClientSide && player.isShiftKeyDown()){
-            Minecraft.getInstance().setScreen(new DebugScreen(Component.literal("Debug Screen")));
+        if (player.level().isClientSide && player.isShiftKeyDown()) {
+            DebugScreen.setScreen();
         }
         return super.use(level, player, usedHand);
     }
