@@ -45,6 +45,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.CORRUPT_SLIME.get(), "腐化史莱姆");
         add(TEMonsterEntities.DESERT_SLIME.get(), "沙漠史莱姆");
         add(TEMonsterEntities.TROPIC_SLIME.get(), "热带史莱姆");
+        add(TEMonsterEntities.LUMINOUS_SLIME.get(), "夜明史莱姆");
         add(TEMonsterEntities.GREEN_SLIME.get(), "绿色史莱姆");
         add(TEMonsterEntities.BLACK_SLIME.get(), "黑色史莱姆");
         add("entity.terra_entity.mother_slime", "史莱姆之母");
