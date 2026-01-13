@@ -16,7 +16,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.lib.mixed.entity.Boss;
 import org.confluence.terraentity.api.entity.IAngryMob;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;

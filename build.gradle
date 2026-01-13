@@ -201,7 +201,7 @@ dependencies {
         implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
         compileOnly "org.mesdag:ParticleStorm:${particle_storm_version}"
     } else {
-        implementation jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}") {}
+        implementation jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}")
         implementation jarJar("software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}")
         implementation jarJar("org.mesdag:ParticleStorm:${particle_storm_version}")
     }

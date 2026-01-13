@@ -30,7 +30,7 @@ import net.minecraft.world.level.dimension.DimensionDefaults;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.lib.mixed.entity.Boss;
 import org.confluence.terraentity.api.entity.IExtendedTracking;
 import org.confluence.terraentity.effect.harmful.HorrifiedEffect;
 import org.confluence.terraentity.entity.animal.VariantsTextureMaps;

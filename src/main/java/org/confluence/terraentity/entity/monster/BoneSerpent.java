@@ -1,7 +1,6 @@
 package org.confluence.terraentity.entity.monster;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
@@ -17,8 +16,8 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.mixed.entity.IDiscardWhenRespawnEntity;
 import org.confluence.terraentity.TerraEntity;
-import org.confluence.terraentity.api.entity.IDiscardWhenRespawnEntity;
 import org.confluence.terraentity.api.entity.IHeightControlMob;
 import org.confluence.terraentity.entity.ai.goal.ComeAndBackDashAttackGoal;
 import org.confluence.terraentity.entity.ai.goal.MutableRangeNearestAttackableTargetGoal;
