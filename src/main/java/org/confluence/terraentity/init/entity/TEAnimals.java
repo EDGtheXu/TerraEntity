@@ -54,7 +54,6 @@ public class TEAnimals {
     public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> DRAGONFLY = TEEntities.registerCreature("dragonfly",  (e, l)-> new BirdVariantAnimal(e, l, VariantsTextureMaps.dragonflyTextures), 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FAIRY = TEEntities.registerCreature("fairy", (e,l)-> new Fairy(e, l, VariantsTextureMaps.fairyTextures), 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FEALING = TEEntities.registerCreature("fealing", (e,l)-> new Fairy(e, l, VariantsTextureMaps.fealingTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<WallOfFairy>> WALL_OF_FAIRY = TEEntities.registerCreature("wall_of_fairy", (e,l)-> new WallOfFairy(e, l, VariantsTextureMaps.fairyTextures, BlockPos.ZERO), 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<JumpableVariantAnimal>> GRASSHOPPER = TEEntities.registerCreature("grasshopper", (e,l)-> new JumpableVariantAnimal(e, l, VariantsTextureMaps.grasshopperTextures), 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> LADYBUG = TEEntities.registerCreature("ladybug", (e, l)-> new BirdVariantAnimal(e, l, VariantsTextureMaps.ladybugTextures), 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> SCORPION = TEEntities.registerCreature("scorpion", (e,l)-> new SimpleVariantAnimal(e, l, VariantsTextureMaps.scorpionTextures), 0.5F, 0.3F);
@@ -87,7 +86,6 @@ public class TEAnimals {
         event.registerEntityRenderer(DRAGONFLY.get(), c-> new GeoNormalRenderer<>(c, new VariantTexModel<>(DRAGONFLY.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0));
         event.registerEntityRenderer(FAIRY.get(), c-> new FairyRenderer<>(c, new VariantTexModel<Fairy>(FAIRY.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0).setBoneToGlow(List.of("Outline","Outline2","Outline3","Outline4","Outline5"), List.of("Body", "Internal","Internal2","Internal3","Internal4")));
         event.registerEntityRenderer(FEALING.get(), c-> new FairyRenderer<>(c, new VariantTexModel<Fairy>(FAIRY.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0).setBoneToGlow(List.of("Outline","Outline2","Outline3","Outline4","Outline5"), List.of("Body", "Internal","Internal2","Internal3","Internal4")));
-        event.registerEntityRenderer(WALL_OF_FAIRY.get(), c-> new FairyRenderer<>(c, new VariantTexModel<WallOfFairy>(FAIRY.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0).setBoneToGlow(List.of("Outline","Outline2","Outline3","Outline4","Outline5"), List.of("Body", "Internal","Internal2","Internal3","Internal4")));
         event.registerEntityRenderer(GRASSHOPPER.get(), c-> new GeoNormalRenderer<>(c, new VariantTexModel<>(GRASSHOPPER.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0));
         event.registerEntityRenderer(LADYBUG.get(), c-> new GeoNormalRenderer<>(c, new VariantTexModel<>(LADYBUG.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0));
         event.registerEntityRenderer(SCORPION.get(), c-> new GeoNormalRenderer<>(c, new VariantTexModel<>(SCORPION.getId().withPrefix("animal/"), true).setHeadName("head"), false, 1, 0));
@@ -121,7 +119,6 @@ public class TEAnimals {
         event.put(DRAGONFLY.get(), Bird.createInspectAttributes().build());
         event.put(FAIRY.get(), Bird.createInspectAttributes().build());
         event.put(FEALING.get(), Bird.createInspectAttributes().build());
-        event.put(WALL_OF_FAIRY.get(), Bird.createInspectAttributes().build());
         event.put(GRASSHOPPER.get(), SimpleAnimal.createInsectAttributes().add(Attributes.FALL_DAMAGE_MULTIPLIER, 0).build());
         event.put(LADYBUG.get(), Bird.createInspectAttributes().build());
         event.put(SCORPION.get(), SimpleAnimal.createInsectAttributes().add(Attributes.FALL_DAMAGE_MULTIPLIER, 0).build());

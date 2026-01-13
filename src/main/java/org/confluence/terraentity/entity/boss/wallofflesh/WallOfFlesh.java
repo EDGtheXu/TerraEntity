@@ -2,7 +2,9 @@ package org.confluence.terraentity.entity.boss.wallofflesh;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.CombatRules;
@@ -19,6 +22,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -33,8 +38,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.api.entity.IExtendedTracking;
 import org.confluence.terraentity.effect.harmful.HorrifiedEffect;
-import org.confluence.terraentity.entity.animal.VariantsTextureMaps;
-import org.confluence.terraentity.entity.animal.WallOfFairy;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.entity.monster.TheHungry;
 import org.confluence.terraentity.entity.monster.prefab.AbstractPrefab;
@@ -51,13 +54,13 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLET_VEC3_INT_LIST_SERIALIZER;
 import static org.confluence.terraentity.init.TEEntityDataSerializers.TUPLE_INT_VEC3_LIST_SERIALIZER;
 
 public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtendedTracking {
     public boolean genSegments = true;
-    int genTick = 1;
     boolean shouldMove = true;
     final float baseMoveSpeed = 0.125f;
     Vec3 InitPos = Vec3.ZERO;
@@ -71,11 +74,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
 
     private static final int summonCDAll = 1200; //饿鬼召唤cd
     private int summonCD = summonCDAll;
-
-    private static final int NO_PLAYER_DESPAWN_TIME = 600;
-    private int noPlayerTimer = 0;
-
-    List<LivingEntity> nearbyLivings;
 
     private float targetHeight;
     private static final double FINISH_LINE_DISTANCE = 2000;
@@ -97,7 +95,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
 
     public WallOfFlesh(EntityType<? extends Monster> type, Level level) {
         super(type, level);
-        this.nearbyLivings = new ArrayList<>();
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(baseMoveSpeed);
         this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(999);
         genGridWall();
@@ -244,71 +241,93 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
             return;
         }
 
-        int centerX = x + width / 2;
-        int centerY = y + height / 2;
+        final double localGridSpacing = gridSpacing;
 
-        double maxOffset = gridSpacing * 0.8;
-        double offsetX = (random.nextDouble() - 0.5) * maxOffset;
-        double offsetY = (random.nextDouble() - 0.5) * maxOffset;
+        final int centerX = x + width / 2;
+        final int centerY = y + height / 2;
+        final double gridSizeXHalf = (double) gridSizeX / 2.0;
+        final double gridSizeYHalf = (double) gridSizeY / 2.0;
 
-        Vec3 worldPos = new Vec3(
-                (centerX - gridSizeX / 2.0) * gridSpacing + offsetX,
-                (centerY - gridSizeY / 2.0) * gridSpacing + offsetY,
-                zOffset
-        );
+        double offsetScale = 1.0 - (depth / (double) maxDepth) * 0.5;
+        double maxOffset = localGridSpacing * 0.8 * offsetScale;
 
-        boolean shouldSubdivide = depth < maxDepth &&
-                width > 1 && height > 1 &&
-                random.nextDouble() < subdivisionChance;
+        long seedOffset = (long) x * 31 + (long) y * 17 + depth * 7L;
+        double randOffsetX = (random.nextDouble() + (seedOffset % 100) / 100.0) % 1.0;
+        double randOffsetY = (random.nextDouble() + (seedOffset % 83) / 100.0) % 1.0;
+        double offsetX = (randOffsetX - 0.5) * maxOffset;
+        double offsetY = (randOffsetY - 0.5) * maxOffset;
 
-        if (depth < 3 && random.nextDouble() < 1.0 - (depth * 0.3)) {
-            shouldSubdivide = true;
+        double worldPosX = (centerX - gridSizeXHalf) * localGridSpacing + offsetX;
+        double worldPosY = (centerY - gridSizeYHalf) * localGridSpacing + offsetY;
+        Vec3 worldPos = new Vec3(worldPosX, worldPosY, zOffset);
+
+        boolean shouldSubdivide = depth < maxDepth && width > 1 && height > 1;
+        if (shouldSubdivide) {
+            shouldSubdivide = random.nextDouble() < subdivisionChance;
+        }
+        if (depth < 3) {
+            double randSubdivide = random.nextDouble();
+            if (randSubdivide < 1.0 - (depth * 0.25)) {
+                shouldSubdivide = true;
+            }
         }
 
         if (shouldSubdivide) {
-            int halfWidth = width / 2;
-            int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+            final int halfHeight = height / 2;
+
+            double decayFactor = 1 - (depth / (double) maxDepth) * 0.02;
+            final double newSubdivisionChance = subdivisionChance * decayFactor;
 
             generateAllEntitiesQuadTree(x, y, halfWidth, halfHeight, depth + 1, maxDepth,
-                    eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
+                    eyeChance, mouthChance, hungryChance, newSubdivisionChance,
                     eyePositions, mouthPositions, hungryPositions, zOffset);
 
             generateAllEntitiesQuadTree(x + halfWidth, y, width - halfWidth, halfHeight, depth + 1, maxDepth,
-                    eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
+                    eyeChance, mouthChance, hungryChance, newSubdivisionChance,
                     eyePositions, mouthPositions, hungryPositions, zOffset);
 
             generateAllEntitiesQuadTree(x, y + halfHeight, halfWidth, height - halfHeight, depth + 1, maxDepth,
-                    eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
+                    eyeChance, mouthChance, hungryChance, newSubdivisionChance,
                     eyePositions, mouthPositions, hungryPositions, zOffset);
 
             generateAllEntitiesQuadTree(x + halfWidth, y + halfHeight, width - halfWidth, height - halfHeight, depth + 1, maxDepth,
-                    eyeChance, mouthChance, hungryChance, subdivisionChance * 0.95,
+                    eyeChance, mouthChance, hungryChance, newSubdivisionChance,
                     eyePositions, mouthPositions, hungryPositions, zOffset);
         } else {
             double rand = random.nextDouble();
 
+            double conflictDistanceScale = 1.0 - (depth / (double) maxDepth) * 0.4;
+            double conflictDistance = localGridSpacing * 0.6 * conflictDistanceScale;
+            final double conflictDistanceSqr = conflictDistance * conflictDistance;
+
             boolean hasConflict = false;
-            double conflictDistance = gridSpacing * 0.6;
 
-            for (Vec3 existingPos : eyePositions) {
-                if (existingPos.distanceToSqr(worldPos) < conflictDistance * conflictDistance) {
-                    hasConflict = true;
-                    break;
+            final boolean eyesEmpty = eyePositions.isEmpty();
+            final boolean mouthsEmpty = mouthPositions.isEmpty();
+            final boolean hungryEmpty = hungryPositions.isEmpty();
+
+            if (!eyesEmpty && !hasConflict) {
+                for (Vec3 existingPos : eyePositions) {
+                    if (existingPos.distanceToSqr(worldPos) < conflictDistanceSqr) {
+                        hasConflict = true;
+                        break;
+                    }
                 }
             }
 
-            if (!hasConflict) {
+            if (!mouthsEmpty && !hasConflict) {
                 for (Vec3 existingPos : mouthPositions) {
-                    if (existingPos.distanceToSqr(worldPos) < conflictDistance * conflictDistance) {
+                    if (existingPos.distanceToSqr(worldPos) < conflictDistanceSqr) {
                         hasConflict = true;
                         break;
                     }
                 }
             }
 
-            if (!hasConflict) {
+            if (!hungryEmpty && !hasConflict) {
                 for (Vec3 existingPos : hungryPositions) {
-                    if (existingPos.distanceToSqr(worldPos) < conflictDistance * conflictDistance) {
+                    if (existingPos.distanceToSqr(worldPos) < conflictDistanceSqr) {
                         hasConflict = true;
                         break;
                     }
@@ -316,11 +335,23 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
             }
 
             if (!hasConflict) {
-                if (rand < eyeChance) {
+                double depthFactor = 0.8 + (depth / (double) maxDepth) * 0.4; // 深度越大，概率越高（弥补小区域面积小）
+                double adjustedEyeChance = eyeChance * depthFactor;
+                double adjustedMouthChance = mouthChance * depthFactor;
+                double adjustedHungryChance = hungryChance * depthFactor;
+
+                double eyeMouthChance = adjustedEyeChance + adjustedMouthChance;
+                double totalChance = eyeMouthChance + adjustedHungryChance;
+
+                double finalEyeChance = Math.min(adjustedEyeChance, 1.0);
+                double finalEyeMouthChance = Math.min(eyeMouthChance, 1.0);
+                double finalTotalChance = Math.min(totalChance, 1.0);
+
+                if (rand < finalEyeChance) {
                     eyePositions.add(worldPos);
-                } else if (rand < eyeChance + mouthChance) {
+                } else if (rand < finalEyeMouthChance) {
                     mouthPositions.add(worldPos);
-                } else if (rand < eyeChance + mouthChance + hungryChance) {
+                } else if (rand < finalTotalChance) {
                     hungryPositions.add(worldPos);
                 }
             }
@@ -463,22 +494,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
         }
 
         super.dropAllDeathLoot(level, damageSource);
-
-        for(LivingEntity nearbyLiving : nearbyLivings) {
-            if(nearbyLiving instanceof Player player) {
-                double distance = player.distanceToSqr(centerPos.getX(), centerPos.getY(), centerPos.getZ());
-                if(distance > 10000) { // 100^2 = 10000
-                    WallOfFairy wallOfFairy = new WallOfFairy(
-                            TEAnimals.WALL_OF_FAIRY.get(),
-                            level,
-                            VariantsTextureMaps.fairyTextures,
-                            centerPos
-                    );
-                    wallOfFairy.setPos(player.getX(), player.getY() + 2, player.getZ());
-                    level.addFreshEntity(wallOfFairy);
-                }
-            }
-        }
     }
 
     @Override
@@ -687,27 +702,10 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                 }
             }
 
-            if (this.tickCount % 5 == 0 && this.getInsideBox() != null && this.getOutsideCollisionBox() != null ) {
+            if (this.tickCount % 5 == 0 && this.getInsideBox() != null && this.getOutsideBox() != null ) {
                 List<Player> nearbyPlayers = level().getEntitiesOfClass(Player.class,
-                        this.getOutsideCollisionBox());
+                        this.getOutsideBox());
 
-                List<Player> nearbyTargets = level().getEntitiesOfClass(Player.class,
-                        this.getInsideBox());
-
-                this.nearbyLivings.clear();
-                this.nearbyLivings.addAll(nearbyTargets);
-
-                if (nearbyPlayers.isEmpty()) {
-                    noPlayerTimer += 5;//5tick检查一次
-                    if (noPlayerTimer >= NO_PLAYER_DESPAWN_TIME) {
-                        nearbyLivings.stream().filter(entity -> entity.hasEffect(TEEffects.HORRIFIED)).forEach(LivingEntity::kill);
-                        theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
-                        this.discard();
-                        return;
-                    }
-                } else {
-                    noPlayerTimer = 0;
-                }
 
                 DeferredHolder<MobEffect, HorrifiedEffect> horrifiedHolder = TEEffects.HORRIFIED;
                 MobEffectInstance horrifiedEffect = new MobEffectInstance(horrifiedHolder, 200, 3, false, true);
@@ -725,7 +723,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                 updatePlayerMouseAssignments();
             }
 
-            for (LivingEntity nearbyLiving : this.nearbyLivings) {
+            for (LivingEntity nearbyLiving : this.getInsideBoxPlayers()) {
                 for (WallOfFleshPart part : this.subEntities) {
                     double distanceSqr = part.position().distanceToSqr(nearbyLiving.position());
                     if (distanceSqr <= 120 * 120) {
@@ -754,8 +752,9 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
                         (moveDirection.z < 0 && progress <= -FINISH_LINE_DISTANCE) || // 北方向
                         !this.level().getWorldBorder().isWithinBounds(this.position())) {
                     //如果血肉墙到达了地图的另一边，它会消失，且所有受到惊恐减益影响的玩家会死亡
-                    nearbyLivings.stream().filter(entity -> entity.hasEffect(TEEffects.HORRIFIED)).forEach(LivingEntity::kill);
-                    theHungryList.stream().map(tuple -> level().getEntity(tuple.getB())).filter(Objects::nonNull).forEach(Entity::discard);
+                    getNearbyPlayers().stream().filter(entity -> entity.hasEffect(TEEffects.HORRIFIED)).forEach(LivingEntity::kill);
+                    this.clearChildrenAndHungry();
+                    this.bossEvent.getPlayers().forEach(p -> p.sendSystemMessage(this.getDisplayName().copy().append(Component.translatable("message.terraentity.boss_discard"))));
                     this.discard();
                     return;
                 }
@@ -795,7 +794,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
         return this.insideCollisionBox;
     }
 
-    public AABB getOutsideCollisionBox() {
+    public AABB getOutsideBox() {
         Direction dir = this.getDirection();
         boolean isReverse = dir == Direction.WEST || dir == Direction.SOUTH;
         int completion = isReverse?-200:200;
@@ -816,7 +815,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
 
     @Override
     public @NotNull AABB getBoundingBoxForCulling() {
-        return this.getOutsideCollisionBox();
+        return this.getOutsideBox();
     }
 
     @Override
@@ -862,14 +861,50 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
     public void die(DamageSource damageSource) {
         if (!this.level().isClientSide) {
             Vec3 centerPos = this.position();
-            // 如果在地狱维度，确保中心位置在 NETHER_GENERATION_HEIGHT 以下
-            if (this.level().dimension() == Level.NETHER) {
-                int maxY = DimensionDefaults.NETHER_GENERATION_HEIGHT/2; // 留出框架的空间
-                if (centerPos.y() > maxY) {
-                    this.setPos(new Vec3(centerPos.x(), maxY, centerPos.z()));
+            Entity sourceEntity = damageSource.getEntity();
+            int maxY = DimensionDefaults.NETHER_GENERATION_HEIGHT*3/4; // 留出框架的空间
+            Vec3 addVec = new Vec3(0, 10, 0);
+            if (sourceEntity instanceof Player player) {
+                centerPos = player.position().add(addVec);
+                if (this.level().dimension() == Level.NETHER) {   // 如果在地狱维度，确保中心位置在 NETHER_GENERATION_HEIGHT 以下
+                    if (centerPos.y() > maxY) {
+                        centerPos =  new Vec3(centerPos.x(), maxY, centerPos.z());
+                    }
+                }
+            } else if (sourceEntity != null) {
+                // 如果伤害来源不是玩家但能追溯到其所有者
+                if (sourceEntity instanceof OwnableEntity ownable) {
+                    Entity owner = ownable.getOwner();
+                    if (owner instanceof Player) {
+                        centerPos = owner.position().add(addVec);
+                    }
+                }
+                if (this.level().dimension() == Level.NETHER) {   // 如果在地狱维度，确保中心位置在 NETHER_GENERATION_HEIGHT 以下
+                    if (centerPos.y() > maxY) {
+                        centerPos =  new Vec3(centerPos.x(), maxY, centerPos.z());
+                    }
+                }
+            }else {
+                List<Player> intersectingPlayers = this.level().players().stream()
+                        .filter(player -> this.getOutsideBox().intersects(player.getBoundingBox()))
+                        .collect(Collectors.toList());
+
+                if (!intersectingPlayers.isEmpty()) {
+                    RandomSource random = this.level().random;
+                    Player selectedPlayer = intersectingPlayers.get(random.nextInt(intersectingPlayers.size()));
+                    centerPos = selectedPlayer.position().add(addVec);
+
+                    if (this.level().dimension() == Level.NETHER) {   // 如果在地狱维度，确保中心位置在 NETHER_GENERATION_HEIGHT 以下
+                        if (centerPos.y() > maxY) {
+                            centerPos =  new Vec3(centerPos.x(), maxY, centerPos.z());
+                        }
+                    }
+                }else if (this.level().dimension() == Level.NETHER && centerPos.y() > maxY) {   // 如果在地狱维度，确保中心位置在 NETHER_GENERATION_HEIGHT 以下
+                    centerPos = new Vec3(centerPos.x(), maxY, centerPos.z());
                 }
             }
 
+            this.setPos(new Vec3(centerPos.x(), centerPos.y(), centerPos.z()));
             clearChildrenAndHungry();
         }
         super.die(damageSource);
@@ -905,7 +940,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
 
     @Override
     public boolean hasLineOfSight(Entity entity) {
-        double size = this.getOutsideCollisionBox().getSize()*1.5F;
+        double size = this.getOutsideBox().getSize()*1.5F;
         return distanceToSqr(entity) < size * size;
     }
 
@@ -929,8 +964,64 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
     }
 
     @Override
-    public boolean shouldEscape() {
-        return false;
+    protected LivingEntity findTarget() {
+        List<Player> nearbyPlayers = getNearbyPlayers();
+
+        if (nearbyPlayers.isEmpty()) {
+            return null;
+        }
+
+        Player closestPlayer = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Player player : nearbyPlayers) {
+            double distance = this.distanceToSqr(player);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestPlayer = player;
+            }
+        }
+
+        return closestPlayer;
+    }
+
+    protected List<Player> getNearbyPlayers() {
+        return this.getNearbyPlayers(0);
+    }
+
+    protected List<Player> getInsideBoxPlayers() {
+        return this.getInsideBoxPlayers(0);
+    }
+
+    @Override
+    protected List<Player> getNearbyPlayers(double range) {
+        List<Player> players = new ArrayList<>();
+        isCreativePlayer = false;
+        List<Player> nearbyTargets = level().getEntitiesOfClass(Player.class,
+                this.getOutsideBox().inflate(range));
+        for (Player player : nearbyTargets) {
+            players.add(player);
+            if(!isCreativePlayer && !player.canBeSeenAsEnemy()){
+                isCreativePlayer = true;
+            }
+            this.noActionTime = 0;
+        }
+        return players;
+    }
+
+    protected List<Player> getInsideBoxPlayers(double range) {
+        List<Player> players = new ArrayList<>();
+        isCreativePlayer = false;
+        List<Player> nearbyTargets = level().getEntitiesOfClass(Player.class,
+                this.getInsideBox().inflate(range));
+        for (Player player : nearbyTargets) {
+            players.add(player);
+            if(!isCreativePlayer && !player.canBeSeenAsEnemy()){
+                isCreativePlayer = true;
+            }
+            this.noActionTime = 0;
+        }
+        return players;
     }
 
     public boolean shouldRender(double x, double y, double z) {
@@ -982,7 +1073,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss,IExtended
         List<WallOfFleshMouth> aliveMice = new ArrayList<>();
         List<WallOfFleshEye> aliveEyes = new ArrayList<>();
 
-        for (LivingEntity living : this.nearbyLivings) {
+        for (LivingEntity living : this.getInsideBoxPlayers()) {
             if (living instanceof Player player && player.isAlive()) {
                 alivePlayers.add(player);
             }

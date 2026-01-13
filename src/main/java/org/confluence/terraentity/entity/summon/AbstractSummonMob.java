@@ -112,12 +112,12 @@ public abstract class AbstractSummonMob extends TamableAnimal implements GeoEnti
             Entity parent = partEntity.getParent();
             if (parent instanceof LivingEntity living) {
                 // 如果 actualTargetEntity 就是这个 PartEntity，或者父实体是 Enemy，则可以攻击
-                return canAttack(living) && (actualTargetEntity == target || parent instanceof Enemy && !(parent instanceof NeutralMob) || parent == getTarget());
+                return living.canBeSeenAsEnemy() && canAttack(living) && (actualTargetEntity == target || parent instanceof Enemy && !(parent instanceof NeutralMob) || parent == getTarget());
             }
             return false;
         }
         if (target instanceof LivingEntity living) {
-            return canAttack(living) && (target instanceof Enemy && !(target instanceof NeutralMob) || target == getTarget());
+            return  living.canBeSeenAsEnemy() &&  canAttack(living) && (target instanceof Enemy && !(target instanceof NeutralMob) || target == getTarget());
         }
         return false;
     }

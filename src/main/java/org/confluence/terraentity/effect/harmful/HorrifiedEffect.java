@@ -11,13 +11,11 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshMouth;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshPart;
-import org.confluence.terraentity.init.TEAttachments;
 import org.confluence.terraentity.init.TEEffects;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class HorrifiedEffect extends MobEffect {
     private WallOfFlesh wall;
@@ -28,9 +26,9 @@ public class HorrifiedEffect extends MobEffect {
     @Override
     public boolean applyEffectTick(LivingEntity living, int amplifier) {
         if (wall != null && wall.isAlive() && (!(living instanceof Player) || (living instanceof Player player && !player.isCreative() && !player.isSpectator()))){
-            if(!living.getBoundingBox().intersects(wall.getOutsideCollisionBox())&&!living.getBoundingBox().intersects(wall.getInsideBox())||living.level().dimension()!=(wall.level().dimension())){
+            if(!living.getBoundingBox().intersects(wall.getOutsideBox())&&!living.getBoundingBox().intersects(wall.getInsideBox())||living.level().dimension()!=(wall.level().dimension())){
                 living.kill();
-            }else if(living.getBoundingBox().intersects(wall.getOutsideCollisionBox())&&!living.getBoundingBox().intersects(wall.getInsideBox())){
+            }else if(living.getBoundingBox().intersects(wall.getOutsideBox())&&!living.getBoundingBox().intersects(wall.getInsideBox())){
                 List<WallOfFleshMouth> nearestMouths = new ArrayList<>();
                 for (int i = 0; i < wall.subEntities.size(); i++) {
                     WallOfFleshPart segment = wall.subEntities.get(i);

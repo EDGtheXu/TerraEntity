@@ -120,7 +120,7 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
                 float r = 120;
 
                 LivingEntity living = null;;
-                for(LivingEntity e : this.getParent().nearbyLivings){
+                for(LivingEntity e : this.getParent().getNearbyPlayers()){
                     boolean isPlayer = e instanceof Player;
                     if(e instanceof Player player && (player.isCreative() || player.isSpectator())){
                         continue;
