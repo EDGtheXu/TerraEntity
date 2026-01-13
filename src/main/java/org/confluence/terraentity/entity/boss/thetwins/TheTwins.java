@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.lib.mixed.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.utils.TEUtils;

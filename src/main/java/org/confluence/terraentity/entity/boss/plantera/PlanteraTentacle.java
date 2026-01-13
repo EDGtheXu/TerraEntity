@@ -18,7 +18,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.lib.mixed.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.init.TESounds;

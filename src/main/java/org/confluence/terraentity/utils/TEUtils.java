@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.entity.PartEntity;
-import org.confluence.lib.mixed.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;

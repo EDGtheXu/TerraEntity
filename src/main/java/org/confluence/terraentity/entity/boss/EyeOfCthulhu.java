@@ -14,7 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.lib.mixed.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.api.entity.IAutoLeaveMob;
 import org.confluence.terraentity.api.entity.blur.IMotionBlurHolder;
 import org.confluence.terraentity.config.ServerConfig;
