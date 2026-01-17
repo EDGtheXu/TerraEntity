@@ -66,14 +66,16 @@ public final class TEJeiPlugin implements IModPlugin {
                 return recipe;
             }).filter(t -> {
                 var cost = t.trade.normalizeCost();
-                var id = t.id;
+                // var id = t.id;
                 if (cost.isEmpty()) {
-                    TerraEntity.LOGGER.warn("NPC Trade Recipe {} has empty cost, skipping registration.", id);
+                    // TerraEntity.LOGGER.warn("NPC Trade Recipe {} has empty cost, skipping registration.", id);
+                    // Reason: DeferredMoneyTradeItem
                     return false;
                 }
                 var result = t.trade.normalizeResult();
                 if (result.isEmpty()) {
-                    TerraEntity.LOGGER.warn("NPC Trade Recipe {} has empty result, skipping registration.", id);
+                    // TerraEntity.LOGGER.warn("NPC Trade Recipe {} has empty result, skipping registration.", id);
+                    // Reason: ItemTradeLootTable
                     return false;
                 }
                 return true;
