@@ -199,13 +199,14 @@ dependencies {
     if (dev) {
         implementation project(":Confluence-Magic-Lib")
         implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
-        compileOnly "org.mesdag:ParticleStorm:${particle_storm_version}"
+        implementation "org.mesdag:ParticleStorm:${particle_storm_version}"
+        implementation "org.mesdag.thr_dim_particle:ThreeDimensionParticle-core:${thr_dim_particle_version}"
     } else {
         implementation jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}")
         implementation jarJar("software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}")
         implementation jarJar("org.mesdag:ParticleStorm:${particle_storm_version}")
+        implementation jarJar("org.mesdag.thr_dim_particle:ThreeDimensionParticle-core:${thr_dim_particle_version}")
     }
-    implementation jarJar("org.mesdag.thr_dim_particle:ThreeDimensionParticle-core:${thr_dim_particle_version}")
 
     compileOnly "curse.maven:jade-324717:6011258"
     runtimeOnly "curse.maven:jade-324717:6011258"
