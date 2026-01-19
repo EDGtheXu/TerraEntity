@@ -15,9 +15,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
@@ -46,7 +46,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
     public static final EntityDataAccessor<Float> DATA_BODY_ROLL = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> DATA_HEAD_SHELL_OPEN = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.BOOLEAN);
 
-    public enum Phase { UNDERGROUND, GROUND, SKY }
+    public enum Phase {UNDERGROUND, GROUND, SKY}
 
     // --- 配置 ---
     private final int segmentCount = 80;
@@ -67,7 +67,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
     private int laserTick = 0;
     private int volleyCooldown = 0;
 
-//    private static final int Y_LEVEL_DEEP = 50;
+    //    private static final int Y_LEVEL_DEEP = 50;
 //    private static final int Y_LEVEL_SKY = 120;
     private static final int Y_LEVEL_DEEP = 60;
     private static final int Y_LEVEL_SKY = 100;
@@ -194,7 +194,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
             }
 
             // B. 旋转(Roll)传递 (DNA螺旋)
-            float prevRoll = (prev instanceof Destroyer d) ? d.getBodyRoll() : ((DestroyerPart)prev).getSegmentRoll();
+            float prevRoll = (prev instanceof Destroyer d) ? d.getBodyRoll() : ((DestroyerPart) prev).getSegmentRoll();
             float currentRoll = part.getSegmentRoll();
             // 平滑传递旋转
             float diff = Mth.degreesDifference(currentRoll, prevRoll);
@@ -367,12 +367,11 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
                 }
             }
             case 2 -> { // 下坠和冷却
-                phaseTimer ++;
+                phaseTimer++;
                 if (phaseTimer > 45) {
                     velocity = velocity.subtract(0, 0.05, 0);
                     setBodyRoll(getBodyRoll() + 5);
-                }
-                else {
+                } else {
                     smoothResetRoll();
                 }
                 if (phaseTimer > 80) {
@@ -476,7 +475,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
         if (laserSequenceIndex >= 0) {
             if (laserSequenceIndex < parts.size()) {
                 DestroyerPart part = parts.get(laserSequenceIndex);
-                if(part.isAlive()) part.tryShootLaser(target);
+                if (part.isAlive()) part.tryShootLaser(target);
                 laserSequenceIndex++;
             } else {
                 laserSequenceIndex = -1;
@@ -515,21 +514,25 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
 
     private void smoothResetRoll() {
         float r = Mth.wrapDegrees(getBodyRoll());
-        if (Math.abs(r) > 2) setBodyRoll(r * 0.8f); else setBodyRoll(0);
+        if (Math.abs(r) > 2) setBodyRoll(r * 0.8f);
+        else setBodyRoll(0);
     }
 
     // --- 接口与存取器 ---
 
-    public Phase getPhase() { return Phase.values()[Mth.clamp(entityData.get(DATA_PHASE), 0, 2)]; }
+    public Phase getPhase() {return Phase.values()[Mth.clamp(entityData.get(DATA_PHASE), 0, 2)];}
+
     public void setPhase(Phase p) {
         entityData.set(DATA_PHASE, p.ordinal());
         setHeadShellOpen(p == Phase.SKY);
-        if(p == Phase.GROUND || p == Phase.SKY) setNoGravity(true);
+        if (p == Phase.GROUND || p == Phase.SKY) setNoGravity(true);
     }
 
-    public float getBodyRoll() { return entityData.get(DATA_BODY_ROLL); }
-    public void setBodyRoll(float roll) { entityData.set(DATA_BODY_ROLL, roll); }
-    public void setHeadShellOpen(boolean open) { entityData.set(DATA_HEAD_SHELL_OPEN, open); }
+    public float getBodyRoll() {return entityData.get(DATA_BODY_ROLL);}
+
+    public void setBodyRoll(float roll) {entityData.set(DATA_BODY_ROLL, roll);}
+
+    public void setHeadShellOpen(boolean open) {entityData.set(DATA_HEAD_SHELL_OPEN, open);}
 
     @Override
     public void onRemovedFromLevel() {
@@ -548,13 +551,22 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
         }
     }
 
-    @Override public boolean shouldShowBossBar() { return true; }
-    @Override protected BossEvent.BossBarColor getBossBarColor() { return BossEvent.BossBarColor.RED; }
-    @Override public boolean isInvulnerableTo(DamageSource s) {
+    @Override
+    public boolean shouldShowBossBar() {return true;}
+
+    @Override
+    protected BossEvent.BossBarColor getBossBarColor() {return BossEvent.BossBarColor.RED;}
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource s) {
         return super.isInvulnerableTo(s) || s.is(DamageTypes.IN_WALL) || s.is(DamageTypes.FALL);
     }
-    @Override public boolean isNoGravity() { return true; }
-    @Override public void addSkills() {}
+
+    @Override
+    public boolean isNoGravity() {return true;}
+
+    @Override
+    public void addSkills() {}
 
     @Override
     public boolean canAttack(LivingEntity entity) {
