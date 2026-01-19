@@ -261,7 +261,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     LivingEntity target;
     protected static final int DISCARD_TICK = 100;
     protected int discardTick = 0;
-    boolean isCreativePlayer; // 如果附近有创造模式玩家，则不清除
+    protected boolean isCreativePlayer; // 如果附近有创造模式玩家，则不清除
 
     @Override
     public void tick() {

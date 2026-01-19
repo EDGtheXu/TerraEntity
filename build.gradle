@@ -178,6 +178,10 @@ repositories {
         name = 'BlameJared Maven (CrT / Bookshelf)'
         url = 'https://maven.blamejared.com'
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
 
 }
 
@@ -194,10 +198,14 @@ dependencies {
 
     if (dev) {
         implementation project(":Confluence-Magic-Lib")
-        implementation("software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}")
+        implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+        implementation "org.mesdag:ParticleStorm:${particle_storm_version}"
+        implementation "org.mesdag.thr_dim_particle:ThreeDimensionParticle-core:${thr_dim_particle_version}"
     } else {
-        implementation jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}") { }
-        implementation(jarJar("software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"))
+        implementation jarJar("org.confluence.lib:Confluence-Magic-Lib:${confluence_lib_version}")
+        implementation jarJar("software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}")
+        implementation jarJar("org.mesdag:ParticleStorm:${particle_storm_version}")
+        implementation jarJar("org.mesdag.thr_dim_particle:ThreeDimensionParticle-core:${thr_dim_particle_version}")
     }
 
     compileOnly "curse.maven:jade-324717:6011258"
@@ -335,7 +343,8 @@ tasks.register("genVoilaRun") {
     def programParam = new File(projectDir, "build/moddev/clientRunProgramArgs.txt").toString().replace("\\", "\\\\")
     def workingDir = new File(projectDir, "run")
     def vmArgs = new File(projectDir, "build/moddev/clientRunVmArgs.txt").toString().replace("\\", "\\\\")
-    def moduleName = "${project.rootProject.name}.${project.name}.${sourceSets.main.name}" // 写死了自身必定在第二层
+    def moduleName = "${project.rootProject.name}.${project.name}.${sourceSets.main.name}"
+    // 写死了自身必定在第二层
     def classesDir = new File(projectDir, "build/classes/java/main").toString().replace("\\", "\\\\")
     def resDir = new File(projectDir, "build/resources/main").toString().replace("\\", "\\\\")
     def modId = mod_id

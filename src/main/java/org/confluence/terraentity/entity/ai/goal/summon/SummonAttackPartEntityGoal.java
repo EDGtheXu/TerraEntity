@@ -5,6 +5,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.api.entity.ISummonMob;
@@ -18,13 +22,11 @@ import java.util.EnumSet;
  */
 public class SummonAttackPartEntityGoal<T extends Mob & ISummonMob & IPartEntityTargetable> extends TargetGoal {
     private Entity partEntityTarget;
-
     public SummonAttackPartEntityGoal(T mob) {
         super(mob, false);
         this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
-    @Override
     public boolean canUse() {
         if (!(this.mob instanceof IPartEntityTargetable targetable)) {
             return false;
@@ -37,13 +39,23 @@ public class SummonAttackPartEntityGoal<T extends Mob & ISummonMob & IPartEntity
         for (Entity entity : this.mob.level().getEntities(this.mob,
                 this.mob.getBoundingBox().inflate(followRange),
                 e -> e instanceof PartEntity<?> part &&
-                     part.isAlive() &&
-                     part.isPickable() &&
-                     part.getParent() instanceof LivingEntity)) {
+                        part.isAlive() &&
+                        part.isPickable() &&
+                        part.getParent() instanceof LivingEntity)) {
 
             if (entity instanceof PartEntity<?> partEntity) {
                 // 检查是否可以攻击这个 PartEntity
                 if (targetable.canAttackTarget(partEntity)) {
+                    Vec3 start = this.mob.getEyePosition();
+                    Vec3 end = partEntity.getEyePosition();
+                    HitResult hitResult = this.mob.level().clip(
+                            new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob)
+                    );
+
+                    if (hitResult.getType() != HitResult.Type.MISS) {
+                        continue; // 跳过被遮挡的目标
+                    }
+
                     this.partEntityTarget = partEntity;
                     return true;
                 }
