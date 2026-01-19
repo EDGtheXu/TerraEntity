@@ -11,10 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -35,7 +32,6 @@ import org.confluence.terraentity.entity.proj.LineProj;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoAnimatable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -47,14 +43,13 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * 毁灭者探针 (Minion)
- */
 public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, RangedAttackMob, Boss {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
+    // 引用本体
     private Destroyer head;
-    public static final EntityDataAccessor<Optional<UUID>> DATA_HEAD_UUID = SynchedEntityData.defineId(DestroyerProbe.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<UUID>> DATA_HEAD_UUID = SynchedEntityData.defineId(DestroyerProbe.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Integer> DATA_HEAD_ID = SynchedEntityData.defineId(DestroyerProbe.class, EntityDataSerializers.INT);
 
     public DestroyerProbe(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -67,36 +62,26 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_HEAD_UUID, Optional.empty());
+        builder.define(DATA_HEAD_ID, 0);
     }
 
-    @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        super.onSyncedDataUpdated(key);
-        if (key == DATA_HEAD_UUID) setHead(null);
-    }
-
-    public void setHead(@Nullable Destroyer newHead) {
-        if (newHead == null) {
-            // 通过UUID查找
-            if (getEntityData().get(DATA_HEAD_UUID).isPresent()) {
-                UUID uuid = getEntityData().get(DATA_HEAD_UUID).get();
-                if (level() instanceof ServerLevel serverLevel) {
-                    Entity entity = serverLevel.getEntity(uuid);
-                    if (entity instanceof Destroyer) newHead = (Destroyer) entity;
-                }
-            }
-        } else {
-            if (!level().isClientSide) {
-                getEntityData().set(DATA_HEAD_UUID, Optional.of(newHead.getUUID()));
-            }
-        }
+    public void setHead(Destroyer newHead) {
         this.head = newHead;
+        if(newHead != null) {
+            entityData.set(DATA_HEAD_UUID, Optional.of(newHead.getUUID()));
+            entityData.set(DATA_HEAD_ID, newHead.getId());
+        }
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (this.head == null && tickCount % 20 == 0) setHead(null);
+
+        // 恢复引用
+        if (!level().isClientSide && tickCount % 20 == 0 && head == null && entityData.get(DATA_HEAD_UUID).isPresent()) {
+            Entity e = ((ServerLevel)level()).getEntity(entityData.get(DATA_HEAD_UUID).get());
+            if(e instanceof Destroyer d) this.head = d;
+        }
 
         // 同步本体目标
         if (this.head != null && this.head.isAlive()) {
@@ -136,35 +121,34 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
     @Override
     public void performRangedAttack(LivingEntity target, float velocity) {
         if (this.level().isClientSide) return;
-        LineProj laser = TEProjectileEntities.VILE_SPIT_PROJ.get().create(level());
+        // 注意：使用 TRAIL_PROJECTILE 或者你模组里的任何激光实体
+        LineProj laser = TEProjectileEntities.TRAIL_PROJECTILE.get().create(level());
         if (laser != null) {
             laser.setOwner(this);
             laser.setPos(this.getX(), this.getY() + 0.5, this.getZ());
             laser.setDamage(20.0f);
-            laser.shoot(target.getX() - getX(), target.getY() - getY(), target.getZ() - getZ(), 1.5F, 1.0F);
+            double d0 = target.getX() - this.getX();
+            double d1 = target.getY(0.5D) - laser.getY();
+            double d2 = target.getZ() - this.getZ();
+            laser.shoot(d0, d1, d2, 1.5F, 1.0F);
             this.playSound(SoundEvents.BEACON_ACTIVATE, 1.0F, 2.0F);
             this.level().addFreshEntity(laser);
         }
     }
 
-    // --- Save/Load ---
-    @Override public void addAdditionalSaveData(CompoundTag compound) { super.addAdditionalSaveData(compound); if (head != null) compound.putUUID("HeadUUID", head.getUUID()); }
-    @Override public void readAdditionalSaveData(@NotNull CompoundTag tag) { super.readAdditionalSaveData(tag); if (tag.contains("HeadUUID")) getEntityData().set(DATA_HEAD_UUID, Optional.of(tag.getUUID("HeadUUID"))); }
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        if (head != null) compound.putUUID("HeadUUID", head.getUUID());
+    }
 
-    // --- Boilerplate ---
-    @Override public boolean isNoGravity() { return true; }
-    @Override protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {}
-    @Override public boolean shouldShowBossBar() { return false; }
-    @Override public boolean isMainBody() { return false; }
-    @Override protected BossEvent.BossBarColor getBossBarColor() { return BossEvent.BossBarColor.RED; }
-    @Override public void addSkills() {}
-    @Override public boolean isPushable() { return true; }
-    @Override protected SoundEvent getHurtSound(@NotNull DamageSource s) { return SoundEvents.IRON_GOLEM_HURT; }
-    @Override protected SoundEvent getDeathSound() { return SoundEvents.GENERIC_EXPLODE.value(); }
-    @Override public void registerControllers(AnimatableManager.ControllerRegistrar c) { c.add(new AnimationController<GeoAnimatable>(this, "controller", 0, e -> PlayState.CONTINUE)); }
-    @Override public AnimatableInstanceCache getAnimatableInstanceCache() { return cache; }
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("HeadUUID")) getEntityData().set(DATA_HEAD_UUID, Optional.of(tag.getUUID("HeadUUID")));
+    }
 
-    // --- Inner Classes ---
+    // --- Inner Classes (AI) ---
     class ProbeMoveControl extends MoveControl {
         public ProbeMoveControl(DestroyerProbe probe) { super(probe); }
         @Override public void tick() {
@@ -177,9 +161,6 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
                 } else {
                     mob.setDeltaMovement(mob.getDeltaMovement().add(vec3.scale(this.speedModifier * 0.05D / d0)));
                     Vec3 look = mob.getDeltaMovement();
-                    if (mob.getTarget() != null) {
-                        look = mob.getTarget().position().subtract(mob.position());
-                    }
                     mob.setYRot(-((float)Mth.atan2(look.x, look.z)) * (180F / (float)Math.PI));
                     mob.yBodyRot = mob.getYRot();
                 }
@@ -192,6 +173,7 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
         public ProbeRandomFlyGoal(DestroyerProbe probe) { this.probe = probe; this.setFlags(EnumSet.of(Flag.MOVE)); }
         @Override public boolean canUse() { return !this.probe.getMoveControl().hasWanted() && this.probe.getRandom().nextInt(7) == 0; }
         @Override public void tick() {
+            // 优先飞向本体附近
             if (probe.head != null && probe.head.isAlive() && probe.distanceToSqr(probe.head) > 64 * 64) {
                 Vec3 headPos = probe.head.position();
                 this.probe.moveControl.setWantedPosition(headPos.x + (random.nextDouble()-0.5)*10, headPos.y+5, headPos.z+(random.nextDouble()-0.5)*10, 1.0);
@@ -212,10 +194,10 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
             LivingEntity t = probe.getTarget();
             if (t != null) {
                 double dist = probe.distanceToSqr(t);
-                if (dist < 100) { // 太近后退
+                if (dist < 100) {
                     Vec3 dir = probe.position().subtract(t.position()).normalize();
                     probe.moveControl.setWantedPosition(probe.getX()+dir.x*5, probe.getY()+2, probe.getZ()+dir.z*5, 1.0);
-                } else if (dist > 256) { // 太远靠近
+                } else if (dist > 256) {
                     probe.moveControl.setWantedPosition(t.getX(), t.getY()+3, t.getZ(), 1.0);
                 }
                 probe.getLookControl().setLookAt(t, 30, 30);
@@ -225,5 +207,23 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
                 }
             }
         }
+    }
+
+    @Override public boolean isNoGravity() { return true; }
+    @Override protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {}
+    @Override public boolean shouldShowBossBar() { return false; }
+    @Override public boolean isMainBody() { return false; }
+    @Override protected BossEvent.BossBarColor getBossBarColor() { return BossEvent.BossBarColor.RED; }
+    @Override public void addSkills() {}
+    @Override public boolean isPushable() { return true; }
+    @Override protected SoundEvent getHurtSound(@NotNull DamageSource s) { return SoundEvents.IRON_GOLEM_HURT; }
+    @Override protected SoundEvent getDeathSound() { return SoundEvents.GENERIC_EXPLODE.value(); }
+    @Override public void registerControllers(AnimatableManager.ControllerRegistrar c) { c.add(new AnimationController<>(this, "controller", 0, e -> PlayState.CONTINUE)); }
+    @Override public AnimatableInstanceCache getAnimatableInstanceCache() { return cache; }
+
+    @Override
+    public boolean canAttack(LivingEntity entity) {
+        if (!super.canAttack(entity)) return false;
+        return !(entity instanceof Destroyer || entity instanceof DestroyerPart || entity instanceof DestroyerProbe);
     }
 }

@@ -1,6 +1,8 @@
 package org.confluence.terraentity.entity.boss.destroyer;
 
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
 import org.confluence.terraentity.api.entity.Boss;
@@ -25,9 +28,10 @@ import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.utils.CameraShakeData;
 import org.confluence.terraentity.utils.CameraShakeManager;
+import org.confluence.terraentity.utils.TEUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 毁灭者 (The Destroyer) - 头部
@@ -35,52 +39,48 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Destroyer extends AbstractTerraBossBase implements Boss {
 
     // --- 同步数据 ---
-    // 0: Underground, 1: Ground, 2: Sky
     public static final EntityDataAccessor<Integer> DATA_PHASE = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.INT);
-    // 0: 白漆, 1: 神圣金属
     public static final EntityDataAccessor<Integer> DATA_TEXTURE_VARIANT = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.INT);
-    // 身体滚转角 (Z轴)
     public static final EntityDataAccessor<Float> DATA_BODY_ROLL = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.FLOAT);
-    // 头甲状态
     public static final EntityDataAccessor<Boolean> DATA_HEAD_SHELL_OPEN = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.BOOLEAN);
 
-    public enum Phase {
-        UNDERGROUND, GROUND, SKY
-    }
+    public enum Phase { UNDERGROUND, GROUND, SKY }
 
     // --- 配置 ---
     private final int segmentCount = 80;
-    private final float segmentInterval = 3.5f;
-    private final float turnSpeedBase = 3.0f;
-    private final float moveSpeedBase = 0.6f;
+    private final float segmentInterval = 3.2f;
+    private final float turnSpeedBase = 9f;
+    private final float moveSpeedBase = 1f;
 
-    // 高度阈值
-//    private static final int Y_LEVEL_DEEP = 50;
-//    private static final int Y_LEVEL_SKY = 120;
-    private static final int Y_LEVEL_DEEP = 0;
-    private static final int Y_LEVEL_SKY = 10;
+    // --- 部件管理 ---
+    // 手动管理 List，不使用 NeoForge 的 PartEntity 接口以避免继承冲突
+    private final List<DestroyerPart> parts = new ArrayList<>();
 
     // --- 运行时 ---
-    public List<DestroyerSegment> segments = new CopyOnWriteArrayList<>();
-    private boolean genSegments = true;
     private boolean isInsideBlock = false;
     private int phaseTimer = 0;
-
-    // 渲染平滑插值字段
     public float prevBodyRoll;
-
-    // 地面攻击状态机: 0=追踪, 1=蓄力, 2=冲刺(重力开启), 3=冷却
     private int groundAttackState = 0;
-
-    // 激光控制
     private int laserSequenceIndex = -1;
     private int laserTick = 0;
-    private int volleyCooldown = 0; // 齐射冷却
+    private int volleyCooldown = 0;
+
+//    private static final int Y_LEVEL_DEEP = 50;
+//    private static final int Y_LEVEL_SKY = 120;
+    private static final int Y_LEVEL_DEEP = 60;
+    private static final int Y_LEVEL_SKY = 100;
+    private int caveAttackState = 0; // 地下模式状态机
+    private int skyAttackState = 0;  // 天空模式状态机
+    private boolean isPerformingBarrelRoll = false; // 天空模式：是否正在进行特技翻滚
+    private Vec3 velocity = getDeltaMovement();
+    private Vec3 wanderPos = null;
+    private boolean lastInBlock = false;
 
     public Destroyer(EntityType<? extends Monster> type, Level level) {
         super(type, level);
         this.noPhysics = true;
-        this.xpReward = 500;
+        this.setNoGravity(true);
+        this.xpReward = 2000;
         this.setHealth(this.getMaxHealth());
     }
 
@@ -97,303 +97,466 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
         builder.define(DATA_HEAD_SHELL_OPEN, false);
     }
 
-    // --- Getters / Setters ---
-    public Phase getPhase() {
-        return Phase.values()[Mth.clamp(entityData.get(DATA_PHASE), 0, 2)];
-    }
-
-    public void setPhase(Phase phase) {
-        entityData.set(DATA_PHASE, phase.ordinal());
-        if (phase == Phase.GROUND) {
-            this.noPhysics = false; // 允许物理计算
-        } else {
-            this.noPhysics = true;
-            this.setNoGravity(true);
-        }
-
-        // 动画重置
-        if (phase == Phase.UNDERGROUND) setHeadShellOpen(false);
-        else if (phase == Phase.SKY) setHeadShellOpen(true);
-    }
-
-    public float getBodyRoll() { return entityData.get(DATA_BODY_ROLL); }
-    public void setBodyRoll(float roll) { entityData.set(DATA_BODY_ROLL, roll); }
-    public void setHeadShellOpen(boolean open) { entityData.set(DATA_HEAD_SHELL_OPEN, open); }
-
-    // --- 核心逻辑 ---
-
-    private void genSegments() {
-        if (!level().isClientSide) {
-            segments.clear();
-            Vec3 dir = this.getForward().normalize().scale(-segmentInterval);
+    // --- 首次生成逻辑 (参考 SkeletronPrime) ---
+    @Override
+    public void firstSpawn() {
+        if (level() instanceof ServerLevel serverLevel && parts.isEmpty()) {
             Vec3 lastPos = position();
-            LivingEntity lastEntity = this;
+            Vec3 backward = this.getForward().scale(-segmentInterval);
 
             for (int i = 0; i < segmentCount; i++) {
-                lastPos = lastPos.add(dir);
-                DestroyerSegment seg = new DestroyerSegment(this, level());
-                seg.setPos(lastPos);
-                seg.setHead(this);
-                seg.setPrevSegment(lastEntity);
+                lastPos = lastPos.add(backward);
 
-                // 设置尾部
-                if (i == segmentCount - 1) seg.setTail(true);
+                // 修正：调用 TEUtils.spawnEntity 或直接 create + addFreshEntity
+                // 这里为了方便设置属性，手动创建
+                DestroyerPart part = TEBossEntities.DESTROYER_PART.get().create(serverLevel);
+                if (part != null) {
+                    part.moveTo(lastPos.x, lastPos.y, lastPos.z, this.getYRot(), this.getXRot());
+                    part.setOwner(this); // 设置归属
+                    part.setPartType(i); // 记录是第几节 (可选)
 
-                // 每隔 3 节设置为探针体节 (Probe Segment)
-                // 这些体节有红灯，能射激光，能放探针
-                if (i % 3 == 0) {
-                    seg.setProbeSegment(true);
+                    // 特殊部位标记
+                    if (i == segmentCount - 1) part.setTail(true);
+                    if (i % 2 == 0) part.setProbeSegment(true);
+
+                    serverLevel.addFreshEntity(part);
+                    this.parts.add(part);
                 }
-
-                level().addFreshEntity(seg);
-                segments.add(seg);
-                lastEntity = seg;
             }
-            Boss.sendBossSpawnMessage(this);
+
+            // 初始化 BossBar
+            final TargetingConditions attackTargeting = TargetingConditions.forNonCombat().range(128.0);
+            level().getNearbyPlayers(attackTargeting, this, this.getBoundingBox().inflate(200))
+                    .forEach(p -> bossEvent.addPlayer((ServerPlayer) p));
         }
     }
+
+    // --- 核心更新逻辑 ---
 
     @Override
     public void tick() {
-        // 记录上一帧的 Roll，用于渲染器插值
         this.prevBodyRoll = this.getBodyRoll();
         super.tick();
     }
 
     @Override
     public void aiStep() {
-        super.aiStep();
-
-        if (genSegments) {
-            genSegments();
-            genSegments = false;
-            if (!level().isClientSide) {
-                final TargetingConditions attackTargeting = TargetingConditions.forNonCombat().range(128.0);
-                level().getNearbyPlayers(attackTargeting, this, this.getBoundingBox().inflate(200))
-                        .forEach(p -> bossEvent.addPlayer((ServerPlayer) p));
-                bossEvent.setProgress(1.0f);
-            }
-        }
+        super.aiStep(); // 处理基础移动 AI
 
         if (level().isClientSide) return;
 
+        // 1. 部件链条物理更新 (Chain Physics)
+        updatePartsPhysics();
+
+        // 2. AI 行为树
         tickPhaseLogic();
         checkBlockCollisionEffects();
         tickLaserControl();
 
-        // 阶段转换检测 (血量 < 50%)
-        if (this.getHealth() / this.getMaxHealth() < 0.5f) {
-            if (entityData.get(DATA_TEXTURE_VARIANT) == 0) {
-                entityData.set(DATA_TEXTURE_VARIANT, 1);
-                CameraShakeManager.addCameraShake(new CameraShakeData(40, this.position(), 50));
-                this.playSound(SoundEvents.ZOMBIE_VILLAGER_CURE, 2.0f, 0.5f); // 破甲音效
-            }
-        }
+        // 3. 状态与血量视觉同步
+        updateBossState();
+    }
 
-        this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
+    /**
+     * 核心：集中管理所有体节的移动和状态
+     */
+    private void updatePartsPhysics() {
+        // 清理已死亡的部件引用
+        parts.removeIf(p -> p == null || !p.isAlive());
+
+        if (parts.isEmpty()) return;
+
+        Entity prev = this;
+        Phase phase = getPhase();
+
+        for (DestroyerPart part : parts) {
+            // A. 位置跟随 (贪吃蛇逻辑)
+            double distSq = part.distanceToSqr(prev);
+            if (distSq > 4000) { // 防丢失
+                part.setPos(prev.position());
+            } else if (distSq > 0.5) {
+                // 计算目标位置：前一节位置 - (朝向 * 间距)
+                // 这里使用简单的向量追踪，使动作更像生物
+                Vec3 dirToPrev = prev.position().subtract(part.position()).normalize();
+                double currentDist = Math.sqrt(distSq);
+                double moveDist = currentDist - segmentInterval;
+
+                if (moveDist > 0) {
+                    Vec3 moveVec = dirToPrev.scale(moveDist);
+                    part.setPos(part.position().add(moveVec));
+                }
+
+                // 强制看向前一节
+                part.lookAtTgt = prev;
+                part.lookAt(EntityAnchorArgument.Anchor.EYES, prev.getEyePosition());
+            }
+
+            // B. 旋转(Roll)传递 (DNA螺旋)
+            float prevRoll = (prev instanceof Destroyer d) ? d.getBodyRoll() : ((DestroyerPart)prev).getSegmentRoll();
+            float currentRoll = part.getSegmentRoll();
+            // 平滑传递旋转
+            float diff = Mth.degreesDifference(currentRoll, prevRoll);
+            if (Math.abs(diff) >= 10.0f) {
+                currentRoll += (diff > 0 ? (diff - 9.0f) : (diff + 9.0f));
+            } else {
+                currentRoll += diff * 0.15f;
+            }
+            part.setSegmentRoll(Mth.wrapDegrees(currentRoll));
+
+            // C. 侧翼开闭同步
+            boolean isSolid = level().getBlockState(part.blockPosition()).isSolid();
+            boolean shouldOpen = phase == Phase.SKY || (phase == Phase.GROUND && !isSolid);
+            part.setFlapsOpen(shouldOpen);
+
+            prev = part;
+        }
     }
 
     private void tickPhaseLogic() {
         LivingEntity target = getTarget();
         phaseTimer++;
 
-        // 默认逻辑
+        // 出入方块声音
+        if (this.onGround() != lastInBlock) {
+            lastInBlock = this.onGround();
+            CameraShakeManager.addCameraShake(new CameraShakeData(20, this.position(), 50));
+        }
+
+        // 1. 目标丢失处理
         if (target == null) {
+            if (wanderPos == null) wanderPos = getEyePosition();
             if (getPhase() != Phase.GROUND) setPhase(Phase.GROUND);
             tickGroundMode(null);
             return;
+        } else {
+            wanderPos = target.position();
         }
 
+        // 2. 根据高度判定目标阶段
         double targetY = target.getY();
         Phase currentPhase = getPhase();
         Phase targetPhase;
 
-        // 根据高度决定目标阶段
         if (targetY < Y_LEVEL_DEEP) targetPhase = Phase.UNDERGROUND;
         else if (targetY > Y_LEVEL_SKY) targetPhase = Phase.SKY;
         else targetPhase = Phase.GROUND;
 
-        // 阶段切换处理
+        // 3. 阶段切换初始化
         if (currentPhase != targetPhase) {
             setPhase(targetPhase);
             phaseTimer = 0;
+            // 重置所有子状态
             groundAttackState = 0;
+            caveAttackState = 0;
+            skyAttackState = 0;
+            isPerformingBarrelRoll = false;
         }
 
+        // 4. 执行对应模式逻辑
         switch (currentPhase) {
-            case UNDERGROUND -> {
-                // 钻头旋转，冲撞
-                float currentRoll = getBodyRoll();
-                setBodyRoll((currentRoll + 15.0f) % 360.0f);
-                if (target != null) {
-                    this.lookAt(target, turnSpeedBase, 80);
-                    this.move(MoverType.SELF, this.getForward().scale(moveSpeedBase * 1.2));
-                }
-            }
-            case GROUND -> {
-                // 平滑归正
-                smoothResetRoll();
-                tickGroundMode(target);
-            }
-            case SKY -> {
-                // 飞行，缓慢旋转
-                setBodyRoll(getBodyRoll() + 2.0f);
-                if (target != null) {
-                    Vec3 targetPos = target.position().add(0, 25, 0);
-                    // 使用原版 LookAt
-                    this.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, targetPos);
-                    this.move(MoverType.SELF, this.getForward().scale(moveSpeedBase * 1.5));
-                }
-            }
+            case UNDERGROUND -> tickCaveMode(target);
+            case GROUND -> tickGroundMode(target);
+            case SKY -> tickSkyMode(target);
         }
     }
 
-    private void tickGroundMode(LivingEntity target) {
-        if (target == null) return;
+    /**
+     * 地下模式 (Cave Mode)
+     * 行为：DNA螺旋钻头冲撞
+     * 限制：不发激光，不放探针，头甲关闭
+     */
+    private void tickCaveMode(LivingEntity target) {
+        // 强制关闭头甲
+        if (entityData.get(DATA_HEAD_SHELL_OPEN)) setHeadShellOpen(false);
 
+        // 基础旋转：模拟钻头持续旋转
+        float baseRollSpeed = 15.0f;
+        float rollSpeed = baseRollSpeed, adjustAngle = turnSpeedBase, fwdSpeed = moveSpeedBase;
+        switch (caveAttackState) {
+            case 0 -> { // 追踪与调整 (Track)
+                rollSpeed = baseRollSpeed;
+                adjustAngle = turnSpeedBase;
+                fwdSpeed = moveSpeedBase;
+                // 每 100 tick 尝试一次冲刺
+                if (phaseTimer > 100) {
+                    caveAttackState = 1;
+                    phaseTimer = 0;
+                }
+            }
+            case 1 -> { // 蓄力 (Rev up)
+                float progMulti = phaseTimer / 20f;
+                rollSpeed = baseRollSpeed * (1f + 1.5f * progMulti); // 1x -> 2.5x
+                adjustAngle = turnSpeedBase;
+                fwdSpeed = moveSpeedBase * (1f - 0.4f * progMulti); // 1x -> 0.4x
+
+                // 播放蓄力音效
+                if (phaseTimer % 3 == 0) {
+                    this.playSound(SoundEvents.MINECART_RIDING, 1.0f, 2.0f);
+                }
+
+                if (phaseTimer > 20) {
+                    caveAttackState = 2;
+                    phaseTimer = 0;
+                    // 初始化冲刺方向
+                    Vec3 dashDir = target.getEyePosition().subtract(this.getEyePosition()).normalize();
+                    velocity = dashDir.scale(moveSpeedBase * 1.5); // 高速冲撞
+                    this.playSound(SoundEvents.TRIDENT_RIPTIDE_3.value(), 2.0f, 0.5f);
+                }
+            }
+            case 2 -> { // 冲刺 (Dash)
+                rollSpeed = baseRollSpeed * 2.5f;
+                adjustAngle = turnSpeedBase * 0.05f; // 转向能力很弱
+                fwdSpeed = moveSpeedBase * 1.5f;
+
+                // 冲刺 30 tick 后结束
+                if (phaseTimer > 30) {
+                    caveAttackState = 3;
+                    phaseTimer = 0;
+                }
+            }
+            case 3 -> { // 惯性恢复 (Recovery)
+                float progMulti = phaseTimer / 20f;
+                rollSpeed = baseRollSpeed * (2.5f - 1.5f * progMulti); // 2.5 -> 1.0
+                adjustAngle = turnSpeedBase * (0.05f + 0.95f * progMulti); // 0.05 -> 1.0
+                fwdSpeed = moveSpeedBase * (1.5f - 0.5f * progMulti); // 1.5 -> 1
+                if (phaseTimer > 20) {
+                    caveAttackState = 0;
+                    phaseTimer = 0;
+                }
+            }
+        }
+
+        // 移动
+        float finalAdjustAngle = adjustAngle * Mth.DEG_TO_RAD;
+        Vec3 tgt = target.getEyePosition().subtract(this.getEyePosition());
+        tgt = tgt.normalize().scale(fwdSpeed);
+        velocity = TEUtils.interpolateBasis(velocity, tgt,
+                (angle) -> Math.min(angle, finalAdjustAngle), (spd) -> spd * 0.25);
+        this.lookAt(EntityAnchorArgument.Anchor.EYES, getEyePosition().add(velocity));
+        setDeltaMovement(velocity);
+        // 旋转
+        setBodyRoll((getBodyRoll() + rollSpeed) % 360.0f);
+    }
+
+    private void tickGroundMode(LivingEntity target) {
+        Vec3 targetPos = target != null ?
+                target.getEyePosition() :
+                wanderPos;
         switch (groundAttackState) {
             case 0 -> { // 潜伏
-                this.noPhysics = true;
-                this.setNoGravity(true);
-                double targetY = Math.min(target.getY() - 15, level().getMinBuildHeight() + 20);
-                Vec3 dest = new Vec3(target.getX(), targetY, target.getZ());
-
-                Vec3 dir = dest.subtract(this.position()).normalize();
-                this.move(MoverType.SELF, dir.scale(moveSpeedBase * 2.0));
-                this.lookAt(target, 20, 20);
-
-                if (distanceToSqr(dest) < 100) {
+                targetPos = targetPos.with(Direction.Axis.Y,
+                        level().getHeight(Heightmap.Types.WORLD_SURFACE, (int) targetPos.x, (int) targetPos.z));
+                targetPos = targetPos.subtract(0, 20, 0);
+                velocity = targetPos.subtract(position()).normalize().scale(moveSpeedBase * 1.35);
+                setBodyRoll(getBodyRoll() + 20);
+                if (distanceToSqr(targetPos) < 16) {
                     groundAttackState = 1;
                     phaseTimer = 0;
                 }
             }
-            case 1 -> { // 蓄力
-                this.setDeltaMovement(Vec3.ZERO);
-                if (phaseTimer++ > 30) {
+            case 1 -> { // 跳跃
+                wanderPos = wanderPos.add(Mth.sin(tickCount * 3.6f * Mth.DEG_TO_RAD) * 25, 0, Mth.cos(tickCount * 3.6f * Mth.DEG_TO_RAD) * 25);
+                velocity = targetPos.subtract(getEyePosition()).normalize().scale(moveSpeedBase * 1.5);
+                setBodyRoll(getBodyRoll() + 12.5f);
+                // 6格以内开始下坠 (需要存在目标)
+                if (targetPos.distanceToSqr(getEyePosition()) < 36 && target != null) {
                     groundAttackState = 2;
-                    // 开启物理重力
-                    this.noPhysics = false;
-                    this.setNoGravity(false);
-
-                    Vec3 horiz = target.position().subtract(this.position()).multiply(1, 0, 1).normalize();
-                    Vec3 jump = horiz.scale(1.5).add(0, 2.5, 0);
-                    this.setDeltaMovement(jump);
-                    setBodyRoll(0);
-                    this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2.0f, 0.5f);
-                }
-            }
-            case 2 -> { // 腾空 (抛物线)
-                if (this.getDeltaMovement().y > 0) setBodyRoll(getBodyRoll() + 15f);
-                else smoothResetRoll();
-
-                if (this.onGround() && this.getDeltaMovement().y <= 0) {
-                    groundAttackState = 3;
                     phaseTimer = 0;
-                    CameraShakeManager.addCameraShake(new CameraShakeData(30, this.position(), 40));
-                    this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 2.0f, 1.0f);
                 }
             }
-            case 3 -> { // 冷却
-                this.setDeltaMovement(Vec3.ZERO);
-                if (phaseTimer++ > 60) groundAttackState = 0;
+            case 2 -> { // 下坠和冷却
+                phaseTimer ++;
+                if (phaseTimer > 45) {
+                    velocity = velocity.subtract(0, 0.05, 0);
+                    setBodyRoll(getBodyRoll() + 5);
+                }
+                else {
+                    smoothResetRoll();
+                }
+                if (phaseTimer > 80) {
+                    groundAttackState = 0;
+                    phaseTimer = 0;
+                }
             }
         }
+        this.lookAt(EntityAnchorArgument.Anchor.EYES, getEyePosition().add(velocity));
+        setDeltaMovement(velocity);
+    }
+
+    /**
+     * 天空模式 (Sky Mode)
+     * 行为：高空飞行，蓝色火焰，激光齐射配合
+     * 限制：头甲常开，偶尔翻滚
+     */
+    private void tickSkyMode(LivingEntity target) {
+        // 强制打开头甲
+        if (!entityData.get(DATA_HEAD_SHELL_OPEN)) setHeadShellOpen(true);
+
+        // 随机触发“绕轴旋转”(Barrel Roll)
+        if (!isPerformingBarrelRoll && random.nextInt(300) == 0) {
+            isPerformingBarrelRoll = true;
+        }
+
+        // 处理旋转逻辑
+        if (isPerformingBarrelRoll) {
+            // 快速翻滚一圈
+            float roll = getBodyRoll() + 25.0f;
+            setBodyRoll(roll);
+            // 滚完几圈后停止
+            if (roll > 720.0f) { // 滚两圈
+                setBodyRoll(0);
+                isPerformingBarrelRoll = false;
+            }
+        } else {
+            // 平时缓慢摆动或归正
+            smoothResetRoll();
+        }
+
+        switch (skyAttackState) {
+            case 0 -> { // 盘旋 (Hover/Circle)
+                // 尝试飞到玩家上方 20-30 格处
+                Vec3 hoverTarget = target.position().add(0, 25, 0);
+                // 像世吞一样平滑飞行
+                this.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, hoverTarget);
+                velocity = this.getForward().scale(moveSpeedBase * 1.5);
+
+                // 如果接近盘旋点，或者随机时间，进入俯冲攻击
+                if (distanceToSqr(hoverTarget) < 256 || phaseTimer > 60) {
+                    skyAttackState = 1;
+                    phaseTimer = 0;
+                    volleyCooldown = 20; // 准备触发齐射
+                }
+            }
+            case 1 -> { // 俯冲/齐射准备 (Dive/Volley Prep)
+                // 这是一个进攻性的动作，通常配合激光齐射
+                // 飞向玩家侧上方，通过侧翼对准玩家
+                float agl = tickCount * 6 * Mth.DEG_TO_RAD;
+                Vec3 attackPos = target.position().add(Mth.sin(agl) * 15, 10, Mth.cos(agl) * 15);
+                this.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, attackPos);
+                velocity = this.getForward().scale(moveSpeedBase * 2.25);
+
+                // 期间触发 tickLaserControl 中的齐射
+
+                if (phaseTimer > 60) {
+                    skyAttackState = 2;
+                    phaseTimer = 0;
+                }
+            }
+            case 2 -> { // 直冲
+                Vec3 attackPos = target.getEyePosition();
+                this.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, attackPos);
+                velocity = this.getForward().scale(moveSpeedBase * 1.6);
+
+                if (phaseTimer > 40) {
+                    skyAttackState = 0;
+                    phaseTimer = 0;
+                }
+            }
+        }
+        setDeltaMovement(velocity);
     }
 
     private void tickLaserControl() {
-        if (getPhase() == Phase.UNDERGROUND) return;
-
         LivingEntity target = getTarget();
-        if (target == null) return;
+        if (target == null || getPhase() == Phase.UNDERGROUND) return;
 
-        // --- 齐射模式 (天空模式专属) ---
+        // 齐射模式 (Sky Phase)
         if (getPhase() == Phase.SKY) {
-            if (volleyCooldown > 0) volleyCooldown--;
-
-            // 随机触发齐射 (5%概率，且冷却完毕)
-            if (volleyCooldown <= 0 && random.nextInt(100) < 5) {
-                // 所有探针体节尝试发射
-                for (DestroyerSegment seg : segments) {
-                    if (seg.isAlive()) seg.tryShootLaser(target);
-                }
-                this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 3.0f, 1.0f); // 轰鸣声
-                volleyCooldown = 100; // 5秒冷却
-                return; // 齐射回合不进行顺序发射
+            if (volleyCooldown-- <= 0) {
+                parts.forEach(p -> p.tryShootLaser(target));
+                this.playSound(SoundEvents.BEACON_ACTIVATE, 2.0f, 1.0f);
+                volleyCooldown = 80 + random.nextInt(40);
+                return;
             }
         }
 
-        // --- 顺序发射模式 ---
+        // 顺序发射模式
         if (laserSequenceIndex >= 0) {
-            if (laserTick++ % 2 == 0) {
-                if (laserSequenceIndex < segments.size()) {
-                    DestroyerSegment seg = segments.get(laserSequenceIndex);
-                    if (seg != null && seg.isAlive()) {
-                        seg.tryShootLaser(target);
-                    }
-                    laserSequenceIndex++;
-                } else {
-                    laserSequenceIndex = -1;
-                    laserTick = 0;
-                }
+            if (laserSequenceIndex < parts.size()) {
+                DestroyerPart part = parts.get(laserSequenceIndex);
+                if(part.isAlive()) part.tryShootLaser(target);
+                laserSequenceIndex++;
+            } else {
+                laserSequenceIndex = -1;
+                laserTick = 0;
             }
-        } else {
-            // 随机开始新一轮顺序射击
-            if (random.nextInt(100) == 0) {
-                laserSequenceIndex = 0;
-            }
+        } else if (random.nextInt(150) == 0) {
+            laserSequenceIndex = 0;
+            laserTick = 0;
+        }
+    }
+
+    private void updateBossState() {
+        this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
+
+        // 二阶段视觉
+        if (getHealth() / getMaxHealth() < 0.5f && entityData.get(DATA_TEXTURE_VARIANT) == 0) {
+            entityData.set(DATA_TEXTURE_VARIANT, 1);
+            this.playSound(SoundEvents.ZOMBIE_VILLAGER_CURE, 3.0f, 0.5f);
         }
     }
 
     private void checkBlockCollisionEffects() {
-        BlockPos pos = this.blockPosition();
+        BlockPos pos = blockPosition();
         BlockState state = level().getBlockState(pos);
-        boolean currentlyInBlock = !state.isAir() && state.isRedstoneConductor(level(), pos);
+        boolean inBlock = !state.isAir() && state.isRedstoneConductor(level(), pos);
 
-        if (currentlyInBlock != isInsideBlock) {
-            float radius = currentlyInBlock ? 7.0f : 14.0f;
-            int duration = currentlyInBlock ? 10 : 20;
-            CameraShakeManager.addCameraShake(new CameraShakeData(duration, this.position(), radius));
-            float volume = currentlyInBlock ? 0.5f : 1.5f;
-            this.playSound(SoundEvents.GENERIC_EXPLODE.value(), volume, 1.0f);
-            isInsideBlock = currentlyInBlock;
+        if (inBlock != isInsideBlock) {
+            this.playSound(SoundEvents.GRINDSTONE_USE, inBlock ? 0.5f : 1.2f, 1.0f);
+            CameraShakeManager.addCameraShake(new CameraShakeData(inBlock ? 10 : 20, this.position(), inBlock ? 7 : 14));
+            isInsideBlock = inBlock;
         }
-
-        if (currentlyInBlock && level() instanceof ServerLevel sl) {
-            sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state),
-                    this.getX(), this.getY(), this.getZ(),
-                    5, 1.0, 1.0, 1.0, 0.1);
+        if (inBlock && level() instanceof ServerLevel sl) {
+            sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), getX(), getY(), getZ(), 3, 0.5, 0.5, 0.5, 0.05);
         }
     }
 
     private void smoothResetRoll() {
         float r = Mth.wrapDegrees(getBodyRoll());
-        if (Math.abs(r) > 2) setBodyRoll(r * 0.8f);
-        else setBodyRoll(0);
+        if (Math.abs(r) > 2) setBodyRoll(r * 0.8f); else setBodyRoll(0);
+    }
+
+    // --- 接口与存取器 ---
+
+    public Phase getPhase() { return Phase.values()[Mth.clamp(entityData.get(DATA_PHASE), 0, 2)]; }
+    public void setPhase(Phase p) {
+        entityData.set(DATA_PHASE, p.ordinal());
+        setHeadShellOpen(p == Phase.SKY);
+        if(p == Phase.GROUND || p == Phase.SKY) setNoGravity(true);
+    }
+
+    public float getBodyRoll() { return entityData.get(DATA_BODY_ROLL); }
+    public void setBodyRoll(float roll) { entityData.set(DATA_BODY_ROLL, roll); }
+    public void setHeadShellOpen(boolean open) { entityData.set(DATA_HEAD_SHELL_OPEN, open); }
+
+    @Override
+    public void onRemovedFromLevel() {
+        if (!level().isClientSide) {
+            parts.forEach(Entity::discard);
+        }
+        this.bossEvent.removeAllPlayers();
+        super.onRemovedFromLevel();
     }
 
     @Override
-    public boolean isNoGravity() {
-        if (getPhase() == Phase.GROUND && groundAttackState == 2) return false;
-        return true;
-    }
-
-    // --- 基础重写 ---
-    @Override public boolean shouldShowBossBar() { return true; }
-    @Override protected BossEvent.BossBarColor getBossBarColor() { return BossEvent.BossBarColor.RED; }
-    @Override public boolean isInvulnerableTo(DamageSource s) { return super.isInvulnerableTo(s) || s.is(DamageTypes.IN_WALL) || s.is(DamageTypes.FALL); }
-    @Override public void addSkills() {}
-    @Override public void die(DamageSource damageSource) {
-        if (!CommonHooks.onLivingDeath(this, damageSource)) {
-            for (DestroyerSegment seg : segments) if (seg != null) seg.discard();
-            this.bossEvent.removeAllPlayers();
-            super.die(damageSource);
+    public void die(DamageSource source) {
+        if (!CommonHooks.onLivingDeath(this, source)) {
+            parts.forEach(Entity::discard);
+            super.die(source);
         }
     }
-    @Override public void onRemovedFromLevel() {
-        this.bossEvent.removeAllPlayers();
-        for (DestroyerSegment seg : segments) if (seg != null) seg.discard();
-        super.onRemovedFromLevel();
+
+    @Override public boolean shouldShowBossBar() { return true; }
+    @Override protected BossEvent.BossBarColor getBossBarColor() { return BossEvent.BossBarColor.RED; }
+    @Override public boolean isInvulnerableTo(DamageSource s) {
+        return super.isInvulnerableTo(s) || s.is(DamageTypes.IN_WALL) || s.is(DamageTypes.FALL);
     }
-    @Override public void startSeenByPlayer(ServerPlayer p) { super.startSeenByPlayer(p); this.bossEvent.addPlayer(p); }
-    @Override public void stopSeenByPlayer(ServerPlayer p) { super.stopSeenByPlayer(p); this.bossEvent.removePlayer(p); }
+    @Override public boolean isNoGravity() { return true; }
+    @Override public void addSkills() {}
+
+    @Override
+    public boolean canAttack(LivingEntity entity) {
+        if (!super.canAttack(entity)) return false;
+        return !(entity instanceof Destroyer || entity instanceof DestroyerPart || entity instanceof DestroyerProbe);
+    }
 }

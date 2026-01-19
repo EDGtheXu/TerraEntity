@@ -156,7 +156,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEBossEntities.SKELETRON_PRIME.get(), "机械骷髅王");
         add(TEBossEntities.SKELETRON_PRIME_PART.get(), "机械骷髅王（机械臂）");
         add(TEBossEntities.DESTROYER.get(), "毁灭者");
-        add(TEBossEntities.DESTROYER_SEGMENT.get(), "毁灭者体节");
+        add(TEBossEntities.DESTROYER_PART.get(), "毁灭者体节");
         add(TEBossEntities.DESTROYER_PROBE.get(), "毁灭者探测器");
         add(TEBossEntities.PLANTERA.get(), "世纪之花");
         add(TEBossEntities.PLANTERA_HOOK.get(), "世纪之花钩");

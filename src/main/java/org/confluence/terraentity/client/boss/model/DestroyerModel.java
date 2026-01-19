@@ -4,7 +4,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.entity.boss.destroyer.Destroyer;
-import org.confluence.terraentity.entity.boss.destroyer.DestroyerSegment;
+import org.confluence.terraentity.entity.boss.destroyer.DestroyerPart;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 
 public class DestroyerModel extends GeoBossModel<Destroyer> {
@@ -24,14 +24,14 @@ public class DestroyerModel extends GeoBossModel<Destroyer> {
     }
 }
 
-class DestroyerSegmentModel extends GeoBossModel<DestroyerSegment> {
+class DestroyerSegmentModel extends GeoBossModel<DestroyerPart> {
 
     public DestroyerSegmentModel(String name) {
         super(name);
     }
 
     @Override
-    public ResourceLocation getTextureResource(DestroyerSegment animatable) {
+    public ResourceLocation getTextureResource(DestroyerPart animatable) {
         // 如果体节也需要变色，可以在这里实现。
         // 由于体节通常需要跟头部一致，可以在体节实体中同步变体数据，
         // 或者简单的使用默认纹理（如果不需要体节变色）。
