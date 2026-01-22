@@ -145,14 +145,14 @@ public interface ISummonMob extends OwnableEntity {
      * 当距离平方超过这个数时，会尝试传送到owner附近
      */
     default float summon_getDistanceToTeleportToOwner() {
-        return 16 * 16;
+        return 40 * 40;
     }
 
     /**
      * 当距离平方超过这个数时，会尝试移动到owner附近
      */
     default float summon_getStartDistanceToOwner() {
-        return 10 * 10;
+        return 32 * 32;
     }
 
     default void summon_teleportToAroundBlockPos(BlockPos pos) {
