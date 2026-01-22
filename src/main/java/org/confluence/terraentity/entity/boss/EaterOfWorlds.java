@@ -52,7 +52,7 @@ public class EaterOfWorlds extends AbstractTerraBossBase implements Boss, IHeigh
     boolean ifBaseHead = false;
     boolean truthDie = false;
     int genTick = 10;//生成体节延迟
-    boolean shouldMove = true;
+    boolean shouldMove = false;
     float moveSpeed;
     float turnSpeed;
     Vec3 targetPos = new Vec3(0, 0, 0);
