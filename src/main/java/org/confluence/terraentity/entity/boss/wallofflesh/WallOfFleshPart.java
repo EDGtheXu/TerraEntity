@@ -16,6 +16,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.api.entity.ICollisionAttackEntity;
 import org.confluence.terraentity.api.entity.IMovablePartEntity;
 import org.confluence.terraentity.network.s2c.SyncWallOfFleshTargetPacket;
@@ -46,9 +47,9 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
     }
 
     @Override
-    public void tick(){}
+    public void tick() {}
 
-    public void changeTarget(LivingEntity target){
+    public void changeTarget(LivingEntity target) {
         if (this.target == null) {
             this.stareStartYaw = 0.0f;
             this.stareStartPitch = 0.0f;
@@ -64,9 +65,9 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
             int partIndex = this.parentMob.subEntities.indexOf(this);
             if (partIndex >= 0) {
                 AdapterUtils.sendToAllPlayers(new SyncWallOfFleshTargetPacket(
-                    this.parentMob.getId(),
-                    partIndex,
-                    target != null ? target.getId() : 0
+                        this.parentMob.getId(),
+                        partIndex,
+                        target != null ? target.getId() : 0
                 ));
             }
         }
@@ -74,17 +75,17 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
 
     protected abstract void tickPart(double offsetX, double offsetY, double offsetZ);
 
-    public float lerpYaw(float partialTick){
+    public float lerpYaw(float partialTick) {
         return Mth.lerp(Mth.clamp(this.stareCount + partialTick, 0, 10) / 10f, this.stareStartYaw, this.stareYaw);
     }
 
-    public float lerpPitch(float partialTick){
+    public float lerpPitch(float partialTick) {
         return Mth.lerp(Mth.clamp(this.stareCount + partialTick, 0, 10) / 10f, this.stareStartPitch, this.starePitch);
     }
 
     @Override
     public float getYRot() {
-        if(this.parentMob!=null) {
+        if (this.parentMob != null) {
             return this.parentMob.getYRot();
         }
         return super.getYRot();
@@ -92,37 +93,38 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
 
     @Override
     public float getXRot() {
-        if(this.parentMob!=null) {
+        if (this.parentMob != null) {
             return this.parentMob.getXRot();
         }
         return super.getXRot();
     }
 
-    public boolean hasLineOfSight(Entity entity){
+    public boolean hasLineOfSight(Entity entity) {
         return this.level().clip(new ClipContext(this.getEyePosition(), entity.getEyePosition(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() == HitResult.Type.MISS;
     }
 
     public void findTarget() {
-        if(level().isClientSide()){
-            if(this.target == null){
+        if (level().isClientSide()) {
+            if (this.target == null) {
                 this.starePitch = wrapRotation(this.starePitch, this.stareStartPitch);
-                if(this.getParent().deathTime <= 0) {
+                if (this.getParent().deathTime <= 0) {
                     this.stareCount = Math.max(0, this.stareCount - 1);
                 }
-            }else if(this.getParent().deathTime <= 0){
+            } else if (this.getParent().deathTime <= 0) {
                 stareCount = Math.min(11, stareCount + 1);
             }
-        }else{
+        } else {
             if (this.target != null && (!this.target.isAlive() || !this.canBeAttack(this.target))) {
                 this.changeTarget(null);
             }
-            if(this.getParent().tickCount % 25 == this.getId() % 25){
+            if (this.getParent().tickCount % 25 == this.getId() % 25) {
                 float r = 120;
 
-                LivingEntity living = null;;
-                for(LivingEntity e : this.getParent().getNearbyPlayers()){
+                LivingEntity living = null;
+                ;
+                for (LivingEntity e : this.getParent().getNearbyPlayers()) {
                     boolean isPlayer = e instanceof Player;
-                    if(e instanceof Player player && (player.isCreative() || player.isSpectator())){
+                    if (e instanceof Player player && (player.isCreative() || player.isSpectator())) {
                         continue;
                     }
                     if (!this.canBeAttack(e)) {
@@ -135,32 +137,32 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
                             && forwardDir.dot(toTargetHorizontal) >= 0
                             && e.position().distanceToSqr(this.position()) < r * r * 1.2
                             && e.position().subtract(this.position()).horizontalDistanceSqr() <= r * r;
-                    if(isTarget &&isPlayer){
-                            living = e;
-                            break;
+                    if (isTarget && isPlayer) {
+                        living = e;
+                        break;
                     }
                 }
                 this.changeTarget(living);
             }
             doCollisionAttack(
-                    e-> e instanceof LivingEntity  living  && e!= this && living.canBeSeenAsEnemy(),
+                    e -> e instanceof LivingEntity living && LibUtils.getOwner(e) != getParent() && living.canBeSeenAsEnemy(),
                     parentMob::doHurtTarget
             );
-            if(this.target == null){
-                if(this.getParent().deathTime <= 0) {
+            if (this.target == null) {
+                if (this.getParent().deathTime <= 0) {
                     this.stareCount = Math.max(0, this.stareCount - 1);
                 }
-            }else if(this.getParent().deathTime <= 0){
+            } else if (this.getParent().deathTime <= 0) {
                 stareCount = Math.min(11, stareCount + 1);
             }
         }
     }
 
-    private float wrapRotation(float current, float target){
-        while (target - current > Math.PI / 2){
+    private float wrapRotation(float current, float target) {
+        while (target - current > Math.PI / 2) {
             current += Math.PI;
         }
-        while (target - current < -Math.PI / 2){
+        while (target - current < -Math.PI / 2) {
             current -= Math.PI;
         }
         return current;
@@ -189,7 +191,7 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
         return !this.isInvulnerableTo(source) && this.parentMob.hurt(this, source, amount);
     }
 
-    public boolean canBeAttack(@NotNull LivingEntity target){
+    public boolean canBeAttack(@NotNull LivingEntity target) {
         return true;
     }
 
@@ -221,8 +223,8 @@ public abstract class WallOfFleshPart extends PartEntity<WallOfFlesh> implements
     }
 
     @Override
-    public boolean shouldDoCollision(){
-        return  this.isAlive();
+    public boolean shouldDoCollision() {
+        return this.isAlive();
     }
 
     protected abstract void onParentChangeState(int state);

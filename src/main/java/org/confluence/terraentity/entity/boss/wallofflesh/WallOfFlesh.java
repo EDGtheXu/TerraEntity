@@ -36,6 +36,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.api.entity.IExtendedTracking;
 import org.confluence.terraentity.effect.harmful.HorrifiedEffect;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
@@ -850,7 +851,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
 
     @Override
     public boolean canAttack(LivingEntity entity) {
-        return super.canAttack(entity);
+        return LibUtils.getOwner(entity) != this && super.canAttack(entity);
     }
 
     @Override
