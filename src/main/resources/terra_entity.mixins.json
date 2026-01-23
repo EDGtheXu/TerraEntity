@@ -8,6 +8,7 @@
         "AttributeInstanceMixin",
         "BlockStateBaseMixin",
         "BossEventMixin",
+        "ChunkMapMixin",
         "EntityMixin",
         "FileLoaderMixin",
         "PlayerMixin",
@@ -19,12 +20,12 @@
         "accessor.MobAccessor",
         "accessor.ProjectileWeaponAccessor",
         "accessor.SlimeAccessor",
-        "azurelib.AzurelibFileLoaderMixin",
-        "client.ServerChunkLoadingManagerMixin"
+        "azurelib.AzurelibFileLoaderMixin"
     ],
     "client": [
         "accessor.CameraAccessor",
         "accessor.GameRendererAccessor",
+        "accessor.GeoRendererAccessor",
         "accessor.LevelRendererAccessor",
         "client.BossHealthOverlayMixin",
         "client.EntityRenderDispatcherMixin",

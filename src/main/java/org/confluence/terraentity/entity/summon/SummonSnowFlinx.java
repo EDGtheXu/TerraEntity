@@ -2,11 +2,14 @@ package org.confluence.terraentity.entity.summon;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.terraentity.api.entity.IMeleeAttackPartGoal;
 import org.confluence.terraentity.entity.ai.goal.JumpOverBlockGoal;
+import org.confluence.terraentity.entity.ai.goal.summon.SummonMeleeAttackGoal;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.constant.DefaultAnimations;
 
@@ -24,12 +27,12 @@ public class SummonSnowFlinx extends AbstractSummonMob {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(2, new SummonJumpOverBlockGoal(this));
-        this.goalSelector.addGoal(3, new MeleeAttackGoal(this,  0.8f, true));
+        this.goalSelector.addGoal(3, new SummonMeleeAttackGoal(this, 0.8f, true));
 
     }
 
 
-    public static class SummonJumpOverBlockGoal extends JumpOverBlockGoal {
+    public static class SummonJumpOverBlockGoal extends JumpOverBlockGoal implements IMeleeAttackPartGoal {
 
         int cd = 20;
         public SummonJumpOverBlockGoal(Mob mob) {
@@ -47,12 +50,26 @@ public class SummonSnowFlinx extends AbstractSummonMob {
                 return false;
             }
 
-            if(mob.getTarget() == null){
+            Entity target = getActualTarget(mob);
+            if(target == null){
                 return false;
             }
 
-            return mob.distanceTo(mob.getTarget()) < 5 &&  mob.getY() < mob.getTarget().getY() + 2.0;
+            Vec3 targetPos = getTargetPosition(mob, target);
+            if(targetPos == null) return false;
+
+            return mob.distanceToSqr(targetPos) < 25 && mob.getY() < targetPos.y + 2.0;
         }
+
+        @Override
+        public boolean canMeleeAttackTarget(Entity target) {
+            if (target instanceof PartEntity<?> partEntity) {
+                Entity parent = partEntity.getParent();
+                return parent instanceof LivingEntity living && mob.canAttack(living);
+            }
+            return target instanceof LivingEntity living && mob.canAttack(living);
+        }
+
         @Override
         public void start() {
             super.start();

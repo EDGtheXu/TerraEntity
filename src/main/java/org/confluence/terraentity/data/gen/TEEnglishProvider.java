@@ -37,6 +37,9 @@ public class TEEnglishProvider extends LanguageProvider {
         TEWhipItems.ITEMS.getEntries().forEach(itemAction);
         TEBoomerangItems.ITEMS.getEntries().forEach(itemAction);
         TERideableItems.ITEMS.getEntries().forEach(itemAction);
+        TEPetItems.ITEMS.getEntries().forEach(itemAction);
+        TEBossSummonsItems.ITEMS.getEntries().forEach(itemAction);
+        TEYoyosItems.ITEMS.getEntries().forEach(itemAction);
         add(TEItems.HOUSE_DETECTOR.get(), "House Detector");
         TEEntities.ENTITIES.getEntries().forEach(entity -> add(entity.get(), toTitleCase(entity.getId().getPath())));
         TEEffects.EFFECTS.getEntries().forEach(effect -> add(effect.get(), toTitleCase(effect.getId().getPath())));
@@ -46,7 +49,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.trade_lock.drawer.npc_exist.title", "%s is nearby");
         add("terra_entity.trade_lock.drawer.mood.title", "Mood");
         add("terra_entity.trade_lock.drawer.kill_entity.title", "Kill");
-        add("terra_entity.trade_lock.drawer.biome.title", "Biome");
+        add("terra_entity.trade_lock.drawer.biome.title", "Any of Biomes");
         add("terra_entity.trade_lock.drawer.biome.title.tag", "Biome Tag");
         add("terra_entity.trade_lock.drawer.and.title", "All should be satisfied");
         add("terra_entity.trade_lock.drawer.not.title", "None should be satisfied");
@@ -69,9 +72,6 @@ public class TEEnglishProvider extends LanguageProvider {
         add("entity.terra_entity.mother_slime", "Mother Slime");
         add("entity.terra_entity.baby_slime", "Baby Slime");
 
-        add("message.terraentity.boss_spawn", "%s Has Awoken!");
-        add("message.terraentity.boss_leave", "%s Has Been Defeated!");
-        add("message.terraentity.boss_discard", "Has Been Discarded！");
         add("message.terra_entity.trade.not_enough_items", "Not Enough Items");
 
 
@@ -90,12 +90,12 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.configuration.enhance_all_monster", "Enhance All Monster");
         add("terra_entity.configuration.monster_attributes_multiplier_health", "Monster Attributes Multiplier-Health");
         add("terra_entity.configuration.monster_attributes_multiplier_damage", "Monster Attributes Multiplier-Damage");
-
         add("terra_entity.configuration.spawn_without_light", "Spawn monsters without light");
         add("terra_entity.configuration.chance_to_spawn_slime_on_zombie_head", "Chance to Spawn Slime on Zombie Head");
         add("terra_entity.configuration.enemy_spawn_chance_apply_all", "Enemy Spawn Chance Apply to all monsters");
         add("terra_entity.configuration.enemy_spawn_chance", "Enemy of Terra Entity Spawn Chance ");
-
+        add("terra_entity.configuration.enable_entity_motion_blur", "Enable Entity Motion Blur");
+        add("terra_entity.configuration.behavior_tree_web_viewer_server_port", "Behavior Tree Web Viewer Server Port");
 
 
         add("terra_entity.configuration.boss_bar_style", "Boss Health Bar Style");
@@ -185,6 +185,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.effect.strategy.hunting_4_sec", "Hunting 4 seconds");
         add("terra_entity.effect.strategy.hell_fire_5_sec", "Hell fire 5 seconds");
         add("terra_entity.effect.strategy.set_fire_5_sec", "Set fire 5 seconds");
+        add("terra_entity.effect.strategy.forzen_burn_5_sec", "Forzen Burn 5 seconds");
         add("terra_entity.effect.strategy.blood_butchered", "Blood Butchered");
         add("terra_entity.effect.strategy.bei_dou", "Random 5 effects:\\nfrozen burn IV 10 seconds\\nhell fire IV 10 seconds\\nwither IV 10 seconds\\npoison ⅳ 10 seconds\\ninstant harm VIII");
 
@@ -317,6 +318,35 @@ public class TEEnglishProvider extends LanguageProvider {
         add("dialogs.terra_entity.angler.task_finished.3", "一Only one fish a day, please go away!");
         add("dialogs.terra_entity.angler.task_finished.4", "I haven't even used the last fish you gave me.  I don't need another.");
         add("dialogs.terra_entity.angler.task_finished.5", "You are done, the grand %s dismisses you!");
+
+        add("dialogs.terra_entity.female_angler.0", "What a pity! Some fish may have disappeared even before I was born. I hope we can protect the remaining ones well~");
+        add("dialogs.terra_entity.female_angler.1", "Ah... I'm so sorry! Did I disturb you while reeling in my line? I really apologize!");
+        add("dialogs.terra_entity.female_angler.2", "Although there's no chef in the whole %s, being able to cook fish with my own hands is a kind of happiness!");
+        add("dialogs.terra_entity.female_angler.3", "I don't have a mom or dad, but I have so many lovely fish to keep me company! I'm already very content~");
+        add("dialogs.terra_entity.female_angler.4", "Take my advice, sweetie~ Never touch ice cubes with your tongue! You'll get frostbite, so make sure to take good care of yourself!");
+        add("dialogs.terra_entity.female_angler.5", "Have you ever heard of fish that can make sounds? I think I've seen some before! Would you like to talk about it with me?");
+        add("dialogs.terra_entity.female_angler.6", "Oh dear! Be careful~ I set up some little decorations, not traps! I just wanted to give everyone a small surprise, please don't misunderstand~");
+        add("dialogs.terra_entity.female_angler.7", "The %s is full of lovely and unique fish everywhere! It's truly wonderful!");
+        add("dialogs.terra_entity.female_angler.stat.0", "You know what? I've already collected %s beautiful fish! Thank you so much—I could never have done it without your help!");
+        add("dialogs.terra_entity.female_angler.stat.1", "Oh no! I've bothered you %s times already, I'm so terribly sorry! But every time I get to see such beautiful fish, it makes me so happy!");
+        add("dialogs.terra_entity.female_angler.wakeup.0", "Thank you so much! I really don't know how to repay you—you're an amazing friend!");
+        add("dialogs.terra_entity.female_angler.wakeup.1", "Oh! It's you~ I just slipped a moment ago, I wasn't drowning! Thank you for caring so much！");
+        add("dialogs.terra_entity.female_angler.wakeup.2", "Thank you for saving me! You're such a kind person~ If you don't mind, I'd like to ask you to help me with a small errand—but it's totally fine if you don't want to!");
+        add("dialogs.terra_entity.female_angler.task_ready.0", "Hello there~ I have a tiny favor to ask. Could you help me if you're free? It's absolutely fine if you're not!");
+        add("dialogs.terra_entity.female_angler.task_ready.1", "I'm looking for a special kind of fish. It would mean the world to me if you'd help find it! No rush at all—let's take our time to go over the details~");
+        add("dialogs.terra_entity.female_angler.task_ready.2", "%1$s would like to formally invite you to become %2$s's fishing helper! Would you accept?");
+        add("dialogs.terra_entity.female_angler.task_ready.3", "Hello! You must be the amazing fishing master I've been looking for! Could I ask for your help, please?");
+        add("dialogs.terra_entity.female_angler.task_succeed.0", "Wow! Thank you for catching the fish I wanted—thank you so much! You must be tired, take it easy~");
+        add("dialogs.terra_entity.female_angler.task_succeed.1", "You did an absolutely wonderful job! You've worked hard—go rest for a bit~");
+        add("dialogs.terra_entity.female_angler.task_succeed.2", "I'm so happy! You finished safely, that's such a relief! I was worried about you the whole time!");
+        add("dialogs.terra_entity.female_angler.task_succeed.3", "Oh my goodness! You not only completed the task but also came back safe and sound—you're incredible! Please hand me the fish, and go get some rest~");
+        add("dialogs.terra_entity.female_angler.task_succeed.4", "We got it! Everything went perfectly~ Thank you for your help, I really appreciate it!");
+        add("dialogs.terra_entity.female_angler.task_finished.0", "I have enough fish now! Thank you so much for all your help—you've done so much for me~");
+        add("dialogs.terra_entity.female_angler.task_finished.1", "Thank you so much for today! I had such a lovely time with you! Go take care of your own things now~");
+        add("dialogs.terra_entity.female_angler.task_finished.2", "I don't have any errands for you right now, but thank you so much for stopping by anyway~");
+        add("dialogs.terra_entity.female_angler.task_finished.3", "I have enough fish for today—you've worked hard! Take care, and goodbye for now~");
+        add("dialogs.terra_entity.female_angler.task_finished.4", "I still have the fish you gave me last time safely stored away. I don't need more for now, but thank you so much all the same!");
+        add("dialogs.terra_entity.female_angler.task_finished.5", "Thank you so much! Having a helper like you is such a blessing to %s~");
 
         add("dialogs.terra_entity.old_man.0", "I cannot let you enter until you free me of my curse.");
         add("dialogs.terra_entity.old_man.1", "Stranger, do you possess the strength to defeat my master?");

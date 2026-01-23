@@ -2,10 +2,7 @@ package org.confluence.terraentity.network;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import org.confluence.terraentity.network.c2s.NPCShopPacket;
-import org.confluence.terraentity.network.c2s.ServerBoundEventPacket;
-import org.confluence.terraentity.network.c2s.ServerBoundHousePacket;
-import org.confluence.terraentity.network.c2s.ServerBoundVehicleExtensionPacket;
+import org.confluence.terraentity.network.c2s.*;
 import org.confluence.terraentity.network.s2c.*;
 
 public final class NetworkHandler {
@@ -24,12 +21,14 @@ public final class NetworkHandler {
         registrar.playToClient(SyncLevelNamePacketS2C.TYPE, SyncLevelNamePacketS2C.STREAM_CODEC, SyncLevelNamePacketS2C::handle);
         registrar.playToClient(SetAnglerDialogPacketS2C.TYPE, SetAnglerDialogPacketS2C.STREAM_CODEC, SetAnglerDialogPacketS2C::handle);
         registrar.playToClient(SyncWallOfFleshTargetPacket.TYPE, SyncWallOfFleshTargetPacket.STREAM_CODEC, SyncWallOfFleshTargetPacket::handle);
+        registrar.playToClient(SyncWallOfFleshPositionsPacket.TYPE, SyncWallOfFleshPositionsPacket.STREAM_CODEC, SyncWallOfFleshPositionsPacket::handle);
         registrar.playToClient(UpdateBlackboardPacket.TYPE, UpdateBlackboardPacket.STREAM_CODEC, UpdateBlackboardPacket::handle);
 
         registrar.playToServer(ServerBoundVehicleExtensionPacket.TYPE, ServerBoundVehicleExtensionPacket.STREAM_CODEC, ServerBoundVehicleExtensionPacket::handle);
         registrar.playToServer(ServerBoundHousePacket.TYPE, ServerBoundHousePacket.STREAM_CODEC, ServerBoundHousePacket::handle);
         registrar.playToServer(NPCShopPacket.TYPE, NPCShopPacket.STREAM_CODEC, NPCShopPacket::handle);
         registrar.playToServer(ServerBoundEventPacket.TYPE, ServerBoundEventPacket.STREAM_CODEC, ServerBoundEventPacket::handle);
+        registrar.playToServer(SetDebugModePacket.TYPE, SetDebugModePacket.STREAM_CODEC, SetDebugModePacket::handle);
 
     }
 }

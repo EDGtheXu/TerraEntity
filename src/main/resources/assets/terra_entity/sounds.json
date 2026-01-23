@@ -366,12 +366,14 @@
         "sounds": [
             "terra_entity:mob/pixie_death"
         ],
+        "volume": 0.05,
         "subtitle": "terra_entity.subtitle.pixie_death"
     },
     "pixie_free": {
         "sounds": [
             "terra_entity:mob/pixie_free"
         ],
+        "volume": 0.05,
         "subtitle": "terra_entity.subtitle.pixie_free"
     },
     "pixie_hurt": {

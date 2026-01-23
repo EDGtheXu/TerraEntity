@@ -1,5 +1,8 @@
 package org.confluence.terraentity.entity.ai.goal.behavior.condition;
 
+import com.google.common.collect.Lists;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * 行为树条件接口
  */
@@ -8,37 +11,24 @@ public interface Condition {
 
     boolean check();
 
-    static Condition not(Condition condition) {
+    default @Nullable String getDesc(){
+        return null;
+    }
+
+    default Condition setConDesc(String desc) {
+        return this;
+    }
+
+    static NotCondition not(Condition condition) {
         return new NotCondition(condition);
     }
 
-    static Condition and(Condition condition1, Condition condition2) {
-        return new AndCondition(condition1, condition2);
+    static AndCondition and(Condition... conditions) {
+        return new AndCondition(Lists.newArrayList(conditions));
     }
 
-    static Condition or(Condition condition1, Condition condition2) {
-        return new OrCondition(condition1, condition2);
-    }
-
-    record NotCondition(Condition condition) implements Condition {
-        @Override
-        public boolean check() {
-            return !condition.check();
-        }
-    }
-
-    record AndCondition(Condition condition1, Condition condition2) implements Condition {
-        @Override
-        public boolean check() {
-            return condition1.check() && condition2.check();
-        }
-    }
-
-    record OrCondition(Condition condition1, Condition condition2) implements Condition {
-        @Override
-        public boolean check() {
-            return condition1.check() || condition2.check();
-        }
+    static OrCondition or(Condition... conditions) {
+        return new OrCondition(Lists.newArrayList(conditions));
     }
 
 }

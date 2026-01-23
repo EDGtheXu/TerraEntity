@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.terraentity.api.entity.ICollisionAttackEntity;
+import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -25,9 +26,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Optional;
 import java.util.UUID;
 
-public abstract class AbstractSummonMob extends TamableAnimal implements GeoEntity, ISummonMob, ICollisionAttackEntity {
+public abstract class AbstractSummonMob extends TamableAnimal implements GeoEntity, ISummonMob, ICollisionAttackEntity, IPartEntityTargetable {
 
     protected float distanceToOwner;
+    @Nullable
+    private Entity actualTargetEntity; // 实际目标实体（可以是 PartEntity）
 
     public AbstractSummonMob(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
@@ -48,8 +51,7 @@ public abstract class AbstractSummonMob extends TamableAnimal implements GeoEnti
 
     @Override
     public boolean shouldDoCollision() {
-        return getTarget() != null;
-
+        return getTarget() != null || actualTargetEntity != null;
     }
 
     @Override
@@ -57,11 +59,26 @@ public abstract class AbstractSummonMob extends TamableAnimal implements GeoEnti
         super.tick();
         if (summon_discardWhenOwnerDie()) return;
 
+        cleanupInvalidActualTarget();
+
         doCollisionAttack(this::canAttackTarget, this::doHurtTarget);
 
         if (this.getOwner() != null) {
             this.distanceToOwner = this.distanceTo(this.getOwner());
         }
+    }
+
+
+    @Override
+    @Nullable
+    public Entity getActualTargetEntity() {
+        return actualTargetEntity;
+    }
+
+
+    @Override
+    public void setActualTargetEntity(@Nullable Entity entity) {
+        this.actualTargetEntity = entity;
     }
 
     /* Summon API */
@@ -90,11 +107,17 @@ public abstract class AbstractSummonMob extends TamableAnimal implements GeoEnti
     }
 
     public boolean canAttackTarget(Entity target) {
+        // 如果目标是 PartEntity，检查父实体是否可以攻击
         if (target instanceof PartEntity<?> partEntity) {
-            target = partEntity.getParent();
+            Entity parent = partEntity.getParent();
+            if (parent instanceof LivingEntity living) {
+                // 如果 actualTargetEntity 就是这个 PartEntity，或者父实体是 Enemy，则可以攻击
+                return living.canBeSeenAsEnemy() && canAttack(living) && (actualTargetEntity == target || parent instanceof Enemy && !(parent instanceof NeutralMob) || parent == getTarget());
+            }
+            return false;
         }
         if (target instanceof LivingEntity living) {
-            return canAttack(living) && (target instanceof Enemy && !(target instanceof NeutralMob) || target == getTarget());
+            return  living.canBeSeenAsEnemy() &&  canAttack(living) && (target instanceof Enemy && !(target instanceof NeutralMob) || target == getTarget());
         }
         return false;
     }

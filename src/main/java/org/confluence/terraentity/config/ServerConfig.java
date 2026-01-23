@@ -23,6 +23,9 @@ public class ServerConfig {
     public static ModConfigSpec.DoubleValue ENEMY_SPAWN_CHANCE;
     public static ModConfigSpec.BooleanValue ENEMY_SPAWN_CHANCE_APPLY_ALL;
 
+    public static ModConfigSpec.IntValue BEHAVIOR_TREE_WEB_VIEWER_SERVER_PORT;
+
+
     private static ModConfigSpec spec;
 
     public static ModConfigSpec init(){
@@ -78,6 +81,10 @@ public class ServerConfig {
         ENEMY_SPAWN_CHANCE_APPLY_ALL = BUILDER
                 .comment("Should the chance to spawn a monster apply to all monsters?")
                 .define("enemy_spawn_chance_apply_all", false);
+
+        BEHAVIOR_TREE_WEB_VIEWER_SERVER_PORT = BUILDER
+                .comment("Port for behavior web viewer.")
+                .defineInRange("behavior_tree_web_viewer_server_port", 59160, 1024, 65535);
         return spec = BUILDER.build();
     }
 

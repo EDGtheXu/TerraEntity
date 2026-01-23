@@ -47,18 +47,20 @@ public abstract class BTBossTwoStageRoot<T extends PathfinderMob & IBlackboardHo
     protected BTNode createStageTrigger() {
         return BTFactory.selector()
                 // 二阶段
-                .addWithCondition(new Blackboard.ContainsValue<>(this.mob, KeyType.STAGE, v -> v == 3), BTFactory.wait(10000))
+                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 3).setConDesc("STAGE == 3"), BTFactory.wait(10000).setDesc("二阶段"))
                 // 转换阶段
-                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 2),
+                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 2).setConDesc("STAGE == 2"),
                         switchPost(
                                 switchPre(BTFactory.sequence())
-                                        .addChild(new SyncAction<>(this.mob, this.mob.get_DATA_STATUS_STATUS(), () -> 3))
-                        ).addChild(Blackboard.setValue(this.mob, KeyType.STAGE, () -> 3))
+                                        .addChild(new SyncAction<>(this.mob, this.mob.get_DATA_STATUS_STATUS(), () -> 3).setDesc("sync status = 3"))
+                        ).addChild(Blackboard.setValue(this.mob, KeyType.STAGE, () -> 3).setDesc("STAGE = 3"))
+                                .setDesc("转换阶段")
                 )
                 // 一阶段
-                .addWithCondition(Condition.and(this.createStageCondition(), Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 1)), BTFactory.sequence()
-                        .addChild(Blackboard.setValue(this.mob, KeyType.STAGE, () -> 2))
-                        .addChild(new SyncAction<>(this.mob, this.mob.get_DATA_STATUS_STATUS(), () -> 2))
+                .addWithCondition(Condition.and(this.createStageCondition(), Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 1).setConDesc("STAGE == 1")), BTFactory.sequence()
+                        .addChild(Blackboard.setValue(this.mob, KeyType.STAGE, () -> 2).setDesc("STAGE = 2"))
+                        .addChild(new SyncAction<>(this.mob, this.mob.get_DATA_STATUS_STATUS(), () -> 2).setDesc("sync status = 2"))
+                        .setDesc("一阶段")
                 );
     }
 
@@ -66,9 +68,12 @@ public abstract class BTBossTwoStageRoot<T extends PathfinderMob & IBlackboardHo
     protected BTNode createAttackBehavior() {
         return BTFactory.selector()
                 // 一阶段
-                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 1), BTFactory.infinite(this.createStageOneAttack()))
+                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 1), "STAGE == 1" , BTFactory.infinite(this.createStageOneAttack().setDesc("一阶段AI")))
                 // 二阶段
-                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 3), BTFactory.infinite(this.createStageTwoAttack()));
+                .addWithCondition(Blackboard.containsValue(this.mob, KeyType.STAGE, v -> v == 3), "STAGE == 3" , BTFactory.infinite(this.createStageTwoAttack().setDesc("二阶段AI")))
+                .setDesc("阶段选择器")
+
+                ;
     }
 
 }

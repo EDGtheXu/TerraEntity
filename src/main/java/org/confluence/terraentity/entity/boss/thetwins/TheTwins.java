@@ -7,7 +7,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -18,10 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
-import org.confluence.terraentity.entity.boss.Retinazer;
-import org.confluence.terraentity.entity.boss.Spazmatism;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.utils.TEUtils;
 import org.jetbrains.annotations.NotNull;
@@ -237,8 +234,8 @@ public class TheTwins extends AbstractTerraBossBase implements Boss {
     }
 
     @Override
-    public boolean hurt(DamageSource pSource, float pAmount) {
-        return !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || pSource == damageSources().genericKill();
+    public boolean hurt(DamageSource source, float pAmount) {
+        return !TEUtils.isPassInvulnerableDamageSource(source, damageSources());
     }
 
     public void onPartDie(Spazmatism spazmatism) {

@@ -67,6 +67,10 @@ public final class ModClientEvent {
 //        registerModel(event, TerraprismaModel.class);
         event.registerLayerDefinition(TerraprismaModel.LAYER_LOCATION, TerraprismaModel::createBodyLayer);
         registerModel(event, BeeProjModel.class);
+        registerModel(event, SlimeSpikedProjectlieModel.class);
+        registerModel(event, JungleSpikedProjectlieModel.class);
+        registerModel(event, IceSpikeProjectileModel.class);
+
 
     }
 

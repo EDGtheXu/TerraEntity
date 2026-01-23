@@ -1,6 +1,8 @@
 package org.confluence.terraentity.entity.ai.goal.behavior;
 
 import net.minecraft.world.entity.ai.goal.Goal;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 行为树节点基类
@@ -8,6 +10,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 public abstract class BTNode extends Goal {
     protected BTStatus status = BTStatus.READY;
     protected BehaviorTreeContext context;
+    private String description;
 
     public abstract BTStatus execute();
 
@@ -63,6 +66,23 @@ public abstract class BTNode extends Goal {
 
     protected void cleanup() {
         // 子类可重写清理逻辑
+    }
+
+    public BTNode setDesc(String desc) {
+        this.description = desc;
+        return this;
+    }
+
+    public @Nullable String getDesc() {
+        return description;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        if(description!= null) {
+            return description;
+        }
+        return super.toString();
     }
 
     public BTStatus getStatus() {

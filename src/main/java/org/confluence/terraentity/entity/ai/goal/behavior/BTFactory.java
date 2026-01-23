@@ -48,6 +48,16 @@ public class BTFactory {
         return new WaitAction(ticks);
     }
 
+    public static BTNode success(Runnable runnable) {
+        return new BTNode() {
+            @Override
+            public BTStatus execute() {
+                runnable.run();
+                return BTStatus.SUCCESS;
+            }
+        };
+    }
+
     public static BTNode waitForever() {
         return new BTNode() {
             @Override

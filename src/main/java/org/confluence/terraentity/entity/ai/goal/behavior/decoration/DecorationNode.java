@@ -12,7 +12,7 @@ public abstract class DecorationNode extends BTNode {
         child.start();
     }
 
-    protected DecorationNode(BTNode child) {
+    public DecorationNode(BTNode child) {
         this.child = child;
     }
 
@@ -21,6 +21,10 @@ public abstract class DecorationNode extends BTNode {
 //        if (child.getStatus() == BTStatus.RUNNING) {
             child.stop();
 //        }
+    }
+
+    public BTNode getChild() {
+        return child;
     }
 
 }

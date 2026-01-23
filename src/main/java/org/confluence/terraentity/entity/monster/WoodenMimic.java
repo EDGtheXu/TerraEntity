@@ -69,7 +69,7 @@ public class WoodenMimic extends AbstractMonster implements ISharedFlagControlle
         this.targetSelector.addGoal(1, new MutableRangeNearestAttackableTargetGoal<>(this, Player.class, true));
     }
 
-    protected BTRoot createBehaviorTree() {
+    protected BTRoot<WoodenMimic> createBehaviorTree() {
         return new MimicBT(this);
     }
 
@@ -115,7 +115,10 @@ public class WoodenMimic extends AbstractMonster implements ISharedFlagControlle
 
         @Override
         public BTNode createWonderBehavior() {
-            return BTFactory.wait(1000);
+            return BTFactory.sequence()
+                    .addChild(new SetAttributeAction(this.mob, Attributes.GRAVITY, 0.08))
+                    .addChild(BTFactory.wait(1000))
+                    ;
         }
 
         @Override

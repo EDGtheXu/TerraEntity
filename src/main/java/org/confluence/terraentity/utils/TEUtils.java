@@ -7,8 +7,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -31,9 +34,9 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.TerraEntity;
-import org.confluence.terraentity.api.entity.Boss;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.config.ServerConfig;
@@ -354,10 +357,17 @@ public final class TEUtils {
         return Math.acos(v1.dot(v2)/v1.length()/v2.length());
     }
 
+    /**
+     * 球坐标
+     * @param r 半径
+     * @param theta yaw
+     * @param beta pitch - 90°
+     * @return 方向向量
+     */
     public static Vec3 sphere(float r, float theta, float beta){
-        double x = r * Math.sin(theta) * Math.cos(beta);
-        double y = r * Math.sin(theta) * Math.sin(beta);
-        double z = r * Math.cos(theta);
+        double x = r * Math.sin(beta) * Math.cos(theta);
+        double y = r * Math.cos(beta);
+        double z = r * Math.sin(beta) * Math.sin(theta);
         return new Vec3(x, y, z);
     }
 
@@ -739,16 +749,19 @@ public final class TEUtils {
      * 测试攻击驯养动物
      */
     public static BiPredicate<Entity, Entity> attackTamableTest = (owner, target) -> {
+        Entity actualTarget = target instanceof PartEntity<?> part ? part.getParent() : target;
+        if(actualTarget == null) return false;
+
         if(
                 owner != null && (
-                        target instanceof TamableAnimal animal &&
+                        actualTarget instanceof TamableAnimal animal &&
                                 owner instanceof LivingEntity living &&
                                 animal.isOwnedBy(living)
                 )
         ){
             return false;
         }
-        if(target instanceof ISummonMob) {
+        if(actualTarget instanceof ISummonMob) {
             return false;
         }
 
@@ -816,6 +829,10 @@ public final class TEUtils {
         return true;
 
     };
+
+    public static boolean isPassInvulnerableDamageSource(DamageSource source, DamageSources sources) {
+        return source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source == sources.genericKill();
+    }
 
     /**
      * 获取向量从v1指向v2的旋转四元数

@@ -20,6 +20,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;
+import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.data.component.EffectStrategyComponent;
 import org.confluence.terraentity.data.enchantment.TEEnchantmentHelper;
@@ -334,6 +335,9 @@ public class WhipEntity extends Projectile {
         boolean trigger = false;
         if(TEUtils.attackTamableTest.test(owner, hurter)){
             owner.setLastHurtMob(hurter); // 让召唤物可以攻击敌人
+            if(actualHurter instanceof PartEntity<?> && owner instanceof IPartEntityTargetable targetable){
+                targetable.setActualTargetEntity(actualHurter);
+            }
             trigger = true;
             damage *= damageDecline;
             damageDecline = Math.max(_damageMin, damageDecline * _damageDecline);

@@ -82,22 +82,22 @@ public class TESummonEntities {
         event.put(PIGGY_BANK.get(), AbstractSummonMob.createAttributes().build());
 
         // sommon
-        event.put(SUMMON_FINCH.get(), AbstractSummonMob.createAttributes().add(Attributes.GRAVITY, 0).add(Attributes.SAFE_FALL_DISTANCE, 1024).add(Attributes.ATTACK_KNOCKBACK, 0).build());
-        event.put(SUMMON_SLIME.get(), AbstractSummonMob.createAttributes().build());
-        event.put(SUMMON_IRON_GOLEM.get(), IronGolem.createAttributes().build());
-        event.put(SUMMON_HORNET.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 20).add(Attributes.MOVEMENT_SPEED, 1).build());
-        event.put(SCULK_WISP.get(), AbstractSummonMob.createAttributes().build());
-        event.put(IMP.get(), AbstractSummonMob.createAttributes().build());
-        event.put(SUMMON_SNOW_FLINX.get(), AbstractSummonMob.createAttributes().build());
+        event.put(SUMMON_FINCH.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 32).add(Attributes.MOVEMENT_SPEED, 0.7).add(Attributes.GRAVITY, 0).add(Attributes.SAFE_FALL_DISTANCE, 1024).add(Attributes.ATTACK_KNOCKBACK, 0).build());
+        event.put(SUMMON_SLIME.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 32).add(Attributes.MOVEMENT_SPEED, 0.7).build());
+        event.put(SUMMON_IRON_GOLEM.get(), IronGolem.createAttributes().add(Attributes.FOLLOW_RANGE, 32).add(Attributes.MOVEMENT_SPEED, 0.6).build());
+        event.put(SUMMON_HORNET.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 84).add(Attributes.MOVEMENT_SPEED, 0.7).build());
+        event.put(SCULK_WISP.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 64).add(Attributes.MOVEMENT_SPEED, 0.7).build());
+        event.put(IMP.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 84).add(Attributes.MOVEMENT_SPEED, 0.7).build());
+        event.put(SUMMON_SNOW_FLINX.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 32).add(Attributes.MOVEMENT_SPEED, 0.7).build());
 
 
-        event.put(SUMMON_WOODEN_SWORD.get(), AbstractSummonMob.createAttributes().build());
-        event.put(SUMMON_STONE_SWORD.get(), AbstractSummonMob.createAttributes().build());
-        event.put(SUMMON_IRON_SWORD.get(), AbstractSummonMob.createAttributes().build());
-        event.put(SUMMON_GOLDEN_SWORD.get(), AbstractSummonMob.createAttributes().build());
-        event.put(SUMMON_DIAMOND_SWORD.get(), AbstractSummonMob.createAttributes().build());
-        event.put(SUMMON_NETHERITE_SWORD.get(), AbstractSummonMob.createAttributes().build());
-        event.put(TERRAPRISMA.get(), AbstractSummonMob.createAttributes().build());
+        event.put(SUMMON_WOODEN_SWORD.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 40).add(Attributes.MOVEMENT_SPEED, 1.5f).build());
+        event.put(SUMMON_STONE_SWORD.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 40).add(Attributes.MOVEMENT_SPEED, 1.5f).build());
+        event.put(SUMMON_IRON_SWORD.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 40).add(Attributes.MOVEMENT_SPEED, 1.5f).build());
+        event.put(SUMMON_GOLDEN_SWORD.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 40).add(Attributes.MOVEMENT_SPEED, 1.5f).build());
+        event.put(SUMMON_DIAMOND_SWORD.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 40).add(Attributes.MOVEMENT_SPEED, 1.5f).build());
+        event.put(SUMMON_NETHERITE_SWORD.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 40).add(Attributes.MOVEMENT_SPEED, 1.5f).build());
+        event.put(TERRAPRISMA.get(), AbstractSummonMob.createAttributes().add(Attributes.FOLLOW_RANGE, 40).add(Attributes.MOVEMENT_SPEED, 1.5f).build());
     }
 
     public static void register(){

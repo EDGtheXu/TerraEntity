@@ -25,8 +25,8 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import org.confluence.terraentity.api.entity.Boss;
-import org.confluence.terraentity.api.entity.IDiscardWhenRespawnEntity;
+import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.api.entity.IDiscardWhenRespawnEntity;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.api.npc.trade.ITradeHolder;
 import org.confluence.terraentity.config.ServerConfig;
@@ -239,7 +239,7 @@ public class GameEntityEvent {
         if (event.isInvulnerable() || !(event.getEntity() instanceof LivingEntity living)) return;
 
         DamageSource damageSource = event.getSource();
-        if (damageSource.is(DamageTypes.IN_WALL) && living.hasEffect(TEEffects.THE_TONGUE)) {
+        if (living.hasEffect(TEEffects.THE_TONGUE)) {
             event.setInvulnerable(true);
         } else if (living.getType() == TEMonsterEntities.FLYING_FISH.get() && damageSource.is(DamageTypes.FALL)) {
             event.setInvulnerable(true);

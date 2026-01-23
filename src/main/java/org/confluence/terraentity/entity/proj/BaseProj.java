@@ -28,6 +28,8 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.*;
+import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
+import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFleshPart;
 import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
 import org.confluence.terraentity.utils.TEUtils;
@@ -277,10 +279,9 @@ public abstract class BaseProj<T extends BaseProj<T>> extends Projectile impleme
     @Override
     protected void onHitEntity(@NotNull EntityHitResult pResult) {
         Entity hurter = pResult.getEntity();
-        if(hurter instanceof LivingEntity living && canHitEntity(living)
-        ) {
+        if(hurter instanceof LivingEntity living && canHitEntity(living)) {
             doHurt(living);
-        }else if(hurter instanceof PartEntity part && part.getParent() instanceof LivingEntity living && canHitEntity(living)){
+        }else if(hurter instanceof PartEntity<?> part && part.getParent() instanceof LivingEntity living && canHitEntity(living)){
             doHurt(living);
         }
     }
@@ -299,33 +300,32 @@ public abstract class BaseProj<T extends BaseProj<T>> extends Projectile impleme
         return 0;
     }
 
-    protected void doHurt(Entity hurter){
-        if(hurter instanceof LivingEntity living) {
-            Entity entity = this.getOwner();
-            hitList.add(hurter.getUUID());
+    protected void doHurt(Entity hurter) {
+        if (hurter instanceof LivingEntity living) {
+            hitList.add(living.getUUID());
             for (MobEffectInstance effect : effects) {
                 living.addEffect(new MobEffectInstance(effect)); // 需要复制，不然duration会减为0
             }
-            if(effectStrategy != null){
-                if(this.getOwner() != null && this.getOwner() instanceof LivingEntity living1) {
+            if (effectStrategy != null) {
+                if (this.getOwner() != null && this.getOwner() instanceof LivingEntity living1) {
                     this.effectStrategy.getEffect().accept(living1, living);
                 }
             }
-            if (hitSound != null)
-                level().playSound(this, this.blockPosition(), hitSound.get(), SoundSource.AMBIENT, 1.0f, 1.0f);
-
-            if(hurter.hurt(getDamageSource(living), damage)){
-                if(this.getOwner() instanceof LivingEntity owner){
-                    owner.setLastHurtMob(hurter);
-                }
-                doKnockBack(living);
+        }
+        if (hitSound != null)
+            level().playSound(this, this.blockPosition(), hitSound.get(), SoundSource.AMBIENT, 1.0f, 1.0f);
+        Entity actualHurter = hurter instanceof PartEntity<?> part ? part.getParent() : hurter;
+        if (actualHurter instanceof LivingEntity living && hurter.hurt(getDamageSource(living), damage)) {
+            if (this.getOwner() instanceof LivingEntity owner) {
+                owner.setLastHurtMob(hurter);
             }
+            if(!(hurter instanceof PartEntity<?>))doKnockBack(living);
+        }
 
-            if (this.level() instanceof ServerLevel serverlevel) {
-                penetration--;
-                if (penetration <= 0) {
-                    discard();
-                }
+        if (this.level() instanceof ServerLevel serverlevel) {
+            penetration--;
+            if (penetration <= 0) {
+                discard();
             }
         }
     }
@@ -342,21 +342,25 @@ public abstract class BaseProj<T extends BaseProj<T>> extends Projectile impleme
 
     @Override
     protected boolean canHitEntity(@NotNull Entity target) {
+        // 如果目标是 PartEntity，使用父实体进行检查
+        Entity actualTarget = target instanceof PartEntity<?> part ? part.getParent() : target;
+        if(actualTarget == null) return false;
+
         // 不能攻击自己和不能被弹幕攻击的实体
-        if(target == getOwner() || !target.isAttackable()){
+        if(actualTarget == getOwner() || !actualTarget.isAttackable()){
             return false;
         }
-        // 不能攻击已经被弹幕攻击过的实体
-        if(hitList.contains(target.getUUID()))
+        // 不能攻击已经被弹幕攻击过的实体（使用父实体的 UUID）
+        if(hitList.contains(actualTarget.getUUID()))
             return false;
         // 召唤物不能攻击主人的仆从
-        if(!TEUtils.attackTamableTest.test(getOwner(), target)
-        ){
+        if(!TEUtils.attackTamableTest.test(getOwner(), target)){
             return false;
         }
         // 有主人的弹幕只能攻击主人可以攻击的目标
-        if(getOwner()!=null && getOwner() instanceof LivingEntity living && target instanceof LivingEntity tar)
+        if(getOwner()!=null && getOwner() instanceof LivingEntity living && actualTarget instanceof LivingEntity tar) {
             return living.canAttack(tar);
+        }
         return false;
     }
 

@@ -6,9 +6,11 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
+import net.neoforged.neoforge.entity.PartEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
@@ -20,6 +22,7 @@ import org.confluence.terraentity.entity.util.KeyframeAnimationCounter;
 import org.confluence.terraentity.init.TEEntityDataSerializers;
 import org.confluence.terraentity.integration.ModChecker;
 import org.confluence.terraentity.integration.veil.VeilHelper;
+import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.utils.OBB;
 import org.jetbrains.annotations.NotNull;
 
@@ -153,8 +156,11 @@ public class Terraprisma extends SummonSword {
         // 由于棱镜拖尾贴合比较好，可以多旋转几圈
         @Override
         protected void triggerZRot(){
-            LivingEntity target = this.sword.getTarget();
-            if(target!=null && target.isAlive() && sword.getRandom().nextBoolean() || sword.getRandom().nextFloat() < 0.1f && (target == null || !target.isAlive())){
+            Entity actualTarget = sword instanceof IPartEntityTargetable t ? t.getActualTargetEntity() : null;
+            if (actualTarget == null) actualTarget = sword.getTarget();
+            boolean targetValid = actualTarget instanceof PartEntity<?> p && p.getParent() instanceof LivingEntity parent && parent.isAlive() || actualTarget instanceof LivingEntity living && living.isAlive();
+
+            if(targetValid && sword.getRandom().nextBoolean() || sword.getRandom().nextFloat() < 0.1f && !targetValid){
                 int cycle  = sword.getRandom().nextIntBetweenInclusive(2, 5);
                 sword.getEntityData().set(DATA_KEYFRAME_X, new KeyframeAnimationCounter(KeyframeAnimation.builder()
                         .addKeyframe(new Keyframe(0, 0, 0, 0.5f, 0, 10f))
@@ -204,8 +210,11 @@ public class Terraprisma extends SummonSword {
             super.stop();
             Objects.requireNonNull(this.sword.getAttribute(Attributes.ATTACK_DAMAGE)).removeModifier(attackModifierId);
 
-            LivingEntity target = this.sword.getTarget();
-            if(target!=null && target.isAlive() && sword.getRandom().nextBoolean() || sword.getRandom().nextFloat() < 0.1f && (target == null || !target.isAlive())){
+            Entity actualTarget = sword instanceof IPartEntityTargetable t ? t.getActualTargetEntity() : null;
+            if (actualTarget == null) actualTarget = sword.getTarget();
+            boolean targetValid = actualTarget instanceof PartEntity<?> p && p.getParent() instanceof LivingEntity parent && parent.isAlive() || actualTarget instanceof LivingEntity living && living.isAlive();
+
+            if(targetValid && sword.getRandom().nextBoolean() || sword.getRandom().nextFloat() < 0.1f && !targetValid){
                 this.sword.getEntityData().set(DATA_KEYFRAME_Y, new KeyframeAnimationCounter(KeyframeAnimation.builder() // 插值似乎和理想的情况不一样
                         .addKeyframe(new Keyframe(0, 0, 0, 0.5f, 0, 100f))
                         .addKeyframe(new Keyframe(30, 720, -5, 100f, -1, 3f))

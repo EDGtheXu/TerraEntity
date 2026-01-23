@@ -22,6 +22,7 @@ import org.confluence.terraentity.api.npc.trade.ITradeHolder;
 import org.confluence.terraentity.api.npc.trade.ITradeLock;
 import org.confluence.terraentity.api.npc.trade.ITradeTask;
 import org.confluence.terraentity.data.codec.TECodecs;
+import org.confluence.terraentity.entity.npc.trade.TradeParams;
 import org.confluence.terraentity.network.s2c.SetAnglerDialogPacketS2C;
 import org.confluence.terraentity.registries.npc_trade.variant.ItemTradeItemList;
 import org.confluence.terraentity.registries.npc_trade.variant.ItemTradeLootTable;
@@ -34,11 +35,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * <p>渔夫动态交易表
- * <P>相对于{@link DynamicPoolTradeTask},将战利品统一成{@link ItemTradeLootTable}和{@link ItemTradeItemList}
- * <P>resultPool存放每个等级对应的固定奖励List，cost来自于渔夫定时刷新，所以对于其他npc是没有用的
- */
+/// 渔夫动态交易表
+///
+/// 相对于[DynamicPoolTradeTask],将战利品统一成[ItemTradeLootTable]和[ItemTradeItemList]
+///
+/// resultPool存放每个等级对应的固定奖励List，cost来自于渔夫定时刷新，所以对于其他npc是没有用的
 public class DynamicAnglerTradeTask implements ITradeTask {
     public static final MapCodec<DynamicAnglerTradeTask> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.unboundedMap(TECodecs.INT_KEY, ItemStack.CODEC.listOf()).fieldOf("result_pool").forGetter(task -> task.resultPool),
@@ -61,15 +62,18 @@ public class DynamicAnglerTradeTask implements ITradeTask {
     private ItemTradeItemList dynamicTrade;
     private int currentSelected;
 
-    /**
-     * 用于数据生成
-     * @param defaultTrade 默认奖励，渔夫使用{@link ItemTradeLootTable 战利品池交易表}
-     * @param resultPool 等级对应的固定奖励池
-     */
+    /// 用于数据生成
+    ///
+    /// @param defaultTrade 默认奖励，渔夫使用[战利品池交易表][ItemTradeLootTable]
+    /// @param resultPool   等级对应的固定奖励池
     public DynamicAnglerTradeTask(
-            Map<Integer, List<ItemStack>> resultPool, Map<Integer, ResourceKey<LootTable>> lootTablePool,
-            List<ItemStack> costPool, List<ITradeLock> costLock, @Nullable String title,
-            ItemTradeLootTable defaultTrade, ItemTradeItemList dynamicTrade, int currentSelected
+            Map<Integer, List<ItemStack>> resultPool,
+            Map<Integer, ResourceKey<LootTable>> lootTablePool,
+            List<ItemStack> costPool,
+            List<ITradeLock> costLock,
+            @Nullable String title,
+            ItemTradeLootTable defaultTrade,
+            ItemTradeItemList dynamicTrade, int currentSelected
     ) {
         if (costPool.size() != costLock.size()) {
             throw new IllegalArgumentException("costPool must match the size of costLock, but received costPool=" + costPool.size() + ", costLock=" + costLock.size());
@@ -84,9 +88,15 @@ public class DynamicAnglerTradeTask implements ITradeTask {
         this.currentSelected = currentSelected;
     }
 
-    private DynamicAnglerTradeTask(Map<Integer, List<ItemStack>> resultPool, Map<Integer, ResourceKey<LootTable>> lootTablePool,
-                                   List<ItemStack> costPool, List<ITradeLock> costLock, Optional<String> title,
-                                   ItemTradeLootTable defaultTrade, Optional<ItemTradeItemList> dynamicTrade, int currentSelected
+    private DynamicAnglerTradeTask(
+            Map<Integer,
+                    List<ItemStack>> resultPool,
+            Map<Integer, ResourceKey<LootTable>> lootTablePool,
+            List<ItemStack> costPool,
+            List<ITradeLock> costLock, Optional<String> title,
+            ItemTradeLootTable defaultTrade,
+            Optional<ItemTradeItemList> dynamicTrade,
+            int currentSelected
     ) {
         this(resultPool, lootTablePool, costPool, costLock, title.orElse(null), defaultTrade, dynamicTrade.orElse(null), currentSelected);
     }
@@ -101,7 +111,9 @@ public class DynamicAnglerTradeTask implements ITradeTask {
 
     @Override
     public @Nullable ITrade getSelected(ITradeHolder npc, int index) {
-        if (resultPool.containsKey(npc.getTradeParams().getLevel(index))) {
+        TradeParams params = npc.getTradeParams();
+        if (params == null) return null;
+        if (resultPool.containsKey(params.getLevel(index))) {
             return dynamicTrade == null ? defaultTrade : dynamicTrade;
         }
         return defaultTrade;

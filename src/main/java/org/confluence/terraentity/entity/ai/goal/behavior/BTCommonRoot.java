@@ -10,12 +10,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 带阶段的AI
  */
-public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot {
+public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot<T> {
 
-    protected final T mob;
 
     public BTCommonRoot(T mob) {
-        this.mob = mob;
+        super(mob);
     }
 
     /**
@@ -38,13 +37,20 @@ public abstract class BTCommonRoot<T extends PathfinderMob> extends BTRoot {
     protected @NotNull BTNode createBehaviorTree() {
         return BTFactory.parallel(ParallelNode.Policy.REQUIRE_ALL, ParallelNode.Policy.REQUIRE_ALL)
                 // 阶段触发器
-                .addChild(BTFactory.infinite(this.createStageTrigger()))
+                .addChild(BTFactory.infinite(this.createStageTrigger().setDesc("阶段触发器")))
                 // AI
                 .addChild(BTFactory.infinite(BTFactory.selector()
                         // 游走
                         .addWithCondition(Condition.not(new TargetExistCondition(mob)), BTFactory.infinite(this.createWonderBehavior()))
                         // 攻击
                         .addWithCondition(new TargetExistCondition(mob), this.createAttackBehavior())
+                        .setDesc("AI")
                 ));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
     }
 }

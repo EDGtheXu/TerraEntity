@@ -15,7 +15,7 @@ import java.util.*;
 import static net.minecraft.world.level.block.Block.getId;
 
 public class EfficientCylinderDestruction {
-    private final TaskScheduler scheduler;
+    private final org.confluence.lib.util.TaskScheduler scheduler;
     private final int centerX;
     private final int centerZ;
     private final int minY;
@@ -40,7 +40,7 @@ public class EfficientCylinderDestruction {
         this.centerZ = centerZ;
         this.minY = minY;
         this.maxY = maxY;
-        this.scheduler = new TaskScheduler(1);
+        this.scheduler = new org.confluence.lib.util.TaskScheduler(1);
         this.maxRadius = maxRadius;
 
         // 初始化每层的边缘集合

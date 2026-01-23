@@ -1,17 +1,14 @@
 package org.confluence.terraentity.entity.ai.goal.behavior.leaf;
 
 import org.confluence.terraentity.api.entity.ISharedFlagControllerHolder;
-import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.confluence.terraentity.entity.util.SharedFlagController;
 import software.bernie.geckolib.animatable.GeoEntity;
 
 /**
- * geo动画状态触发器
+ * geo动画状态触发器，并将状态绑定一个共享标志位，给客户端使用
  */
-public class AnimCtrlAction<T extends GeoEntity & ISharedFlagControllerHolder> extends BTNode {
-    final T entity;
-    final SharedFlagController.SharedFlag sharedFlag;
-    final boolean isEnable;
+public class AnimCtrlAction<T extends GeoEntity & ISharedFlagControllerHolder> extends SyncFlagAction<T> {
+
     final String controllerName;
     final String animationName;
     public AnimCtrlAction(T entity,
@@ -19,22 +16,15 @@ public class AnimCtrlAction<T extends GeoEntity & ISharedFlagControllerHolder> e
                           String animationName,
                           SharedFlagController.SharedFlag sharedFlag,
                           boolean isEnable) {
-        this.entity = entity;
-        this.sharedFlag = sharedFlag;
-        this.isEnable = isEnable;
+        super(entity, sharedFlag, isEnable);
+
         this.controllerName = controllerName;
         this.animationName = animationName;
     }
 
     @Override
-    public BTStatus execute() {
-        return BTStatus.SUCCESS;
-    }
-
-    @Override
     public void start() {
         super.start();
-        entity.getSharedFlagController().setFlag(sharedFlag, isEnable);
         if(isEnable) {
             entity.triggerAnim(controllerName, animationName);
         }
