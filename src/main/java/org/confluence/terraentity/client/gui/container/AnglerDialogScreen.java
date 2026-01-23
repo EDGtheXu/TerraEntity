@@ -32,17 +32,18 @@ public class AnglerDialogScreen extends DialogScreen {
         if (wakeup) return;
         addRenderableWidget(this.tradeButton = Button.builder(Component.translatable("dialogs.terra_entity.quest"), p -> {
             AnglerNPC angler = (AnglerNPC) holder;
+            String key = angler.getType().builtInRegistryHolder().unwrapKey().orElseThrow().location().toLanguageKey();
             if (taskFinished) {
                 if (random.nextBoolean()) {
-                    this.dialogText = Component.translatable("dialogs.terra_entity.angler.task_finished.5", angler.getName());
+                    this.dialogText = Component.translatable("dialogs." + key + ".task_finished.5", angler.getName());
                 } else {
-                    this.dialogText = Component.translatable("dialogs.terra_entity.angler.task_finished." + random.nextInt(5));
+                    this.dialogText = Component.translatable("dialogs." + key + ".task_finished." + random.nextInt(5));
                 }
             } else if (taskReady) {
                 this.taskReady = false;
                 DynamicAnglerTradeTask task = angler.getFirstTask();
                 if (task != null && task.canTrade(angler, 0)) {
-                    this.dialogText = Component.translatable("dialogs.terra_entity.angler." + task.getCurrentCost().getDescriptionId());
+                    this.dialogText = Component.translatable("dialogs." + key + "." + task.getCurrentCost().getDescriptionId());
                 }
             } else {
                 Minecraft.getInstance().setScreen(parent);
@@ -53,15 +54,16 @@ public class AnglerDialogScreen extends DialogScreen {
     @Override
     protected Component getRandomDialog(AbstractTerraNPC npc) {
         AnglerNPC angler = (AnglerNPC) npc;
+        String key = angler.getType().builtInRegistryHolder().unwrapKey().orElseThrow().location().toLanguageKey();
 
         if (wakeup) {
             this.wakeup = false;
-            return Component.translatable("dialogs.terra_entity.angler.wakeup." + random.nextInt(3));
+            return Component.translatable("dialogs." + key + ".wakeup." + random.nextInt(3));
         }
 
         if (taskSucceed) {
             this.taskSucceed = false;
-            return Component.translatable("dialogs.terra_entity.angler.task_succeed." + random.nextInt(5));
+            return Component.translatable("dialogs." + key + ".task_succeed." + random.nextInt(5));
         }
 
         int level = npc.getTradeParams().getLevel(0);
@@ -75,17 +77,17 @@ public class AnglerDialogScreen extends DialogScreen {
             this.taskFinished = false;
             this.taskReady = true;
             int i = random.nextInt(3);
-            return Component.translatable("dialogs.terra_entity.angler.task_ready." + i, i == 2
+            return Component.translatable("dialogs." + key + ".task_ready." + i, i == 2
                     ? new Object[]{angler.getName(), SyncLevelNamePacketS2C.levelName}
                     : TranslatableContents.NO_ARGS);
         }
 
         if (random.nextFloat() < 0.2F) {
-            return Component.translatable("dialogs.terra_entity.angler.stat." + random.nextInt(2), level);
+            return Component.translatable("dialogs." + key + ".stat." + random.nextInt(2), level);
         }
 
         int i = random.nextInt(8);
-        return Component.translatable("dialogs.terra_entity.angler." + i, i == 2 || i == 7
+        return Component.translatable("dialogs." + key + "." + i, i == 2 || i == 7
                 ? new Object[]{SyncLevelNamePacketS2C.levelName}
                 : TranslatableContents.NO_ARGS);
     }
