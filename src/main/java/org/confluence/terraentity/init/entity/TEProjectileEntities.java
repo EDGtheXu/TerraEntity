@@ -58,7 +58,7 @@ public class TEProjectileEntities {
             .build(TEEntities.Key("trail_projectile")));
 
     // OBB剑气
-    public static final DeferredHolder<EntityType<?>, EntityType<TrailSwordProj<?>>> TRAIL_SWORD_PROJECTILE = TEEntities.ENTITIES.register("trail_sword_projectile", () -> EntityType.Builder.<TrailSwordProj>of(TrailSwordProj::new, MobCategory.MISC).updateInterval(1).clientTrackingRange(1).sized(0.5F, 0.5F).build(TEEntities.Key("trail_sword_projectile")));
+    public static final DeferredHolder<EntityType<?>, EntityType<TrailSwordProj>> TRAIL_SWORD_PROJECTILE = TEEntities.ENTITIES.register("trail_sword_projectile", () -> EntityType.Builder.<TrailSwordProj>of(TrailSwordProj::new, MobCategory.MISC).updateInterval(1).clientTrackingRange(1).sized(0.5F, 0.5F).build(TEEntities.Key("trail_sword_projectile")));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeeProj>> BEE_PROJ = registerProj("bee_proj", BeeProj::new, 1.2F, 1.2F);
 
