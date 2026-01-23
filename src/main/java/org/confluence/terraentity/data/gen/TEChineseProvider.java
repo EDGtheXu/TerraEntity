@@ -535,6 +535,34 @@ public class TEChineseProvider extends LanguageProvider {
 
         add(TEItems.HOUSE_DETECTOR.get(), "房屋探测器");
 
+        // 弹幕
+        add(TEProjectileEntities.BOOMERANG_PROJECTILE.get(), "回旋镖射弹");
+        add(TEProjectileEntities.CABBAGE_PROJ.get(), "卷心菜投射物");
+        add(TEProjectileEntities.BEE_STICK_PROJ.get(), "蜜蜂棒射弹");
+        add(TEProjectileEntities.SUMMON_BEE_STICK_PROJ.get(), "召唤蜜蜂棒射弹");
+        add(TEProjectileEntities.SKULL.get(), "骷髅射弹");
+        add(TEProjectileEntities.VILE_SPIT_PROJ.get(), "魔唾液射弹");
+        add(TEProjectileEntities.DARK_CASTER_PROJ.get(), "黑暗法师射弹");
+        add(TEProjectileEntities.FIRE_IMP_PROJ.get(), "火焰小鬼射弹");
+        add(TEProjectileEntities.FIRE_BOUND_PROJ.get(), "火焰束缚射弹");
+        add(TEProjectileEntities.HARPY_FEATURE_PROJ.get(), "鸟妖羽毛射弹");
+        add(TEProjectileEntities.DEMON_SCYTHE_PROJ.get(), "恶魔镰刀射弹");
+        add(TEProjectileEntities.LAVA_PILLAR.get(), "熔岩柱");
+        add(TEProjectileEntities.DESTROYER_LASER_PROJ.get(), "毁灭者激光");
+        add(TEProjectileEntities.SEED.get(), "种子射弹");
+        add(TEProjectileEntities.SPORE.get(), "孢子射弹");
+        add(TEProjectileEntities.SPIKE_BALL.get(), "刺球射弹");
+        add(TEProjectileEntities.WHIP_PROJECTILE.get(), "鞭子射弹");
+        add(TEProjectileEntities.TRAIL_PROJECTILE.get(), "轨迹子弹");
+        add(TEProjectileEntities.TRAIL_SWORD_PROJECTILE.get(), "轨迹剑气");
+        add(TEProjectileEntities.BEE_PROJ.get(), "蜜蜂射弹");
+        add(TEProjectileEntities.SLIME_SPIKE.get(), "史莱姆尖刺");
+        add(TEProjectileEntities.JUNGLE_SPIKE.get(), "丛林尖刺");
+        add(TEProjectileEntities.ICE_SPIKE.get(), "寒冰尖刺");
+        add(TEProjectileEntities.YOYO_PROJ.get(), "悠悠球射弹");
+        add(TEProjectileEntities.THROWN_ICE_PROJECTILE.get(), "投掷寒冰射弹");
+        add(TEProjectileEntities.ICE_PILLAR.get(), "冰刺");
+        add(TEProjectileEntities.SHADOW_HAND.get(), "暗影之手射弹");
 
         add("message.terraentity.boss_spawn", "%s已苏醒！");
         add("message.terraentity.boss_leave", "%s已被打败！");
