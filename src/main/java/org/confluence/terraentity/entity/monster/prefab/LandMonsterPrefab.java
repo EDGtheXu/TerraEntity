@@ -190,6 +190,20 @@ public class LandMonsterPrefab extends AbstractPrefab {
                         g.addGoal(8, new LookAtPlayerGoal(e, Player.class, 6));
                     });
 
+    public static Supplier<AttributeBuilder> GHOUL_BUILDER =
+            ()->new LandMonsterPrefab().getPrefab()
+                    .setSpawnWithoutLight()
+                    .setHurtSound(TESounds.ROUTINE_HURT)
+                    .setDeathSound(TESounds.ROUTINE_DEATH)
+                    .addTarget((t,e)-> t.addGoal(1, new NearestAttackableTargetGoal<>(e, Player.class,false, LivingEntity::canBeSeenAsEnemy)))
+                    .addGoal((g,e)-> {
+                        g.addGoal(1, new JumpAttack(e, 2, 5));
+                        g.addGoal(2, new JumpOverBlockGoal(e));
+                        g.addGoal(3, new MeleeAttackGoal(e,  1.6f, true));
+                        g.addGoal(7, new WaterAvoidingRandomStrollGoal(e, 1.0));
+                        g.addGoal(8, new LookAtPlayerGoal(e, Player.class, 6));
+                    });
+
     public static Supplier<AttributeBuilder> EVIL_MUMMY_BUILDER =
             ()->new LandMonsterPrefab().getPrefab()
                     .setSpawnWithoutLight()

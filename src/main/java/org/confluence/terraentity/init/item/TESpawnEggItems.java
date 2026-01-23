@@ -153,6 +153,11 @@ public class TESpawnEggItems {
 
     public static final DeferredItem<SpawnEggItem> DARK_LAMIA_SPAWN_EGG = registerEgg("dark_lamia_spawn_egg", TEMonsterEntities.DARK_LAMIA, 0xffffff);
     public static final DeferredItem<SpawnEggItem> LIGHT_LAMIA_SPAWN_EGG = registerEgg("light_lamia_spawn_egg", TEMonsterEntities.LIGHT_LAMIA, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> GHOUL_SPAWN_EGG = registerEgg("ghoul_spawn_egg", TEMonsterEntities.GHOUL, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> TAINTED_GHOUL_SPAWN_EGG = registerEgg("tainted_ghoul_spawn_egg", TEMonsterEntities.TAINTED_GHOUL, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> VILE_GHOUL_SPAWN_EGG = registerEgg("vile_ghoul_spawn_egg", TEMonsterEntities.VILE_GHOUL, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> DREAMER_GHOUL_SPAWN_EGG = registerEgg("dreamer_ghoul_spawn_egg", TEMonsterEntities.DREAMER_GHOUL, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> SAND_POACHER_SPAWN_EGG = registerEgg("sand_poacher_spawn_egg", TEMonsterEntities.SAND_POACHER, 0xffffff);
     public static final DeferredItem<SpawnEggItem> DERPLING_SPAWN_EGG = registerEgg("derpling_spawn_egg", TEMonsterEntities.DERPLING, 0xffffff);
     public static final DeferredItem<SpawnEggItem> HERPLING_SPAWN_EGG = registerEgg("herpling_spawn_egg", TEMonsterEntities.HERPLING, 0xffffff);
 

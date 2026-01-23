@@ -192,6 +192,11 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> LIGHT_MUMMY = registerSimpleMonster("light_mummy", LandMonsterPrefab.MUMMY_BUILDER, 0.75F, 1.95F);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> DARK_LAMIA = registerSimpleMonster("dark_lamia", LandMonsterPrefab.LAMIA_BUILDER, 0.75F, 1.95F);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> LIGHT_LAMIA = registerSimpleMonster("light_lamia", LandMonsterPrefab.LAMIA_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> GHOUL = registerSimpleMonster("ghoul", LandMonsterPrefab.GHOUL_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> TAINTED_GHOUL = registerSimpleMonster("tainted_ghoul", LandMonsterPrefab.GHOUL_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> VILE_GHOUL = registerSimpleMonster("vile_ghoul", LandMonsterPrefab.GHOUL_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> DREAMER_GHOUL  = registerSimpleMonster("dreamer_ghoul", LandMonsterPrefab.GHOUL_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SandPoacher>> SAND_POACHER = TEEntities.registerMonster("sand_poacher", SandPoacher::new, 1.8F, 1.2F);
 
     public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> ARAPAIMA = TEEntities.registerMonster("arapaima", (e, l)->new Piranha(e,l), 2.2F, 0.7F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> GREEN_JELLYFISH = TEEntities.registerMonster("green_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
@@ -351,6 +356,11 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.LIGHT_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.LIGHT_MUMMY.getId()));
         event.registerEntityRenderer(TEMonsterEntities.DARK_LAMIA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DARK_LAMIA.getId()));
         event.registerEntityRenderer(TEMonsterEntities.LIGHT_LAMIA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.LIGHT_LAMIA.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.GHOUL.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.GHOUL.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.TAINTED_GHOUL.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.TAINTED_GHOUL.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.VILE_GHOUL.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VILE_GHOUL.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.DREAMER_GHOUL.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DREAMER_GHOUL.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.SAND_POACHER.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.SAND_POACHER.getId()));
 
         event.registerEntityRenderer(TEMonsterEntities.DERPLING.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DERPLING.getId()));
         event.registerEntityRenderer(TEMonsterEntities.HERPLING.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.HERPLING.getId()));
@@ -503,6 +513,11 @@ public class TEMonsterEntities {
         event.put(LIGHT_MUMMY.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
         event.put(DARK_LAMIA.get(), AttBuilder.createAttributes(182,28,27,48,1,0.69f).stepLength(3.2).jumpHeight(0.5).build());
         event.put(LIGHT_LAMIA.get(), AttBuilder.createAttributes(182,28,27,48,1,0.69f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(GHOUL.get(), AttBuilder.createAttributes(93,26,26,64,1,0.46f).stepLength(3.2).jumpHeight(0.7).build());
+        event.put(TAINTED_GHOUL.get(), AttBuilder.createAttributes(114,32,33,64,1,0.55f).stepLength(3.2).jumpHeight(0.7).build());
+        event.put(DREAMER_GHOUL.get(), AttBuilder.createAttributes(156,32,28,64,1,0.55f).stepLength(3.2).jumpHeight(0.7).build());
+        event.put(VILE_GHOUL.get(), AttBuilder.createAttributes(130,30,31,64,1,0.64f).stepLength(3.2).jumpHeight(0.7).build());
+        event.put(SAND_POACHER.get(), AttBuilder.createAttributes(166,24,34,64,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
 
         event.put(DERPLING.get(), AttBuilder.createAttributes(156,26,41,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
         event.put(HERPLING.get(), AttBuilder.createAttributes(114,26,33,48,1,0.73f).stepLength(3.2).jumpHeight(0.5).build());
@@ -644,6 +659,11 @@ public class TEMonsterEntities {
         event.register(LIGHT_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(DARK_LAMIA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(LIGHT_LAMIA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(GHOUL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(TAINTED_GHOUL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(VILE_GHOUL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(DREAMER_GHOUL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(SAND_POACHER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(DERPLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(HERPLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);

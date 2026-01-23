@@ -81,6 +81,7 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.LITTLE_HORNET.get(),
                 TEMonsterEntities.BLOOD_CRAWLER.get(),
                 TEMonsterEntities.DERPLING.get(),
+                TEMonsterEntities.SAND_POACHER.get(),
                 TEMonsterEntities.CRAWDAD.get(),
                 TEAnimals.CRAB.get(),
                 TEMonsterEntities.GIANT_SHELLY.get()
@@ -109,6 +110,10 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.DARK_MUMMY.get(),
                 TEMonsterEntities.BLOOD_MUMMY.get(),
                 TEMonsterEntities.LIGHT_MUMMY.get(),
+                TEMonsterEntities.GHOUL.get(),
+                TEMonsterEntities.TAINTED_GHOUL.get(),
+                TEMonsterEntities.DREAMER_GHOUL.get(),
+                TEMonsterEntities.VILE_GHOUL.get(),
                 TEMonsterEntities.HAT_SPORE_ZOMBIE.get()
         );
         tag(EntityTypeTags.SKELETONS).add(
@@ -140,6 +145,10 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.DARK_MUMMY.get(),
                 TEMonsterEntities.BLOOD_MUMMY.get(),
                 TEMonsterEntities.LIGHT_MUMMY.get(),
+                TEMonsterEntities.GHOUL.get(),
+                TEMonsterEntities.TAINTED_GHOUL.get(),
+                TEMonsterEntities.DREAMER_GHOUL.get(),
+                TEMonsterEntities.VILE_GHOUL.get(),
                 TEMonsterEntities.UNDEAD_VIKING.get()
         );
         tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(
@@ -181,6 +190,7 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.POSSESS_ARMOR.get(),
                 TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.get(),
                 TEMonsterEntities.DERPLING.get(),
+                TEMonsterEntities.SAND_POACHER.get(),
                 TEMonsterEntities.HERPLING.get()
                 );
 

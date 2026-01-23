@@ -134,6 +134,11 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.LIGHT_MUMMY.get(), "光明木乃伊");
         add(TEMonsterEntities.DARK_LAMIA.get(), "黑暗拉弥亚");
         add(TEMonsterEntities.LIGHT_LAMIA.get(), "光明拉弥亚");
+        add(TEMonsterEntities.GHOUL.get(), "食尸鬼");
+        add(TEMonsterEntities.TAINTED_GHOUL.get(), "红染食尸鬼");
+        add(TEMonsterEntities.VILE_GHOUL.get(), "腐恶食尸鬼");
+        add(TEMonsterEntities.DREAMER_GHOUL .get(), "神梦食尸鬼");
+        add(TEMonsterEntities.SAND_POACHER .get(), "沙贼");
         add(TEMonsterEntities.DERPLING.get(), "跳跳兽");
         add(TEMonsterEntities.HERPLING.get(), "蹦蹦兽");
 
@@ -299,6 +304,11 @@ public class TEChineseProvider extends LanguageProvider {
 
         add(TESpawnEggItems.DARK_LAMIA_SPAWN_EGG.get(), "黑暗拉弥亚刷怪蛋");
         add(TESpawnEggItems.LIGHT_LAMIA_SPAWN_EGG.get(), "光明拉弥亚刷怪蛋");
+        add(TESpawnEggItems.GHOUL_SPAWN_EGG.get(), "食尸鬼刷怪蛋");
+        add(TESpawnEggItems.TAINTED_GHOUL_SPAWN_EGG.get(), "红染食尸鬼刷怪蛋");
+        add(TESpawnEggItems.VILE_GHOUL_SPAWN_EGG.get(), "腐恶食尸鬼刷怪蛋");
+        add(TESpawnEggItems.DREAMER_GHOUL_SPAWN_EGG .get(), "神梦食尸鬼刷怪蛋");
+        add(TESpawnEggItems.SAND_POACHER_SPAWN_EGG .get(), "沙贼刷怪蛋");
         add(TESpawnEggItems.DERPLING_SPAWN_EGG.get(), "跳跳兽刷怪蛋");
         add(TESpawnEggItems.HERPLING_SPAWN_EGG.get(), "蹦蹦兽刷怪蛋");
 
