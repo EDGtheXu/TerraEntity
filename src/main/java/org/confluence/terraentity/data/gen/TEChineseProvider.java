@@ -887,6 +887,35 @@ public class TEChineseProvider extends LanguageProvider {
         add("dialogs.terra_entity.angler.task_finished.4", "你上次给我的鱼还没用呢。我不需要了。");
         add("dialogs.terra_entity.angler.task_finished.5", "你完蛋了，伟大的%s会解雇你！");
 
+        add("dialogs.terra_entity.female_angler.0", "真可惜呀！有些鱼或许在我出生前就消失了，希望能好好保护剩下的它们～");
+        add("dialogs.terra_entity.female_angler.1", "啊……抱歉！是不是打扰到我收钓线了？实在不好意思呀！");
+        add("dialogs.terra_entity.female_angler.2", "整个%s里虽然没有厨师，但能自己亲手烹鱼，也是一种幸福呢！");
+        add("dialogs.terra_entity.female_angler.3", "我没有爸爸妈妈，但有这么多可爱的鱼儿作伴！我已经很满足啦～");
+        add("dialogs.terra_entity.female_angler.4", "听姐姐一句劝哦，千万别用舌头碰冰块啦！会冻伤的，一定要好好照顾自己呀～");
+        add("dialogs.terra_entity.female_angler.5", "你听说过会叫的鱼吗？我好像见过哦，要不要和我聊聊呀！");
+        add("dialogs.terra_entity.female_angler.6", "哎呀！小心一点～我布置了些小装饰，不是陷阱啦，只是想给大家一点小惊喜，千万别误会哦～");
+        add("dialogs.terra_entity.female_angler.7", "%s里到处都是可爱又特别的鱼儿，真的太美好了！");
+        add("dialogs.terra_entity.female_angler.stat.0", "你知道吗？我已经收集到%s条超美的鱼了！真的太谢谢你了，没有你的帮忙我肯定做不到的！");
+        add("dialogs.terra_entity.female_angler.stat.1", "哎呀！麻烦你%s次了，真的太不好意思啦！不过每次都能见到这么好看的鱼，真的太开心了！");
+        add("dialogs.terra_entity.female_angler.wakeup.0", "太感谢你了！真的不知道该怎么报答你，你真的是个超级好的朋友！");
+        add("dialogs.terra_entity.female_angler.wakeup.1", "呀？是你呀～刚刚只是脚滑了一下，不是溺水啦，谢谢你这么关心我❤");
+        add("dialogs.terra_entity.female_angler.wakeup.2", "谢谢你救了我！你真的太好了～如果你不介意的话，我想请你帮我做点小事，当然不愿意也没关系的！");
+        add("dialogs.terra_entity.female_angler.task_ready.0", "你好呀～我有个小小的请求，如果你方便的话能不能帮我一下？不方便也完全没关系的！");
+        add("dialogs.terra_entity.female_angler.task_ready.1", "我想找一条特别的鱼，如果你愿意帮忙找找的话就太好啦！不急的，慢慢说细节～");
+        add("dialogs.terra_entity.female_angler.task_ready.2", "%1$s想正式邀请你成为%2$s的钓鱼小帮手，你愿意吗？");
+        add("dialogs.terra_entity.female_angler.task_ready.3", "你好呀！你就是我一直想找的、超厉害的钓鱼大师吧！能请你帮帮忙吗？");
+        add("dialogs.terra_entity.female_angler.task_succeed.0", "哇！谢谢你帮我抓到想要的鱼，真的太感谢了！辛苦你啦～");
+        add("dialogs.terra_entity.female_angler.task_succeed.1", "你真的做得超棒的！辛苦你了，快歇一歇吧～");
+        add("dialogs.terra_entity.female_angler.task_succeed.2", "太开心啦！你安全完成了，真的太好了！我还一直担心你呢！");
+        add("dialogs.terra_entity.female_angler.task_succeed.3", "天呐！？你不仅完成了任务，还平平安安的，真的太棒了！快把鱼给我，快去休息一下吧～");
+        add("dialogs.terra_entity.female_angler.task_succeed.4", "抓到啦！一切都超顺利的～谢谢你的帮忙，真的太感谢了！");
+        add("dialogs.terra_entity.female_angler.task_finished.0", "我的鱼已经足够啦！真的太谢谢你的帮忙，你真的帮了我太多了～");
+        add("dialogs.terra_entity.female_angler.task_finished.1", "今天真的谢谢你啦，和你相处超开心的！你快去忙自己的事吧～");
+        add("dialogs.terra_entity.female_angler.task_finished.2", "暂时没有需要帮忙的啦，不过还是谢谢你愿意过来～");
+        add("dialogs.terra_entity.female_angler.task_finished.3", "今天的鱼已经够啦，辛苦你啦，慢走哦～");
+        add("dialogs.terra_entity.female_angler.task_finished.4", "上次你给我的鱼我还好好收着呢，暂时不需要啦，不过还是超感谢你的！");
+        add("dialogs.terra_entity.female_angler.task_finished.5", "真的太谢谢你啦！能有你这样的帮手，是%s的幸运呀～");
+
         add("dialogs.terra_entity.old_man.0", "如果你不解除我的诅咒，我是不会让你进的。");
         add("dialogs.terra_entity.old_man.1", "陌生人，你是否拥有能打败我主人的力量？");
         add("dialogs.terra_entity.old_man.2", "打败我的主人，我就让你进入地牢。");
