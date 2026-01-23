@@ -105,7 +105,7 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> SPAZMATISM_SPAWN_EGG = registerEgg("spazmatism_spawn_egg", TEBossEntities.SPAZMATISM, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> THE_TWINS_SPAWN_EGG = registerEgg("the_twins_spawn_egg", TEBossEntities.THE_TWINS, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> SKELETRON_PRIME_SPAWN_EGG = registerEgg("skeletron_prime_spawn_egg", TEBossEntities.SKELETRON_PRIME, 0xffffff, 0xffffff);
-    public static final DeferredItem<SpawnEggItem> DESTROYER_SPAWN_EGG = registerEgg("destroyer_spawn_egg", TEBossEntities.DESTROYER, 0xffffff, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> DESTROYER_SPAWN_EGG = registerEgg("destroyer_spawn_egg", TEBossEntities.THE_DESTROYER, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> PLANTERA_SPAWN_EGG = registerEgg("plantera_spawn_egg", TEBossEntities.PLANTERA, 0xffffff, 0xffffff);
 
     // 地牢骷髅

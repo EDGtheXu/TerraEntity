@@ -161,9 +161,9 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEBossEntities.THE_TWINS.get(), "双子魔眼");
         add(TEBossEntities.SKELETRON_PRIME.get(), "机械骷髅王");
         add(TEBossEntities.SKELETRON_PRIME_PART.get(), "机械骷髅王（机械臂）");
-        add(TEBossEntities.DESTROYER.get(), "毁灭者");
-        add(TEBossEntities.DESTROYER_PART.get(), "毁灭者体节");
-        add(TEBossEntities.DESTROYER_PROBE.get(), "毁灭者探测器");
+        add(TEBossEntities.THE_DESTROYER.get(), "毁灭者");
+        add(TEBossEntities.THE_DESTROYER_PART.get(), "毁灭者体节");
+        add(TEBossEntities.THE_DESTROYER_PROBE.get(), "毁灭者探测器");
         add(TEBossEntities.PLANTERA.get(), "世纪之花");
         add(TEBossEntities.PLANTERA_HOOK.get(), "世纪之花钩");
         add(TEBossEntities.PLANTERA_TENTACLE.get(), "世纪之花触手");
@@ -898,7 +898,7 @@ public class TEChineseProvider extends LanguageProvider {
         add("dialogs.terra_entity.female_angler.stat.0", "你知道吗？我已经收集到%s条超美的鱼了！真的太谢谢你了，没有你的帮忙我肯定做不到的！");
         add("dialogs.terra_entity.female_angler.stat.1", "哎呀！麻烦你%s次了，真的太不好意思啦！不过每次都能见到这么好看的鱼，真的太开心了！");
         add("dialogs.terra_entity.female_angler.wakeup.0", "太感谢你了！真的不知道该怎么报答你，你真的是个超级好的朋友！");
-        add("dialogs.terra_entity.female_angler.wakeup.1", "呀？是你呀～刚刚只是脚滑了一下，不是溺水啦，谢谢你这么关心我❤");
+        add("dialogs.terra_entity.female_angler.wakeup.1", "呀？是你呀～刚刚只是脚滑了一下，不是溺水啦，谢谢你这么关心我！");
         add("dialogs.terra_entity.female_angler.wakeup.2", "谢谢你救了我！你真的太好了～如果你不介意的话，我想请你帮我做点小事，当然不愿意也没关系的！");
         add("dialogs.terra_entity.female_angler.task_ready.0", "你好呀～我有个小小的请求，如果你方便的话能不能帮我一下？不方便也完全没关系的！");
         add("dialogs.terra_entity.female_angler.task_ready.1", "我想找一条特别的鱼，如果你愿意帮忙找找的话就太好啦！不急的，慢慢说细节～");

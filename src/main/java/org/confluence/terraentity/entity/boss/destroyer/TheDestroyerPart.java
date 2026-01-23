@@ -23,29 +23,28 @@ import org.confluence.terraentity.entity.proj.LineProj;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPart {
+public class TheDestroyerPart extends AbstractTerraBossBase implements Boss.BossPart {
 
     // --- 同步 Owner ---
-    private static final EntityDataAccessor<Optional<UUID>> DATA_OWNER = SynchedEntityData.defineId(DestroyerPart.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Integer> DATA_OWNER_ID = SynchedEntityData.defineId(DestroyerPart.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Optional<UUID>> DATA_OWNER = SynchedEntityData.defineId(TheDestroyerPart.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Integer> DATA_OWNER_ID = SynchedEntityData.defineId(TheDestroyerPart.class, EntityDataSerializers.INT);
 
     // --- 状态数据 ---
-    private static final EntityDataAccessor<Boolean> DATA_PROBE_RELEASED = SynchedEntityData.defineId(DestroyerPart.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_FLAPS_OPEN = SynchedEntityData.defineId(DestroyerPart.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Float> DATA_SEGMENT_ROLL = SynchedEntityData.defineId(DestroyerPart.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> DATA_IS_TAIL = SynchedEntityData.defineId(DestroyerPart.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_IS_PROBE_SEGMENT = SynchedEntityData.defineId(DestroyerPart.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_PROBE_RELEASED = SynchedEntityData.defineId(TheDestroyerPart.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_FLAPS_OPEN = SynchedEntityData.defineId(TheDestroyerPart.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> DATA_SEGMENT_ROLL = SynchedEntityData.defineId(TheDestroyerPart.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> DATA_IS_TAIL = SynchedEntityData.defineId(TheDestroyerPart.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_IS_PROBE_SEGMENT = SynchedEntityData.defineId(TheDestroyerPart.class, EntityDataSerializers.BOOLEAN);
 
-    public Destroyer owner; // 引用头部
+    public TheDestroyer owner; // 引用头部
     public Entity lookAtTgt = null;
     public float prevPartRoll; // 渲染插值
 
-    public DestroyerPart(EntityType<? extends Monster> type, Level level) {
+    public TheDestroyerPart(EntityType<? extends Monster> type, Level level) {
         super(type, level);
         this.noPhysics = true;
     }
@@ -63,7 +62,7 @@ public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPar
         builder.define(DATA_IS_PROBE_SEGMENT, false);
     }
 
-    public void setOwner(Destroyer owner) {
+    public void setOwner(TheDestroyer owner) {
         this.owner = owner;
         if(owner != null) {
             entityData.set(DATA_OWNER, Optional.of(owner.getUUID()));
@@ -81,7 +80,7 @@ public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPar
 
             // 受伤释放探针逻辑 (仅服务端)
             if (hurtResult && !level().isClientSide) {
-                if (isProbeSegment() && !hasReleasedProbe() && owner.getPhase() != Destroyer.Phase.UNDERGROUND) {
+                if (isProbeSegment() && !hasReleasedProbe() && owner.getPhase() != TheDestroyer.Phase.UNDERGROUND) {
                     if (random.nextFloat() < 0.2f) { // 20% 概率
                         tryReleaseProbe();
                     }
@@ -102,7 +101,7 @@ public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPar
         // 客户端：寻找 Owner
         if (level().isClientSide) {
             if (this.owner == null) {
-                this.owner = (Destroyer) level().getEntity(entityData.get(DATA_OWNER_ID));
+                this.owner = (TheDestroyer) level().getEntity(entityData.get(DATA_OWNER_ID));
             }
             // 粒子特效
             if (areFlapsOpen() && random.nextFloat() < 0.1) {
@@ -115,7 +114,7 @@ public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPar
                 if(owner == null && entityData.get(DATA_OWNER).isPresent()) {
                     ServerLevel sl = (ServerLevel) level();
                     Entity e = sl.getEntity(entityData.get(DATA_OWNER).get());
-                    if(e instanceof Destroyer d) this.owner = d;
+                    if(e instanceof TheDestroyer d) this.owner = d;
                 }
             }
             if (tickCount > 5 && (owner == null || !owner.isAlive())) {
@@ -125,9 +124,9 @@ public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPar
         }
 
         // 天空模式：蓝色火焰伤害
-        if (owner != null && owner.getPhase() == Destroyer.Phase.SKY) {
+        if (owner != null && owner.getPhase() == TheDestroyer.Phase.SKY) {
             level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(1.5),
-                            e -> e != this && e != owner && !(e instanceof DestroyerPart))
+                            e -> e != this && e != owner && !(e instanceof TheDestroyerPart))
                     .forEach(e -> {
                         // TODO - 蓝色火焰攻击特殊处理
                         e.hurt(damageSources().mobAttack(this), 10.0f);
@@ -141,7 +140,7 @@ public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPar
             this.playSound(SoundEvents.PISTON_EXTEND, 1.0f, 1.0f);
 
             if (level() instanceof ServerLevel sl) {
-                DestroyerProbe probe = TEBossEntities.DESTROYER_PROBE.get().create(sl);
+                TheDestroyerProbe probe = TEBossEntities.THE_DESTROYER_PROBE.get().create(sl);
                 if (probe != null) {
                     probe.moveTo(this.getX(), this.getY() + 1.5, this.getZ(), this.getYRot(), 0);
                     probe.setHead(this.owner);
@@ -222,6 +221,6 @@ public class DestroyerPart extends AbstractTerraBossBase implements Boss.BossPar
     @Override
     public boolean canAttack(LivingEntity entity) {
         if (!super.canAttack(entity)) return false;
-        return !(entity instanceof Destroyer || entity instanceof DestroyerPart || entity instanceof DestroyerProbe);
+        return !(entity instanceof TheDestroyer || entity instanceof TheDestroyerPart || entity instanceof TheDestroyerProbe);
     }
 }

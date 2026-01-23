@@ -38,13 +38,13 @@ import java.util.List;
 /**
  * 毁灭者 (The Destroyer) - 头部
  */
-public class Destroyer extends AbstractTerraBossBase implements Boss {
+public class TheDestroyer extends AbstractTerraBossBase implements Boss {
 
     // --- 同步数据 ---
-    public static final EntityDataAccessor<Integer> DATA_PHASE = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> DATA_TEXTURE_VARIANT = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Float> DATA_BODY_ROLL = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<Boolean> DATA_HEAD_SHELL_OPEN = SynchedEntityData.defineId(Destroyer.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> DATA_PHASE = SynchedEntityData.defineId(TheDestroyer.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> DATA_TEXTURE_VARIANT = SynchedEntityData.defineId(TheDestroyer.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Float> DATA_BODY_ROLL = SynchedEntityData.defineId(TheDestroyer.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> DATA_HEAD_SHELL_OPEN = SynchedEntityData.defineId(TheDestroyer.class, EntityDataSerializers.BOOLEAN);
 
     public enum Phase {UNDERGROUND, GROUND, SKY}
 
@@ -56,7 +56,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
 
     // --- 部件管理 ---
     // 手动管理 List，不使用 NeoForge 的 PartEntity 接口以避免继承冲突
-    private final List<DestroyerPart> parts = new ArrayList<>();
+    private final List<TheDestroyerPart> parts = new ArrayList<>();
 
     // --- 运行时 ---
     private boolean isInsideBlock = false;
@@ -78,7 +78,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
     private Vec3 wanderPos = null;
     private boolean lastInBlock = false;
 
-    public Destroyer(EntityType<? extends Monster> type, Level level) {
+    public TheDestroyer(EntityType<? extends Monster> type, Level level) {
         super(type, level);
         this.noPhysics = true;
         this.setNoGravity(true);
@@ -86,8 +86,8 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
         this.setHealth(this.getMaxHealth());
     }
 
-    public Destroyer(Level level) {
-        this(TEBossEntities.DESTROYER.get(), level);
+    public TheDestroyer(Level level) {
+        this(TEBossEntities.THE_DESTROYER.get(), level);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
 
                 // 修正：调用 TEUtils.spawnEntity 或直接 create + addFreshEntity
                 // 这里为了方便设置属性，手动创建
-                DestroyerPart part = TEBossEntities.DESTROYER_PART.get().create(serverLevel);
+                TheDestroyerPart part = TEBossEntities.THE_DESTROYER_PART.get().create(serverLevel);
                 if (part != null) {
                     part.moveTo(lastPos.x, lastPos.y, lastPos.z, this.getYRot(), this.getXRot());
                     part.setOwner(this); // 设置归属
@@ -171,7 +171,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
         Entity prev = this;
         Phase phase = getPhase();
 
-        for (DestroyerPart part : parts) {
+        for (TheDestroyerPart part : parts) {
             // A. 位置跟随 (贪吃蛇逻辑)
             double distSq = part.distanceToSqr(prev);
             if (distSq > 4000) { // 防丢失
@@ -194,7 +194,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
             }
 
             // B. 旋转(Roll)传递 (DNA螺旋)
-            float prevRoll = (prev instanceof Destroyer d) ? d.getBodyRoll() : ((DestroyerPart) prev).getSegmentRoll();
+            float prevRoll = (prev instanceof TheDestroyer d) ? d.getBodyRoll() : ((TheDestroyerPart) prev).getSegmentRoll();
             float currentRoll = part.getSegmentRoll();
             // 平滑传递旋转
             float diff = Mth.degreesDifference(currentRoll, prevRoll);
@@ -474,7 +474,7 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
         // 顺序发射模式
         if (laserSequenceIndex >= 0) {
             if (laserSequenceIndex < parts.size()) {
-                DestroyerPart part = parts.get(laserSequenceIndex);
+                TheDestroyerPart part = parts.get(laserSequenceIndex);
                 if (part.isAlive()) part.tryShootLaser(target);
                 laserSequenceIndex++;
             } else {
@@ -571,6 +571,6 @@ public class Destroyer extends AbstractTerraBossBase implements Boss {
     @Override
     public boolean canAttack(LivingEntity entity) {
         if (!super.canAttack(entity)) return false;
-        return !(entity instanceof Destroyer || entity instanceof DestroyerPart || entity instanceof DestroyerProbe);
+        return !(entity instanceof TheDestroyer || entity instanceof TheDestroyerPart || entity instanceof TheDestroyerProbe);
     }
 }

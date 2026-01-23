@@ -31,7 +31,6 @@ import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.entity.proj.LineProj;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -43,15 +42,15 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
 
-public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, RangedAttackMob, Boss {
+public class TheDestroyerProbe extends AbstractTerraBossBase implements GeoEntity, RangedAttackMob, Boss {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     // 引用本体
-    private Destroyer head;
-    private static final EntityDataAccessor<Optional<UUID>> DATA_HEAD_UUID = SynchedEntityData.defineId(DestroyerProbe.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Integer> DATA_HEAD_ID = SynchedEntityData.defineId(DestroyerProbe.class, EntityDataSerializers.INT);
+    private TheDestroyer head;
+    private static final EntityDataAccessor<Optional<UUID>> DATA_HEAD_UUID = SynchedEntityData.defineId(TheDestroyerProbe.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Integer> DATA_HEAD_ID = SynchedEntityData.defineId(TheDestroyerProbe.class, EntityDataSerializers.INT);
 
-    public DestroyerProbe(EntityType<? extends Monster> entityType, Level level) {
+    public TheDestroyerProbe(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
         this.moveControl = new ProbeMoveControl(this);
         this.xpReward = 5;
@@ -65,7 +64,7 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
         builder.define(DATA_HEAD_ID, 0);
     }
 
-    public void setHead(Destroyer newHead) {
+    public void setHead(TheDestroyer newHead) {
         this.head = newHead;
         if(newHead != null) {
             entityData.set(DATA_HEAD_UUID, Optional.of(newHead.getUUID()));
@@ -80,7 +79,7 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
         // 恢复引用
         if (!level().isClientSide && tickCount % 20 == 0 && head == null && entityData.get(DATA_HEAD_UUID).isPresent()) {
             Entity e = ((ServerLevel)level()).getEntity(entityData.get(DATA_HEAD_UUID).get());
-            if(e instanceof Destroyer d) this.head = d;
+            if(e instanceof TheDestroyer d) this.head = d;
         }
 
         // 同步本体目标
@@ -150,7 +149,7 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
 
     // --- Inner Classes (AI) ---
     class ProbeMoveControl extends MoveControl {
-        public ProbeMoveControl(DestroyerProbe probe) { super(probe); }
+        public ProbeMoveControl(TheDestroyerProbe probe) { super(probe); }
         @Override public void tick() {
             if (this.operation == Operation.MOVE_TO) {
                 Vec3 vec3 = new Vec3(this.wantedX - mob.getX(), this.wantedY - mob.getY(), this.wantedZ - mob.getZ());
@@ -169,8 +168,8 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
     }
 
     class ProbeRandomFlyGoal extends Goal {
-        private final DestroyerProbe probe;
-        public ProbeRandomFlyGoal(DestroyerProbe probe) { this.probe = probe; this.setFlags(EnumSet.of(Flag.MOVE)); }
+        private final TheDestroyerProbe probe;
+        public ProbeRandomFlyGoal(TheDestroyerProbe probe) { this.probe = probe; this.setFlags(EnumSet.of(Flag.MOVE)); }
         @Override public boolean canUse() { return !this.probe.getMoveControl().hasWanted() && this.probe.getRandom().nextInt(7) == 0; }
         @Override public void tick() {
             // 优先飞向本体附近
@@ -185,9 +184,9 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
     }
 
     class ProbeAttackGoal extends Goal {
-        private final DestroyerProbe probe;
+        private final TheDestroyerProbe probe;
         private int attackTime;
-        public ProbeAttackGoal(DestroyerProbe probe) { this.probe = probe; this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK)); }
+        public ProbeAttackGoal(TheDestroyerProbe probe) { this.probe = probe; this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK)); }
         @Override public boolean canUse() { return probe.getTarget() != null && probe.getTarget().isAlive(); }
         @Override public void start() { attackTime = 0; }
         @Override public void tick() {
@@ -224,6 +223,6 @@ public class DestroyerProbe extends AbstractTerraBossBase implements GeoEntity, 
     @Override
     public boolean canAttack(LivingEntity entity) {
         if (!super.canAttack(entity)) return false;
-        return !(entity instanceof Destroyer || entity instanceof DestroyerPart || entity instanceof DestroyerProbe);
+        return !(entity instanceof TheDestroyer || entity instanceof TheDestroyerPart || entity instanceof TheDestroyerProbe);
     }
 }

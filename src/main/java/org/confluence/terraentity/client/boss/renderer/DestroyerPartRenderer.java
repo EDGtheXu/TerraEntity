@@ -7,19 +7,19 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terraentity.client.boss.model.GeoBossModel;
 import org.confluence.terraentity.client.entity.renderer.GeoNormalRenderer;
-import org.confluence.terraentity.entity.boss.destroyer.DestroyerPart;
+import org.confluence.terraentity.entity.boss.destroyer.TheDestroyerPart;
 import org.confluence.terraentity.utils.TEUtils;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 
-public class DestroyerPartRenderer extends GeoNormalRenderer<DestroyerPart> {
+public class DestroyerPartRenderer extends GeoNormalRenderer<TheDestroyerPart> {
 
     // 预加载两个模型：身体和尾部
     // TODO: 使用真正的模型
-    private static final GeoBossModel<DestroyerPart> BODY_MODEL = new GeoBossModel<>("eater_of_worlds_segment");
-    private static final GeoBossModel<DestroyerPart> TAIL_MODEL = new GeoBossModel<>("eater_of_worlds_tail");
+    private static final GeoBossModel<TheDestroyerPart> BODY_MODEL = new GeoBossModel<>("eater_of_worlds_segment");
+    private static final GeoBossModel<TheDestroyerPart> TAIL_MODEL = new GeoBossModel<>("eater_of_worlds_tail");
 
     public DestroyerPartRenderer(EntityRendererProvider.Context renderManager) {
         // 默认传入 BODY_MODEL，但在 getGeoModel 中会动态切换
@@ -27,8 +27,8 @@ public class DestroyerPartRenderer extends GeoNormalRenderer<DestroyerPart> {
     }
 
     @Override
-    public GeoModel<DestroyerPart> getGeoModel() {
-        DestroyerPart segment = this.getAnimatable();
+    public GeoModel<TheDestroyerPart> getGeoModel() {
+        TheDestroyerPart segment = this.getAnimatable();
         // 根据实体状态切换模型
         if (segment != null && segment.isTail()) {
             return TAIL_MODEL;
@@ -37,7 +37,7 @@ public class DestroyerPartRenderer extends GeoNormalRenderer<DestroyerPart> {
     }
 
     @Override
-    public void preRender(PoseStack poseStack, DestroyerPart animatable, BakedGeoModel model, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
+    public void preRender(PoseStack poseStack, TheDestroyerPart animatable, BakedGeoModel model, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
         // 获取并应用 Roll
         float roll = animatable.getSegmentRoll();
         Vec3 axis = TEUtils.rotToDir(animatable.getYRot(), animatable.getXRot());

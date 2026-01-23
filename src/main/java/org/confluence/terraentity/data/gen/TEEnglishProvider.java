@@ -333,7 +333,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("dialogs.terra_entity.female_angler.stat.0", "You know what? I've already collected %s beautiful fish! Thank you so much—I could never have done it without your help!");
         add("dialogs.terra_entity.female_angler.stat.1", "Oh no! I've bothered you %s times already, I'm so terribly sorry! But every time I get to see such beautiful fish, it makes me so happy!");
         add("dialogs.terra_entity.female_angler.wakeup.0", "Thank you so much! I really don't know how to repay you—you're an amazing friend!");
-        add("dialogs.terra_entity.female_angler.wakeup.1", "Oh! It's you~ I just slipped a moment ago, I wasn't drowning! Thank you for caring so much ❤");
+        add("dialogs.terra_entity.female_angler.wakeup.1", "Oh! It's you~ I just slipped a moment ago, I wasn't drowning! Thank you for caring so much！");
         add("dialogs.terra_entity.female_angler.wakeup.2", "Thank you for saving me! You're such a kind person~ If you don't mind, I'd like to ask you to help me with a small errand—but it's totally fine if you don't want to!");
         add("dialogs.terra_entity.female_angler.task_ready.0", "Hello there~ I have a tiny favor to ask. Could you help me if you're free? It's absolutely fine if you're not!");
         add("dialogs.terra_entity.female_angler.task_ready.1", "I'm looking for a special kind of fish. It would mean the world to me if you'd help find it! No rush at all—let's take our time to go over the details~");

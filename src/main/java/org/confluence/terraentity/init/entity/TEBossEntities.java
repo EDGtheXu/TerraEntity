@@ -1,7 +1,6 @@
 package org.confluence.terraentity.init.entity;
 
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -17,9 +16,9 @@ import org.confluence.terraentity.client.entity.renderer.GeoNormalRenderer;
 import org.confluence.terraentity.client.entity.renderer.mob.KingSlimeRenderer;
 import org.confluence.terraentity.entity.blur.PosRotMotionBlurRenderer;
 import org.confluence.terraentity.entity.boss.*;
-import org.confluence.terraentity.entity.boss.destroyer.Destroyer;
-import org.confluence.terraentity.entity.boss.destroyer.DestroyerPart;
-import org.confluence.terraentity.entity.boss.destroyer.DestroyerProbe;
+import org.confluence.terraentity.entity.boss.destroyer.TheDestroyer;
+import org.confluence.terraentity.entity.boss.destroyer.TheDestroyerPart;
+import org.confluence.terraentity.entity.boss.destroyer.TheDestroyerProbe;
 import org.confluence.terraentity.entity.boss.hillofflesh.HillOfFlesh;
 import org.confluence.terraentity.entity.boss.plantera.Plantera;
 import org.confluence.terraentity.entity.boss.plantera.PlanteraHook;
@@ -33,8 +32,6 @@ import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.model.CrownOfKingSlimeModelEntity;
 import org.confluence.terraentity.entity.util.AttBuilder;
 import org.confluence.terraentity.init.TEEntities;
-
-import java.util.logging.Level;
 
 public class TEBossEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<KingSlime>> KING_SLIME = TEEntities.ENTITIES.register("king_slime", () -> EntityType.Builder.<KingSlime>of(KingSlime::new, MobCategory.MONSTER).sized(0.6f, 0.6f).clientTrackingRange(10).build(TEEntities.Key("king_slime")));
@@ -60,9 +57,9 @@ public class TEBossEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<SkeletronPrimePart>> SKELETRON_PRIME_PART = TEEntities.registerMonster("skeletron_prime_part", SkeletronPrimePart::new, 2.6F, 2.6F);
 
 
-    public static final DeferredHolder<EntityType<?>, EntityType<Destroyer>> DESTROYER = TEEntities.registerMonster("destroyer", Destroyer::new, 3F, 3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<DestroyerPart>> DESTROYER_PART = TEEntities.registerMonster("destroyer_part", DestroyerPart::new, 3F, 3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<DestroyerProbe>> DESTROYER_PROBE = TEEntities.registerMonster("destroyer_probe", DestroyerProbe::new, 2F, 2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<TheDestroyer>> THE_DESTROYER = TEEntities.registerMonster("the_destroyer", TheDestroyer::new, 3F, 3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<TheDestroyerPart>> THE_DESTROYER_PART = TEEntities.registerMonster("the_destroyer_part", TheDestroyerPart::new, 3F, 3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<TheDestroyerProbe>> THE_DESTROYER_PROBE = TEEntities.registerMonster("the_destroyer_probe", TheDestroyerProbe::new, 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<Plantera>> PLANTERA = TEEntities.registerMonster("plantera", Plantera::new, 10F, 10F);
     public static final DeferredHolder<EntityType<?>, EntityType<PlanteraHook>> PLANTERA_HOOK = TEEntities.registerMonster("plantera_hook", PlanteraHook::new, 1.25F, 1.25F);
     public static final DeferredHolder<EntityType<?>, EntityType<PlanteraTentacle>> PLANTERA_TENTACLE = TEEntities.registerMonster("plantera_tentacle", PlanteraTentacle::new, 2F, 2F);
@@ -94,9 +91,9 @@ public class TEBossEntities {
         event.registerEntityRenderer(TEBossEntities.SKELETRON_PRIME.get(), c->new SkeletronPrimeRenderer(c, TEBossEntities.SKELETRON_PRIME));
         event.registerEntityRenderer(TEBossEntities.SKELETRON_PRIME_PART.get(), c->new SkeletronPrimePartRenderer(c, TEBossEntities.SKELETRON_PRIME.getId().withPrefix("boss/")));
 
-        event.registerEntityRenderer(TEBossEntities.DESTROYER.get(), DestroyerRenderer::new);
-        event.registerEntityRenderer(TEBossEntities.DESTROYER_PART.get(), DestroyerPartRenderer::new);
-        event.registerEntityRenderer(TEBossEntities.DESTROYER_PROBE.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true));
+        event.registerEntityRenderer(TEBossEntities.THE_DESTROYER.get(), DestroyerRenderer::new);
+        event.registerEntityRenderer(TEBossEntities.THE_DESTROYER_PART.get(), DestroyerPartRenderer::new);
+        event.registerEntityRenderer(TEBossEntities.THE_DESTROYER_PROBE.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true));
 
         event.registerEntityRenderer(TEBossEntities.PLANTERA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
         event.registerEntityRenderer(TEBossEntities.PLANTERA_HOOK.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
@@ -129,9 +126,9 @@ public class TEBossEntities {
         event.put(TEBossEntities.SKELETRON_PRIME_PART.get(), AttBuilder.createBoss(8, 2080, 26).build());
 
 
-        event.put(TEBossEntities.DESTROYER.get(), AttBuilder.createBoss(35, 23333, 2).build());
-        event.put(TEBossEntities.DESTROYER_PART.get(), AttBuilder.createBoss(66, 23333, 2).build());
-        event.put(TEBossEntities.DESTROYER_PROBE.get(), AttBuilder.createBoss(12, 100, 10).build());
+        event.put(TEBossEntities.THE_DESTROYER.get(), AttBuilder.createBoss(35, 23333, 2).build());
+        event.put(TEBossEntities.THE_DESTROYER_PART.get(), AttBuilder.createBoss(66, 23333, 2).build());
+        event.put(TEBossEntities.THE_DESTROYER_PROBE.get(), AttBuilder.createBoss(12, 100, 10).build());
 
         event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(26, 10920, 36).build());
         event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(15.6, 1040, 24).build());
