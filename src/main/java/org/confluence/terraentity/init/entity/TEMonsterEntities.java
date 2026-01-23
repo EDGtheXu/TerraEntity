@@ -190,6 +190,8 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> DARK_MUMMY = registerSimpleMonster("dark_mummy", LandMonsterPrefab.EVIL_MUMMY_BUILDER, 0.75F, 1.95F);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> BLOOD_MUMMY = registerSimpleMonster("blood_mummy", LandMonsterPrefab.EVIL_MUMMY_BUILDER, 0.75F, 1.95F);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> LIGHT_MUMMY = registerSimpleMonster("light_mummy", LandMonsterPrefab.MUMMY_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> DARK_LAMIA = registerSimpleMonster("dark_lamia", LandMonsterPrefab.LAMIA_BUILDER, 0.75F, 1.95F);
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> LIGHT_LAMIA = registerSimpleMonster("light_lamia", LandMonsterPrefab.LAMIA_BUILDER, 0.75F, 1.95F);
 
     public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> ARAPAIMA = TEEntities.registerMonster("arapaima", (e, l)->new Piranha(e,l), 2.2F, 0.7F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> GREEN_JELLYFISH = TEEntities.registerMonster("green_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
@@ -347,6 +349,8 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.DARK_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DARK_MUMMY.getId()));
         event.registerEntityRenderer(TEMonsterEntities.BLOOD_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.BLOOD_MUMMY.getId()));
         event.registerEntityRenderer(TEMonsterEntities.LIGHT_MUMMY.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.LIGHT_MUMMY.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.DARK_LAMIA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DARK_LAMIA.getId()));
+        event.registerEntityRenderer(TEMonsterEntities.LIGHT_LAMIA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.LIGHT_LAMIA.getId()));
 
         event.registerEntityRenderer(TEMonsterEntities.DERPLING.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.DERPLING.getId()));
         event.registerEntityRenderer(TEMonsterEntities.HERPLING.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.HERPLING.getId()));
@@ -394,10 +398,10 @@ public class TEMonsterEntities {
         event.put(BLOOD_ZOMBIE.get(), AttBuilder.createAttributes(39,8,10,60,0.5f,0.1f).moveSpeed(0.15).build());
         event.put(SNOW_FLINX.get(), AttBuilder.createAttributes(36,12,13,60,0.1f,0.1f).build());
 
-        event.put(GIANT_SHELLY.get(), AttBuilder.createAttributes(26,12,9,10,0,0.4f).moveSpeed(0.1).build());
-        event.put(CRAWDAD.get(), AttBuilder.createAttributes(26,12,9,10,0,0.4f).jumpHeight(0.8).build());
+        event.put(GIANT_SHELLY.get(), AttBuilder.createAttributes(26,12,9,20,0,0.4f).moveSpeed(0.1).build());
+        event.put(CRAWDAD.get(), AttBuilder.createAttributes(26,6,15,25,0,0.1f).jumpHeight(0.8).build());
 
-        event.put(NYMPH.get(), AttBuilder.createAttributes(156,16,15,5,1,0.5f).build());
+        event.put(NYMPH.get(), AttBuilder.createAttributes(156,16,15,15,1,0.5f).build());
         event.put(SNATCHER.get(), AttBuilder.createAttributes(31, 10, 13, 20, 1, 1).build());
         event.put(MAN_EATER.get(), AttBuilder.createAttributes(57, 10, 15, 20, 1, 1).build());
         event.put(THE_HUNGRY.get(), AttBuilder.createAttributes(87,16,15,32,0.75f,1).build());
@@ -497,10 +501,11 @@ public class TEMonsterEntities {
         event.put(DARK_MUMMY.get(), AttBuilder.createAttributes(93,18,32,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
         event.put(BLOOD_MUMMY.get(), AttBuilder.createAttributes(93,18,32,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
         event.put(LIGHT_MUMMY.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(DARK_LAMIA.get(), AttBuilder.createAttributes(182,28,27,48,1,0.69f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(LIGHT_LAMIA.get(), AttBuilder.createAttributes(182,28,27,48,1,0.69f).stepLength(3.2).jumpHeight(0.5).build());
 
-
-        event.put(DERPLING.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
-        event.put(HERPLING.get(), AttBuilder.createAttributes(104,18,28,48,1,0.51f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(DERPLING.get(), AttBuilder.createAttributes(156,26,41,48,1,0.55f).stepLength(3.2).jumpHeight(0.5).build());
+        event.put(HERPLING.get(), AttBuilder.createAttributes(114,26,33,48,1,0.73f).stepLength(3.2).jumpHeight(0.5).build());
     }
 
 
@@ -637,6 +642,8 @@ public class TEMonsterEntities {
         event.register(DARK_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(BLOOD_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(LIGHT_MUMMY.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(DARK_LAMIA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(LIGHT_LAMIA.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkUndergroundMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
 
         event.register(DERPLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(HERPLING.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SpawnPlacementChecks.checkHardmode(SpawnPlacementChecks::checkRoutineMonsterSpawn), RegisterSpawnPlacementsEvent.Operation.REPLACE);

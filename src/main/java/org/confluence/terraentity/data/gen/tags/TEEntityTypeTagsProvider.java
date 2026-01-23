@@ -46,6 +46,9 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                         TEMonsterEntities.HONEY_SLIME.get(),
                         TEMonsterEntities.BLACK_SLIME.get(),
                         TEMonsterEntities.GOLDEN_SLIME.get(),
+                        TEMonsterEntities.SPIKED_JUNGLE_SLIME.get(),
+                        TEMonsterEntities.SPIKED_ICE_SLIME.get(),
+                        TEMonsterEntities.SPIKED_SLIME.get(),
                         EntityType.SLIME)
                 );
         tag(TETags.EntityTypes.CORRUPT).add(
@@ -53,6 +56,7 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.DECAYEDER.get(),
                 TEMonsterEntities.DEVOURER.get()
         );
+
 
         EntityType<?>[] bosses = {
                 TEBossEntities.EYE_OF_CTHULHU.get(),
@@ -76,6 +80,9 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.HORNET.get(),
                 TEMonsterEntities.LITTLE_HORNET.get(),
                 TEMonsterEntities.BLOOD_CRAWLER.get(),
+                TEMonsterEntities.DERPLING.get(),
+                TEMonsterEntities.CRAWDAD.get(),
+                TEAnimals.CRAB.get(),
                 TEMonsterEntities.GIANT_SHELLY.get()
         );
         tag(TETags.EntityTypes.FLESH_ALLIANCE).add(
@@ -91,12 +98,17 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.BLUE_JELLYFISH.get(),
                 TEMonsterEntities.PINK_JELLYFISH.get(),
                 TEMonsterEntities.GREEN_JELLYFISH.get(),
+                TEMonsterEntities.ARAPAIMA.get(),
                 TEAnimals.DUCK.get()
         );
         tag(EntityTypeTags.ZOMBIES).add(
                 TEMonsterEntities.FACE_MONSTER.get(),
                 TEMonsterEntities.SPORE_ZOMBIE.get(),
                 TEMonsterEntities.BLOOD_ZOMBIE.get(),
+                TEMonsterEntities.MUMMY.get(),
+                TEMonsterEntities.DARK_MUMMY.get(),
+                TEMonsterEntities.BLOOD_MUMMY.get(),
+                TEMonsterEntities.LIGHT_MUMMY.get(),
                 TEMonsterEntities.HAT_SPORE_ZOMBIE.get()
         );
         tag(EntityTypeTags.SKELETONS).add(
@@ -124,36 +136,52 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.BIG_ANGER_BONES.get(),
                 TEMonsterEntities.BIG_HELMET_ANGER_BONES.get(),
                 TEMonsterEntities.BIG_MUSCLE_ANGER_BONES.get(),
+                TEMonsterEntities.MUMMY.get(),
+                TEMonsterEntities.DARK_MUMMY.get(),
+                TEMonsterEntities.BLOOD_MUMMY.get(),
+                TEMonsterEntities.LIGHT_MUMMY.get(),
                 TEMonsterEntities.UNDEAD_VIKING.get()
         );
         tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(
                 TEMonsterEntities.SNOW_FLINX.get(),
+                TEMonsterEntities.ICE_MIMIC.get(),
                 TEMonsterEntities.UNDEAD_VIKING.get()
         );
         tag(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES).add(
                 TEMonsterEntities.PIRANHA.get(),
                 TEMonsterEntities.BLUE_JELLYFISH.get(),
                 TEMonsterEntities.PINK_JELLYFISH.get(),
-                TEMonsterEntities.GREEN_JELLYFISH.get()
+                TEMonsterEntities.GREEN_JELLYFISH.get(),
+                TEMonsterEntities.CRAWDAD.get(),
+                TEMonsterEntities.ARAPAIMA.get()
         );
         tag(EntityTypeTags.AXOLOTL_HUNT_TARGETS).add(
                 TEMonsterEntities.PIRANHA.get(),
                 TEMonsterEntities.BLUE_JELLYFISH.get(),
                 TEMonsterEntities.PINK_JELLYFISH.get(),
+                TEMonsterEntities.ARAPAIMA.get(),
+                TEMonsterEntities.CRAWDAD.get(),
                 TEMonsterEntities.GREEN_JELLYFISH.get()
         );
         tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(
                 TEMonsterEntities.SNOW_FLINX.get(),
+                TEMonsterEntities.ICE_MIMIC.get(),
                 TEMonsterEntities.UNDEAD_VIKING.get()
         );
         tag(EntityTypeTags.CAN_BREATHE_UNDER_WATER).add(
                 TEMonsterEntities.PIRANHA.get(),
                 TEMonsterEntities.BLUE_JELLYFISH.get(),
                 TEMonsterEntities.PINK_JELLYFISH.get(),
+                TEMonsterEntities.ARAPAIMA.get(),
+                TEMonsterEntities.CRAWDAD.get(),
                 TEMonsterEntities.GREEN_JELLYFISH.get()
         );
         tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(
-                TEMonsterEntities.GIANT_SHELLY.get()
+                TEMonsterEntities.GIANT_SHELLY.get(),
+                TEMonsterEntities.POSSESS_ARMOR.get(),
+                TEMonsterEntities.POSSESS_ARMOR_VOID_VESSEL.get(),
+                TEMonsterEntities.DERPLING.get(),
+                TEMonsterEntities.HERPLING.get()
                 );
 
     }

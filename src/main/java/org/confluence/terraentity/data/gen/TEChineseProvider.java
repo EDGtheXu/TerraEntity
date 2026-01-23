@@ -61,6 +61,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.DEMON_EYE.get(), "恶魔眼");
         add(TEMonsterEntities.FLYING_FISH.get(), "飞鱼");
         add(TEMonsterEntities.GIANT_SHELLY.get(), "巨型卷壳怪");
+        add(TEMonsterEntities.CRAWDAD.get(), "龙虾");
         add(TEMonsterEntities.NYMPH.get(), "宁芙");
         add(TEMonsterEntities.DRIPPLER.get(), "滴滴怪");
         add(TEMonsterEntities.BLOOD_ZOMBIE.get(), "血腥僵尸");
@@ -131,6 +132,10 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEMonsterEntities.DARK_MUMMY.get(), "暗黑木乃伊");
         add(TEMonsterEntities.BLOOD_MUMMY.get(), "血木乃伊");
         add(TEMonsterEntities.LIGHT_MUMMY.get(), "光明木乃伊");
+        add(TEMonsterEntities.DARK_LAMIA.get(), "黑暗拉弥亚");
+        add(TEMonsterEntities.LIGHT_LAMIA.get(), "光明拉弥亚");
+        add(TEMonsterEntities.DERPLING.get(), "跳跳兽");
+        add(TEMonsterEntities.HERPLING.get(), "蹦蹦兽");
 
         // boss
         add(TEBossEntities.KING_SLIME.get(), "史莱姆王");
@@ -220,6 +225,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.DEMON_SPAWN_EGG.get(), "恶魔刷怪蛋");
         add(TESpawnEggItems.VOODOO_DEMON_SPAWN_EGG.get(), "巫毒恶魔刷怪蛋");
         add(TESpawnEggItems.GIANT_SHELLY_SPAWN_EGG.get(), "巨型卷壳怪刷怪蛋");
+        add(TESpawnEggItems.CRAWDAD_SPAWN_EGG.get(), "龙虾刷怪蛋");
         add(TESpawnEggItems.GIANT_WORM_SPAWN_EGG.get(), "巨型蠕虫刷怪蛋");
         add(TESpawnEggItems.NYMPH_SPAWN_EGG.get(), "宁芙刷怪蛋");
         add(TESpawnEggItems.TOMB_CRAWLER_SPAWN_EGG.get(), "墓穴爬虫刷怪蛋");
@@ -291,6 +297,10 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.BLOOD_MUMMY_SPAWN_EGG.get(), "血木乃伊刷怪蛋");
         add(TESpawnEggItems.LIGHT_MUMMY_SPAWN_EGG.get(), "光明木乃伊刷怪蛋");
 
+        add(TESpawnEggItems.DARK_LAMIA_SPAWN_EGG.get(), "黑暗拉弥亚刷怪蛋");
+        add(TESpawnEggItems.LIGHT_LAMIA_SPAWN_EGG.get(), "光明拉弥亚刷怪蛋");
+        add(TESpawnEggItems.DERPLING_SPAWN_EGG.get(), "跳跳兽刷怪蛋");
+        add(TESpawnEggItems.HERPLING_SPAWN_EGG.get(), "蹦蹦兽刷怪蛋");
 
 
         add(TEMonsterEntities.GOBLIN_SORCERER.get(), "哥布林巫士");
@@ -627,7 +637,7 @@ public class TEChineseProvider extends LanguageProvider {
 
         add("terra_entity.effect.strategy.mud", "泥潭");
         add("terra_entity.effect.strategy.snapthorn", "中毒");
-        add("terra_entity.effect.strategy.firecracker", "烈火焚身");
+        add("terra_entity.effect.strategy.firecracker", "狱炎");
 
         add("terra_entity.effect.strategy.bat", "吸血 +1 hp");
         add("terra_entity.effect.strategy.lights_bane", "召唤魔光剑");
@@ -637,11 +647,11 @@ public class TEChineseProvider extends LanguageProvider {
         add("terra_entity.effect.strategy.frozen_burn_3_sec_50_chance", "50%几率 霜冻 3秒");
         add("terra_entity.effect.strategy.tentacle_spikes", "触手钉锤");
         add("terra_entity.effect.strategy.hunting_4_sec", "狩猎 4秒");
-        add("terra_entity.effect.strategy.hell_fire_5_sec", "烈火焚身 5秒");
+        add("terra_entity.effect.strategy.hell_fire_5_sec", "狱炎 5秒");
         add("terra_entity.effect.strategy.set_fire_5_sec", "着火啦 5秒");
         add("terra_entity.effect.strategy.forzen_burn_5_sec", "霜火 5秒");
         add("terra_entity.effect.strategy.blood_butchered", "血腥屠宰");
-        add("terra_entity.effect.strategy.bei_dou", "随机5种效果:\n     霜冻 IV 10秒\n     烈火焚身 IV 10秒\n     凋零 IV 10秒\n     中毒 IV 10秒\n     瞬间伤害 VIII");
+        add("terra_entity.effect.strategy.bei_dou", "随机5种效果:\n     霜冻 IV 10秒\n     狱炎 IV 10秒\n     凋零 IV 10秒\n     中毒 IV 10秒\n     瞬间伤害 VIII");
 
         add("terra_entity.effect.strategy.strength", "愤怒");
 
