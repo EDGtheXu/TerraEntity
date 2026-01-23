@@ -772,7 +772,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
                     //如果血肉墙到达了地图的另一边，它会消失，且所有受到惊恐减益影响的玩家会死亡
                     getNearbyPlayers().stream().filter(entity -> entity.hasEffect(TEEffects.HORRIFIED)).forEach(LivingEntity::kill);
                     this.clearChildrenAndHungry();
-                    this.bossEvent.getPlayers().forEach(p -> p.sendSystemMessage(this.getDisplayName().copy().append(Component.translatable("message.terraentity.boss_discard"))));
+                    this.bossEvent.getPlayers().forEach(p -> p.sendSystemMessage(this.getDisplayName().copy().append(Component.translatable("message.confluence.boss_discard", getDisplayName()))));
                     this.discard();
                     return;
                 }

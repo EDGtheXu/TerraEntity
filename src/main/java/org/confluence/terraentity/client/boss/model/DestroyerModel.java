@@ -3,8 +3,8 @@ package org.confluence.terraentity.client.boss.model;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.confluence.terraentity.TerraEntity;
-import org.confluence.terraentity.entity.boss.destroyer.TheDestroyer;
-import org.confluence.terraentity.entity.boss.destroyer.TheDestroyerPart;
+import org.confluence.terraentity.entity.boss.thedestroyer.TheDestroyer;
+import org.confluence.terraentity.entity.boss.thedestroyer.TheDestroyerPart;
 import org.confluence.terraentity.init.entity.TEBossEntities;
 
 public class DestroyerModel extends GeoBossModel<TheDestroyer> {
@@ -18,7 +18,7 @@ public class DestroyerModel extends GeoBossModel<TheDestroyer> {
     public ResourceLocation getTextureResource(TheDestroyer animatable) {
         // 根据实体数据切换纹理：0 = 原版白漆, 1 = 神圣金属
         if (animatable.getEntityData().get(TheDestroyer.DATA_TEXTURE_VARIANT) == 1) {
-            return TerraEntity.space("textures/entity/boss/destroyer_hallowed.png");
+            return TerraEntity.space("textures/entity/boss/the_destroyer_hallowed.png");
         }
         return super.getTextureResource(animatable);
     }

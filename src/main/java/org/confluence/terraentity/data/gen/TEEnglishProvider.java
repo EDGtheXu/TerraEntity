@@ -72,9 +72,6 @@ public class TEEnglishProvider extends LanguageProvider {
         add("entity.terra_entity.mother_slime", "Mother Slime");
         add("entity.terra_entity.baby_slime", "Baby Slime");
 
-        add("message.terraentity.boss_spawn", "%s Has Awoken!");
-        add("message.terraentity.boss_leave", "%s Has Been Defeated!");
-        add("message.terraentity.boss_discard", "Has Been Discarded！");
         add("message.terra_entity.trade.not_enough_items", "Not Enough Items");
 
 

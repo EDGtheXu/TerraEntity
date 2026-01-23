@@ -548,7 +548,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEProjectileEntities.HARPY_FEATURE_PROJ.get(), "鸟妖羽毛射弹");
         add(TEProjectileEntities.DEMON_SCYTHE_PROJ.get(), "恶魔镰刀射弹");
         add(TEProjectileEntities.LAVA_PILLAR.get(), "熔岩柱");
-        add(TEProjectileEntities.DESTROYER_LASER_PROJ.get(), "毁灭者激光");
+        add(TEProjectileEntities.THE_DESTROYER_LASER_PROJ.get(), "毁灭者激光");
         add(TEProjectileEntities.SEED.get(), "种子射弹");
         add(TEProjectileEntities.SPORE.get(), "孢子射弹");
         add(TEProjectileEntities.SPIKE_BALL.get(), "刺球射弹");
@@ -564,9 +564,6 @@ public class TEChineseProvider extends LanguageProvider {
         add(TEProjectileEntities.ICE_PILLAR.get(), "冰刺");
         add(TEProjectileEntities.SHADOW_HAND.get(), "暗影之手射弹");
 
-        add("message.terraentity.boss_spawn", "%s已苏醒！");
-        add("message.terraentity.boss_leave", "%s已被打败！");
-        add("message.terraentity.boss_discard", "已离开！");
         add("message.terra_entity.trade.not_enough_items", "你没有足够的物品来交易");
 
 

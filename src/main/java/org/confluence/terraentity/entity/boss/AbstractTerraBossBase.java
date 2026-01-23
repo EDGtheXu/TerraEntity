@@ -63,13 +63,12 @@ import static org.confluence.terraentity.utils.TEUtils.getMultiple;
 
 /**
  * BOSS基类
+ *
  * @param <T> Boss类型
  */
 @SuppressWarnings("all")
 public abstract class AbstractTerraBossBase extends Monster implements GeoEntity, IFSMGeoMob, ICollisionAttackEntity, IStateChangeableMob {
-
-/* 属性 */
-
+    /* 属性 */
     public float ironGlomResistance = 0.4f;
     public float explosionResistance = 0.5f;
 
@@ -77,7 +76,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     protected ServerBossEvent bossEvent;
 
     protected DifficultSelector difficultSelector;
-//    public int stage = 1; //阶段
+    //    public int stage = 1; //阶段
     private boolean consumeStageChange = false;
 
     public AbstractTerraBossBase(EntityType<? extends Monster> type, Level level) {
@@ -86,8 +85,8 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
         setNoGravity(true);
 //        this.baseHealth = health;
 //        this.baseArmor = armor;
-        if(level().isClientSide){
-            CustomizeBossHealthBar.registerBossHealthBar(getDisplayName().getString(),this.getType());
+        if (level().isClientSide) {
+            CustomizeBossHealthBar.registerBossHealthBar(getDisplayName().getString(), this.getType());
         }
 
         difficultSelector = new DifficultSelector(level);
@@ -103,48 +102,44 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     /**
      * 再次进入游戏需要同步BOSS阶段
+     *
      * @param stage
      */
-    protected void initStage(int stage){
+    protected void initStage(int stage) {}
 
-    }
-
-    public float getAttributeMultiplier(Holder<Attribute> attribute){
+    public float getAttributeMultiplier(Holder<Attribute> attribute) {
         return getMultiple(level(), blockPosition(), attribute);
     }
 
     /**
      * 因为finalizeSpawn中生成时，id可能会错乱，所以必须推迟在onAddedToLevel中调用
      */
-    public void firstSpawn(){};
+    public void firstSpawn() {}
 
-    public void aganinSpawn(){};
-
-
-    @Override
-    protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {
-    }
+    public void aganinSpawn() {}
 
     @Override
-    public void onAddedToLevel(){
+    protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {}
 
-        if(!level().isClientSide){
-            if(dirty) {
+    @Override
+    public void onAddedToLevel() {
+        if (!level().isClientSide) {
+            if (dirty) {
                 firstSpawn();
-            }else{
+            } else {
                 aganinSpawn();
             }
-            if(bossEvent!= null){
-                bossEvent.getPlayers().forEach(p->syncBossHealthBar(p));
+            if (bossEvent != null) {
+                bossEvent.getPlayers().forEach(p -> syncBossHealthBar(p));
 
             }
 
         }
         super.onAddedToLevel();
-        if(skills.count() > 0) {
+        if (skills.count() > 0) {
             skills.forceStartIndex(0);
         }
-        if(!this.level().isClientSide){
+        if (!this.level().isClientSide) {
             this.initStage(this.getStage());
         }
 
@@ -166,20 +161,15 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
                 .add(Attributes.ATTACK_KNOCKBACK, 2.2)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 300.0)
-                .add(Attributes.FLYING_SPEED)
-                ;
-
+                .add(Attributes.FLYING_SPEED);
     }
 
-
     // 尽量不要使用这个方法，应该使用modifier且使用最好使用乘法，以适配其他模组的属性
-    protected void setAttactDamage(float damage){
+    protected void setAttactDamage(float damage) {
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(damage);
     }
 
-
-/* 攻击目标 */
-
+    /* 攻击目标 */
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = entity -> entity instanceof Player;
 
     protected void registerGoals() {
@@ -193,22 +183,21 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
         this.registerRandomStrollGoal();
     }
 
-    protected void registerRandomStrollGoal(){
-        if(ServerConfig.BOSS_KEEP_WANDERING.get()) {
+    protected void registerRandomStrollGoal() {
+        if (ServerConfig.BOSS_KEEP_WANDERING.get()) {
             this.goalSelector.addGoal(10, new LookForwardWanderFlyGoal(this, 0.3f, 0));
-        }else{
+        } else {
             this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Player.class, 10, 1f));
         }
     }
 
-
-/* FSM */
-
+    /* FSM */
     public CircleMobSkills skills = new CircleMobSkills(this, DATA_SKILL_INDEX);
     public static final EntityDataAccessor<Integer> DATA_STATUS_STATUS = SynchedEntityData.defineId(AbstractTerraBossBase.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> DATA_SKILL_INDEX = SynchedEntityData.defineId(AbstractTerraBossBase.class, EntityDataSerializers.INT);
     protected ClientBoundAnimationMessage skillMessage = new ClientBoundAnimationMessage();
     protected int lastSkillTick;
+
     @Override
     public CircleMobSkills getSkills() {
         return skills;
@@ -230,20 +219,18 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
         syncSkills(DATA_SKILL_INDEX);
-
     }
 
-    public int getSkillIndex(){
+    public int getSkillIndex() {
         return this.entityData.get(DATA_SKILL_INDEX);
     }
 
     @Override
-    public EntityDataAccessor<Integer> get_DATA_STATUS_STATUS(){
+    public EntityDataAccessor<Integer> get_DATA_STATUS_STATUS() {
         return DATA_STATUS_STATUS;
     }
 
-/* Collision */
-
+    /* Collision */
     protected CollisionProperties collisionProperties = new CollisionProperties(5, 20, 0);
 
     @Override
@@ -252,12 +239,11 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     }
 
     @Override
-    public boolean shouldDoCollision(){
+    public boolean shouldDoCollision() {
         return getTarget() != null && this.isAlive();
     }
 
-/* discard */
-
+    /* discard */
     LivingEntity target;
     protected static final int DISCARD_TICK = 100;
     protected int discardTick = 0;
@@ -267,10 +253,11 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     public void tick() {
         super.tick();
 
-        if (!level().isClientSide){
+        if (!level().isClientSide) {
             target = getTarget();
-            if(this.isAlive())
+            if (this.isAlive()) {
                 skills.tick();
+            }
             //没有目标禁止行为
 
 
@@ -281,29 +268,26 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
                     return;
                 }
 
-                if(!isCreativePlayer) {
+                if (!isCreativePlayer) {
                     discardTick++;
                     if (!level().isClientSide && discardTick > DISCARD_TICK && ServerConfig.BOSS_CLEAR_WHEN_NO_TARGET.get() && shouldEscape()) {
-                        this.bossEvent.getPlayers().forEach(p -> p.sendSystemMessage(this.getDisplayName().copy().append(Component.translatable("message.terraentity.boss_discard"))));
+                        this.bossEvent.getPlayers().forEach(p -> p.sendSystemMessage(this.getDisplayName().copy().append(Component.translatable("message.confluence.boss_discard", getDisplayName()))));
                         this.discard();
                     }
                     return;
-                }else{
-                    // 有创造玩家，强行写入目标
-//                    setTarget(this.level().getNearestPlayer(this, this.getAttributeValue(Attributes.FOLLOW_RANGE)));
-
                 }
-            }this.refreshDimensions();
+            }
+            this.refreshDimensions();
             discardTick = 0;
 
             doCollisionAttack(
-                    e-> e instanceof LivingEntity  living && canAttack(living) && e!= this && living.canBeSeenAsEnemy(),
+                    e -> e instanceof LivingEntity living && canAttack(living) && e != this && living.canBeSeenAsEnemy(),
                     this::doHurtTarget
             );
-            if(shouldOverPlayer() && target!= null && position().y < target.getY()){
-                addDeltaMovement(new Vec3(0,0.02f,0));
+            if (shouldOverPlayer() && target != null && position().y < target.getY()) {
+                addDeltaMovement(new Vec3(0, 0.02f, 0));
             }
-        }else{
+        } else {
             this.skills.tick += 1;
         }
 
@@ -314,9 +298,10 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     /**
      * 如果为true，则y坐标低于玩家时向上加速
+     *
      * @return
      */
-    protected boolean shouldOverPlayer(){
+    protected boolean shouldOverPlayer() {
         return false;
     }
 
@@ -331,11 +316,11 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
             return level().getNearestPlayer(getX(), getY(), getZ(), range, true);
         }
         List<Player> maxAggroPlayers = players.stream()
-            .collect(Collectors.groupingBy(player -> player.getAttribute(aggroAttr).getValue(), Collectors.toList()))
-            .entrySet().stream().max(Map.Entry.comparingByKey())
-            .map(Map.Entry::getValue)
-            .orElse(List.of());
-        if(!maxAggroPlayers.isEmpty()) {
+                .collect(Collectors.groupingBy(player -> player.getAttribute(aggroAttr).getValue(), Collectors.toList()))
+                .entrySet().stream().max(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
+                .orElse(List.of());
+        if (!maxAggroPlayers.isEmpty()) {
             return maxAggroPlayers.get(level().random.nextInt(maxAggroPlayers.size()));
         }
         return null;
@@ -348,7 +333,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
             if (player.canBeSeenAsEnemy() && this.distanceToSqr(player) < range * range) {
                 players.add(player);
             }
-            if(!isCreativePlayer && !player.canBeSeenAsEnemy()){
+            if (!isCreativePlayer && !player.canBeSeenAsEnemy()) {
                 isCreativePlayer = true;
             }
             this.noActionTime = 0; // 防止某些站桩boss被刷新
@@ -367,15 +352,14 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     }
 
     /* func */
-
     public void lookAtPos(Vec3 target, float pMaxYRotIncrease, float pMaxXRotIncrease) {
         double d0 = target.x - this.getX();
         double d2 = target.z - this.getZ();
         double d1 = target.y - this.getEyeY();
 
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        float f = (float)(Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F;
-        float f1 = (float)(-(Mth.atan2(d1, d3) * 57.2957763671875));
+        float f = (float) (Mth.atan2(d2, d0) * 57.2957763671875) - 90.0F;
+        float f1 = (float) (-(Mth.atan2(d1, d3) * 57.2957763671875));
         this.setXRot(this.rotlerp(this.getXRot(), f1, pMaxXRotIncrease));
         this.setYRot(this.rotlerp(this.getYRot(), f, pMaxYRotIncrease));
     }
@@ -403,12 +387,10 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     @Override
     public boolean hurt(DamageSource pSource, float pAmount) {
-
-
-        if(pSource.getEntity() instanceof IronGolem){
+        if (pSource.getEntity() instanceof IronGolem) {
             pAmount *= ironGlomResistance;
         }
-        if(pSource.is(DamageTypes.EXPLOSION)){
+        if (pSource.is(DamageTypes.EXPLOSION)) {
             pAmount *= explosionResistance;
         }
 
@@ -420,25 +402,23 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     @Override
     public boolean canAttack(LivingEntity entity) {
-        return super.canAttack(entity)&&entity.isPickable() &&
-                (
-                        entity instanceof Player ||
-                                        entity != this
+        return super.canAttack(entity) && entity.isPickable() && (
+                entity instanceof Player ||
+                        entity != this
 //                                        &&!(entity instanceof AbstractTerraBossBase)
-                                        && entity instanceof LivingEntity living && living.canBeSeenAsEnemy()
-                );
+                                && entity instanceof LivingEntity living && living.canBeSeenAsEnemy()
+        );
     }
 
-    public float getHealthPercentage(){
+    public float getHealthPercentage() {
         return this.getHealth() / this.getMaxHealth();
     }
 
-    public float getMoveSpeed(){
+    public float getMoveSpeed() {
         return (float) this.getAttributeValue(Attributes.MOVEMENT_SPEED);
     }
 
-/* boss条 */
-
+    /* boss条 */
     public boolean shouldShowBossBar() {
         return true;
     }
@@ -446,17 +426,17 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     @Override // boss条显示
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
-        if (shouldShowBossBar()){
+        if (shouldShowBossBar()) {
             this.bossEvent.addPlayer(player);
-            if(tickCount != 0)
+            if (tickCount != 0)
                 syncBossHealthBar(player);
         }
     }
 
-    public void syncBossHealthBar(ServerPlayer player){
+    public void syncBossHealthBar(ServerPlayer player) {
         float[] datas = getBossEventProgress();
-        ((IBossEvent)this.bossEvent).terra_enity$setBossHealth(datas[0]);
-        ((IBossEvent)this.bossEvent).terra_enity$setBossMaxHealth(datas[1]);
+        ((IBossEvent) this.bossEvent).terra_enity$setBossHealth(datas[0]);
+        ((IBossEvent) this.bossEvent).terra_enity$setBossMaxHealth(datas[1]);
         AdapterUtils.sendToPlayer(player, new SyncBossEventHealthPacket(bossEvent.getId(), datas[0], datas[1]));
     }
 
@@ -469,9 +449,10 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     /**
      * 获取boss血量和最大血量
+     *
      * @return [血量, 最大血量]
      */
-    public float[] getBossEventProgress(){
+    public float[] getBossEventProgress() {
         return new float[]{this.getHealth(), this.getMaxHealth()};
     }
 
@@ -480,9 +461,9 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
         super.customServerAiStep();
         if (shouldShowBossBar()) {
             float[] datas = getBossEventProgress();
-            ((IBossEvent)this.bossEvent).terra_enity$setBossHealth(datas[0]);
-            ((IBossEvent)this.bossEvent).terra_enity$setBossMaxHealth(datas[1]);
-            float res = datas[1] == 0? 1 : datas[0] / datas[1];
+            ((IBossEvent) this.bossEvent).terra_enity$setBossHealth(datas[0]);
+            ((IBossEvent) this.bossEvent).terra_enity$setBossMaxHealth(datas[1]);
+            float res = datas[1] == 0 ? 1 : datas[0] / datas[1];
             this.bossEvent.setProgress(res);
         }
     }
@@ -531,7 +512,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("dirty", false);
-        if(getStage() > 0) {
+        if (getStage() > 0) {
             compound.putInt("Stage", getStage());
         }
     }
@@ -561,9 +542,9 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
         return distanceToSqr(entity) < 100 * 100;
     }
 
-    protected BossEvent.BossBarColor getBossBarColor(){
+    protected BossEvent.BossBarColor getBossBarColor() {
         return BossEvent.BossBarColor.RED;
-    };
+    }
 
     @Override
     public void lavaHurt() {
@@ -577,19 +558,21 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     }
 
     @Override
-    public void changeState(){
-    }
+    public void changeState() {}
 
-    protected boolean isExpert(){
+    protected boolean isExpert() {
         return this.difficultSelector.isExpert();
     }
-    protected boolean isMaster(){
+
+    protected boolean isMaster() {
         return this.difficultSelector.isMaster();
     }
-    protected boolean isFtw(){
+
+    protected boolean isFtw() {
         return this.difficultSelector.isFtw();
     }
-    public DifficultSelector getDifficultSelector(){
+
+    public DifficultSelector getDifficultSelector() {
         return this.difficultSelector;
     }
 
@@ -600,19 +583,18 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        if(source.is(DamageTypes.LAVA)){
+        if (source.is(DamageTypes.LAVA)) {
             return true;
         }
         return super.isInvulnerableTo(source);
     }
 
     protected int calShareFlag(int data, int index, boolean value) {
-        return value? (data | (1 << index)) : (data & ~(1 << index));
+        return value ? (data | (1 << index)) : (data & ~(1 << index));
     }
 
     @Override
     public int getMaxHeadXRot() {
         return 85;
     }
-
 }

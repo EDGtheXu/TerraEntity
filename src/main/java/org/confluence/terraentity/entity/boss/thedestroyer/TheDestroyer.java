@@ -1,4 +1,4 @@
-package org.confluence.terraentity.entity.boss.destroyer;
+package org.confluence.terraentity.entity.boss.thedestroyer;
 
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
