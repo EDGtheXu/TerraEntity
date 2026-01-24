@@ -105,11 +105,10 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> SPAZMATISM_SPAWN_EGG = registerEgg("spazmatism_spawn_egg", TEBossEntities.SPAZMATISM, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> THE_TWINS_SPAWN_EGG = registerEgg("the_twins_spawn_egg", TEBossEntities.THE_TWINS, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> SKELETRON_PRIME_SPAWN_EGG = registerEgg("skeletron_prime_spawn_egg", TEBossEntities.SKELETRON_PRIME, 0xffffff, 0xffffff);
-    public static final DeferredItem<SpawnEggItem> DESTROYER_SPAWN_EGG = registerEgg("destroyer_spawn_egg", TEBossEntities.THE_DESTROYER, 0xffffff, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> THE_DESTROYER_SPAWN_EGG = registerEgg("the_destroyer_spawn_egg", TEBossEntities.THE_DESTROYER, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> PLANTERA_SPAWN_EGG = registerEgg("plantera_spawn_egg", TEBossEntities.PLANTERA, 0xffffff, 0xffffff);
 
     // 地牢骷髅
-
     public static final DeferredItem<SpawnEggItem> ANGER_BONES_SPAWN_EGG = registerEgg("anger_bones_spawn_egg", TEMonsterEntities.ANGER_BONES, 0xffffff);
     public static final DeferredItem<SpawnEggItem> SHORT_BONES_SPAWN_EGG = registerEgg("short_bones_spawn_egg", TEMonsterEntities.SHORT_BONES, 0xffffff);
     public static final DeferredItem<SpawnEggItem> BIG_BONES_SPAWN_EGG = registerEgg("big_bones_spawn_egg", TEMonsterEntities.BIG_BONES, 0xffffff);
@@ -121,7 +120,6 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> UNDEAD_VIKING_SPAWN_EGG = registerEgg("undead_viking_spawn_egg", TEMonsterEntities.UNDEAD_VIKING, 0xffffff);
 
     // 哥布林军队
-
     public static final DeferredItem<SpawnEggItem> GOBLIN_SORCERER_SPAWN_EGG = registerEgg("goblin_sorcerer_spawn_egg", TEMonsterEntities.GOBLIN_SORCERER, 0xffffff);
     public static final DeferredItem<SpawnEggItem> GOBLIN_ARCHER_SPAWN_EGG = registerEgg("goblin_archer_spawn_egg", TEMonsterEntities.GOBLIN_ARCHER, 0xffffff);
     public static final DeferredItem<SpawnEggItem> GOBLIN_PEON_SPAWN_EGG = registerEgg("goblin_peon_spawn_egg", TEMonsterEntities.GOBLIN_PEON, 0xffffff);
