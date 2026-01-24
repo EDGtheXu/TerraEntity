@@ -232,9 +232,9 @@ public class TEMonsterEntities {
         event.registerEntityRenderer(TEMonsterEntities.GOLDEN_SLIME.get(), c -> new CustomSlimeRenderer(c, "yellow"));
         event.registerEntityRenderer(TEMonsterEntities.FLESH_SLIME.get(), c -> new CustomSlimeRenderer(c, "flesh"));
 
-        event.registerEntityRenderer(TEMonsterEntities.SPIKED_SLIME.get(), c -> new GeoSlimeRenderer<>(c, SPIKED_SLIME.getId().withPrefix("slime/")));
-        event.registerEntityRenderer(TEMonsterEntities.SPIKED_JUNGLE_SLIME.get(), c -> new GeoSlimeRenderer<>(c, SPIKED_JUNGLE_SLIME.getId().withPrefix("slime/")));
-        event.registerEntityRenderer(TEMonsterEntities.SPIKED_ICE_SLIME.get(), c -> new GeoSlimeRenderer<>(c, SPIKED_ICE_SLIME.getId().withPrefix("slime/")));
+        event.registerEntityRenderer(TEMonsterEntities.SPIKED_SLIME.get(), c -> new GeoSpecialSlimeRenderer<>(c, SPIKED_SLIME.getId().withPrefix("slime/")));
+        event.registerEntityRenderer(TEMonsterEntities.SPIKED_JUNGLE_SLIME.get(), c -> new GeoSpecialSlimeRenderer<>(c, SPIKED_JUNGLE_SLIME.getId().withPrefix("slime/")));
+        event.registerEntityRenderer(TEMonsterEntities.SPIKED_ICE_SLIME.get(), c -> new GeoSpecialSlimeRenderer<>(c, SPIKED_ICE_SLIME.getId().withPrefix("slime/")));
 
 
         event.registerEntityRenderer(TEMonsterEntities.CRIMERA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.CRIMERA.getId(), true));

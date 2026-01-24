@@ -15,9 +15,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.confluence.terraentity.client.entity.model.GeoNormalModel;
 import org.confluence.terraentity.client.entity.renderer.GeoNormalRenderer;
-import org.confluence.terraentity.client.entity.renderer.mob.SculkWispRenderer;
-import org.confluence.terraentity.client.entity.renderer.mob.SummonSwordRenderer;
-import org.confluence.terraentity.client.entity.renderer.mob.TerraprismaRenderer;
+import org.confluence.terraentity.client.entity.renderer.mob.*;
 import org.confluence.terraentity.entity.summon.*;
 import org.confluence.terraentity.init.TEEffectStrategies;
 import org.confluence.terraentity.init.TEEntities;
@@ -55,7 +53,7 @@ public class TESummonEntities {
 
         // sommon
         event.registerEntityRenderer(SUMMON_FINCH.get(), c-> new GeoNormalRenderer<>(c, SUMMON_FINCH.getId().withPrefix("summon/"),true));
-        event.registerEntityRenderer(SUMMON_SLIME.get(), c-> new GeoNormalRenderer<>(c, SUMMON_SLIME.getId().withPrefix("summon/"),false));
+        event.registerEntityRenderer(SUMMON_SLIME.get(), c-> new SlimeBabyRenderer(c, SUMMON_SLIME.getId().withPrefix("summon/")));
         event.registerEntityRenderer(SUMMON_IRON_GOLEM.get(), IronGolemRenderer::new);
         event.registerEntityRenderer(SUMMON_HORNET.get(), c->new GeoNormalRenderer<>(c, new GeoNormalModel<>(TEMonsterEntities.HORNET.getId(),false),true, 0.6f, 0.5f));
         event.registerEntityRenderer(SCULK_WISP.get(), c->new SculkWispRenderer(c, SCULK_WISP.getId().withPrefix("summon/")));
