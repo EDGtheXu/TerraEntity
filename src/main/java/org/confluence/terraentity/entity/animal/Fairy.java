@@ -2,6 +2,7 @@ package org.confluence.terraentity.entity.animal;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.FollowMobGoal;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.terraentity.utils.TEUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -129,4 +131,10 @@ public class Fairy extends BirdVariantAnimal {
         }
     }
 
+    @Override
+    public boolean hurt(@NotNull DamageSource source, float amount) {
+        boolean flag = TEUtils.isPassInvulnerableDamageSource(source, damageSources());
+        if (flag) super.hurt(source, amount);
+        return flag;
+    }
 }
