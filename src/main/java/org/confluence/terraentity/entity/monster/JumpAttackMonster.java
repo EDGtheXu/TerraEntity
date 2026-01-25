@@ -4,6 +4,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -16,6 +17,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.leaf.AnimTriggerAction
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.JumpForwardAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.LookAtTargetAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.RandomLookAction;
+import org.confluence.terraentity.entity.monster.prefab.AttributeBuilder;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
@@ -29,8 +31,8 @@ public class JumpAttackMonster extends AbstractMonster {
     private static final RawAnimation jump = RawAnimation.begin().thenPlay("jump");
     private static final RawAnimation idle = RawAnimation.begin().thenPlay("idle");
 
-    public JumpAttackMonster(EntityType<? extends Monster> type, Level level) {
-        super(type, level);
+    public JumpAttackMonster(EntityType<? extends AbstractMonster> entityType, Level level, AttributeBuilder builder) {
+        super(entityType, level, builder);
 
     }
 

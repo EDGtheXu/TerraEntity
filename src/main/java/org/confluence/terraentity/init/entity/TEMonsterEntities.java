@@ -201,8 +201,8 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> ARAPAIMA = TEEntities.registerMonster("arapaima", (e, l)->new Piranha(e,l), 2.2F, 0.7F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> GREEN_JELLYFISH = TEEntities.registerMonster("green_jellyfish", (e, l)->new JellyFish(e,l), 0.5F, 0.5F);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<JumpAttackMonster>> DERPLING = TEEntities.registerMonster("derpling", (e, l)->new JumpAttackMonster(e,l), 2F, 2F);
-    public static final DeferredHolder<EntityType<?>, EntityType<JumpAttackMonster>> HERPLING = TEEntities.registerMonster("herpling", (e, l)->new JumpAttackMonster(e,l), 1F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JumpAttackMonster>> DERPLING = TEEntities.registerMonster("derpling", (e, l)->new JumpAttackMonster(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight()), 2F, 2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JumpAttackMonster>> HERPLING = TEEntities.registerMonster("herpling", (e, l)->new JumpAttackMonster(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight()), 1F, 1F);
 
 
     @OnlyIn(Dist.CLIENT)
