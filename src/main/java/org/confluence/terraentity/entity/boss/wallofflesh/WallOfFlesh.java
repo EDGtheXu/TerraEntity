@@ -97,7 +97,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         super(type, level);
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(baseMoveSpeed);
         this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(999);
-        genGridWall();
         explosionResistance = switch (this.level().getDifficulty()) {
             case EASY -> 0.25f;
             case NORMAL -> 0.15f;
@@ -629,6 +628,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
+        genGridWall();
         this.noPhysics = true;
         this.noCulling = true;
         this.setNoGravity(true);
