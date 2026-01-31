@@ -81,6 +81,9 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     private static final int MAX_ASSIGNED_EYES = 4;
 
     public List<WallOfFleshPart> subEntities = new CopyOnWriteArrayList<>();
+    List<ObjectIntPair<Vec3>> eyePositions = new ArrayList<>();
+    List<ObjectIntPair<Vec3>> mouthPositions = new ArrayList<>();
+    protected List<TheHungry> theHungries = new ArrayList<>();
 
     public final List<Tuple<Integer, Vec3>> localOffsets = new CopyOnWriteArrayList<>(); // 存储子实体相对坐标
     public final List<Tuple<Vec3, Integer>> theHungryList = new CopyOnWriteArrayList<>();
@@ -97,6 +100,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
         super(type, level);
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(baseMoveSpeed);
         this.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(999);
+        genGridWall();
         explosionResistance = switch (this.level().getDifficulty()) {
             case EASY -> 0.25f;
             case NORMAL -> 0.15f;
@@ -167,6 +171,7 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
             this.setHungryOffsets(localOffset, hungry.getId());
             Vec3 rotatedOffset = rotateLocalOffset(localOffset);
             hungry.setInitPos(this.position().add(rotatedOffset).toVector3f());
+            theHungries.add(hungry);
         }
         // 应用旋转到子实体位置
         Vec3 rotatedOffset = rotateLocalOffset(localOffset);
@@ -174,10 +179,8 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     }
 
     private void genGridWall() {
-        List<ObjectIntPair<Vec3>> eyePositions = new ArrayList<>();
-        List<ObjectIntPair<Vec3>> mouthPositions = new ArrayList<>();
         List<Vec3> hungryPositions = new ArrayList<>();
-        if (this.level() instanceof ServerLevel serverLevel) {// 只在服务端生成眼睛和嘴巴，并通过数据同步到客户端
+        if (!level().isClientSide) {// 只在服务端生成眼睛和嘴巴，并通过数据同步到客户端
             float zOffset = 0.0F;
 
             final int MAX_DEPTH = 6;
@@ -215,38 +218,19 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
 
             // 生成饿鬼（只在服务端）
             for (Vec3 pos : hungryPositions) {
-                TheHungry hungry = TEUtils.spawnEntity(() -> new TheHungry(TEMonsterEntities.THE_HUNGRY.get(), level(),
+                TheHungry hungry = new TheHungry(TEMonsterEntities.THE_HUNGRY.get(), level(),
                         new AbstractPrefab().getPrefab()) {
                     @Override
                     protected boolean shouldDropLoot() {
                         return false;
                     }
-                }, serverLevel, pos);
+                };
 
-                if (hungry != null) {
-                    addChild(hungry, pos);
-                    hungry.minion_setOwner(this);
-                }
+                addChild(hungry, pos);
+                hungry.minion_setOwner(this);
             }
         }
         this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.size() + 1) + 1);
-        if (level() instanceof ServerLevel level) {
-            level.getServer().tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + 20, () -> {
-                for (int i = 0; i < subEntities.size(); i++) {
-                    WallOfFleshPart part = subEntities.get(i);
-                    if (i < eyePositions.size()) {
-                        eyePositions.get(i).right(part.getId());
-                    } else {
-                        mouthPositions.get(i - eyePositions.size()).right(part.getId());
-                    }
-                }
-                AdapterUtils.sendToAllPlayers(
-                        new SyncWallOfFleshPositionsPacket(
-                                this.getId(), eyePositions, mouthPositions
-                        )
-                );
-            }));
-        }
     }
 
     //四叉树
@@ -628,7 +612,6 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
-        genGridWall();
         this.noPhysics = true;
         this.noCulling = true;
         this.setNoGravity(true);
@@ -655,6 +638,26 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
 
         this.reapplyPosition();
         this.InitPos = summonPos;
+
+        if (level() instanceof ServerLevel level) {
+            for (TheHungry theHungry : theHungries) {
+                TEUtils.internalSpawnEntity(theHungry, level);
+            }
+
+            for (int i = 0; i < subEntities.size(); i++) {
+                WallOfFleshPart part = subEntities.get(i);
+                if (i < eyePositions.size()) {
+                    eyePositions.get(i).right(part.getId());
+                } else {
+                    mouthPositions.get(i - eyePositions.size()).right(part.getId());
+                }
+            }
+            AdapterUtils.sendToAllPlayers(
+                    new SyncWallOfFleshPositionsPacket(
+                            this.getId(), eyePositions, mouthPositions
+                    )
+            );
+        }
     }
 
     @Override
