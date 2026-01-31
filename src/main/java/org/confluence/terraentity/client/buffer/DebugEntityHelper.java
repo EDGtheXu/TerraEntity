@@ -10,8 +10,6 @@ import org.confluence.terraentity.client.entity.renderer.GeoNormalRenderer;
 import org.confluence.terraentity.client.post.BossSpawnCameraManager;
 import org.confluence.terraentity.item.BossSummonsItem;
 
-import java.awt.*;
-
 
 /**
  * 用于显示Debug实体
@@ -19,7 +17,7 @@ import java.awt.*;
 public enum DebugEntityHelper{
     INSTANCE;
 
-    Color color = Color.white;
+    int color = 0xFFFFFF;
     Entity e;
 
     DebugEntityHelper() {
@@ -34,7 +32,7 @@ public enum DebugEntityHelper{
             if(summonsItem.hasSpecificSummonPos()){
                 return false;
             }
-            color = Color.WHITE;
+            color = 0xFFFFFF;
             if(e == null || summonsItem.getEntityType() != e.getType()){
                 e = summonsItem.getEntityType().create(Minecraft.getInstance().level);
             }

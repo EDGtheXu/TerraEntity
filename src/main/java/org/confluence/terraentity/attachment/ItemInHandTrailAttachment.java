@@ -16,7 +16,7 @@ import org.confluence.terraentity.init.item.TESummonItems;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.awt.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -31,11 +31,11 @@ public class ItemInHandTrailAttachment implements INBTSerializable<Tag> {
     public float sliderProgress = 0.003f;
 
     float colorProgress = 0;
-    int colorFrom = new Color(0x1FE6C0).getRGB();
-    int colorTo = new Color(0xC67C28).getRGB();
+    int colorFrom = 0x1FE6C0;
+    int colorTo = 0xC67C28;
 
 
-    static Map<Item, Operator> registry = new java.util.HashMap<>();
+    static Map<Item, Operator> registry = new HashMap<>();
 
     public int tickColor(Player player){
         float d = (player.getRandom().nextFloat() - 0.5f) * 0.05f;

@@ -10,11 +10,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
-import net.neoforged.neoforge.entity.PartEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.terraentity.TerraEntity;
+import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.entity.ai.goal.skill.SkillCooldownManager;
 import org.confluence.terraentity.entity.ai.keyframe.Keyframe;
 import org.confluence.terraentity.entity.ai.keyframe.animation.KeyframeAnimation;
@@ -22,11 +23,9 @@ import org.confluence.terraentity.entity.util.KeyframeAnimationCounter;
 import org.confluence.terraentity.init.TEEntityDataSerializers;
 import org.confluence.terraentity.integration.ModChecker;
 import org.confluence.terraentity.integration.veil.VeilHelper;
-import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.utils.OBB;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -40,8 +39,8 @@ public class Terraprisma extends SummonSword {
     // 客户端动态颜色
     float colorProgress = 0;
     float sliderProgress = 0;
-    int colorFrom = new Color(0x1FE6C0).getRGB();
-    int colorTo = new Color(0xC67C28).getRGB();
+    int colorFrom = 0x1FE6C0;
+    int colorTo = 0xC67C28;
 
     public KeyframeAnimationCounter anim_y;
     public KeyframeAnimationCounter anim_z;

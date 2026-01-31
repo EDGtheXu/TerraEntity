@@ -271,8 +271,13 @@ public final class TEUtils {
     public static void monsterEnhance(LivingEntity entity) {
         if(entity instanceof Boss || entity instanceof AbstractTerraBossBase || entity instanceof ISummonMob ) return;
         if(!ServerConfig.ENHANCE_ALL_MONSTER.get() && !BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getNamespace().equals(TerraEntity.MODID)) return;
-        if(!entity.level().isClientSide) {
-            float multiplier = getMultiple(entity.level(), entity.blockPosition(), Attributes.MAX_HEALTH);
+        if(entity.level() instanceof ServerLevel level) {
+            float multiplier;
+            if (LibUtils.getChunkIfLoaded(level.getChunkSource(), entity.chunkPosition()) == null) {
+                multiplier = 1;
+            } else {
+                multiplier = getMultiple(entity.level(), entity.blockPosition(), Attributes.MAX_HEALTH);
+            }
             var healthAttribute = entity.getAttribute(Attributes.MAX_HEALTH);
             if (healthAttribute != null) {
                 if (!healthAttribute.hasModifier(healthKey)) {
