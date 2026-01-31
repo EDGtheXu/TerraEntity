@@ -494,9 +494,9 @@ public class TEMonsterEntities {
         /* *********肉后***************** */
         event.put(WYVERN.get(), AttBuilder.createAttributes(2080, 10, 41, 50, 1f, 0.28f).build());
         event.put(PIXIE.get(), AttBuilder.createAttributes(78, 20, 28, 16, 1, 0.46f).build());
-        event.put(POSSESS_ARMOR.get(), AttBuilder.createAttributes(135, 26, 28, 32, 1, 0.64f).build());
+        event.put(POSSESS_ARMOR.get(), AttBuilder.createAttributes(135, 10, 28, 32, 1, 0.64f).build());
         event.put(POSSESS_ARMOR_VOID_VESSEL.get(), AttBuilder.createAttributes(1, 0, 28, 32, 1, 0.64f).build());
-        event.put(WRAITH.get(), AttBuilder.createAttributes(83, 16, 33, 32, 1, 0.37f).gravity(0).build());
+        event.put(WRAITH.get(), AttBuilder.createAttributes(83, 0, 33, 32, 1, 0.37f).gravity(0).build());
 
         event.put(WOODEN_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
         event.put(ICE_MIMIC.get(), AttBuilder.createAttributes(260, 30, 42, 32, 1, 0.73f).build());
