@@ -122,19 +122,6 @@ public class GeoNegativeVolumeRenderer<T extends Entity & GeoEntity> extends Geo
 
         super.preRender(poseStack, animatable, model, bufferSource, buffer, false, partialTick, packedLight, packedOverlay, colour);
     }
-//
-//    @Override
-//    public void actuallyRender(PoseStack poseStack, T animatable, BakedGeoModel model, @Nullable RenderType renderType, MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, int colour) {
-//        Minecraft minecraft = Minecraft.getInstance();
-//        if (minecraft.levelRenderer.shouldShowEntityOutlines() && minecraft.shouldEntityAppearGlowing(animatable)) {
-//            if (renderType != null && !(buffer instanceof OutlineBufferSource.EntityOutlineGenerator)) {
-//                OutlineBufferSource source = minecraft.renderBuffers().outlineBufferSource();
-//                bufferSource = source;
-//                buffer = new OutlineBufferSource.EntityOutlineGenerator(source.getBuffer(renderType), source.teamR, source.teamG, source.teamB, source.teamA);
-//            }
-//        }
-//        super.actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, colour);
-//    }
 
     /**
      * 只添加发光部分
