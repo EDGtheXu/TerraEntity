@@ -19,6 +19,7 @@ import net.neoforged.fml.event.IModBusEvent;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -28,24 +29,27 @@ import java.util.function.Supplier;
  * 适配多版本的适配器工具类
  */
 public class AdapterUtils {
-
-    private AdapterUtils(){
+    private AdapterUtils() {
         throw new UnsupportedOperationException("can't create util class object");
     }
 
-    public static void sendToPlayer(ServerPlayer player, CustomPacketPayload payload){
+    public static void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayer(player, payload);
-
-    }
-    public static void sendToAllPlayers(CustomPacketPayload payload){
-        PacketDistributor.sendToAllPlayers(payload);
     }
 
-    public static void sendToServer(CustomPacketPayload payload){
-        PacketDistributor.sendToServer(payload);
+    public static void sendToAllPlayers(CustomPacketPayload payload) {
+        if (ServerLifecycleHooks.getCurrentServer() != null) {
+            PacketDistributor.sendToAllPlayers(payload);
+        }
     }
 
-    public static <T extends Event> T postGameEvent(T event){
+    public static void sendToServer(CustomPacketPayload payload) {
+        if (ServerLifecycleHooks.getCurrentServer() != null) {
+            PacketDistributor.sendToServer(payload);
+        }
+    }
+
+    public static <T extends Event> T postGameEvent(T event) {
         return NeoForge.EVENT_BUS.post(event);
     }
 
@@ -53,27 +57,27 @@ public class AdapterUtils {
         return ModLoader.postEventWithReturn(event);
     }
 
-    public static void enchant(ItemStack stack, ResourceKey<Enchantment> enchantment, int level, HolderLookup.RegistryLookup<Enchantment> enchantLookup){
+    public static void enchant(ItemStack stack, ResourceKey<Enchantment> enchantment, int level, HolderLookup.RegistryLookup<Enchantment> enchantLookup) {
         stack.enchant(enchantLookup.getOrThrow(enchantment), level);
     }
 
-    public static void setPotion(ItemStack stack, Holder<Potion> potion){
+    public static void setPotion(ItemStack stack, Holder<Potion> potion) {
         stack.set(DataComponents.POTION_CONTENTS, PotionContents.EMPTY.withPotion(potion));
     }
 
-    public static void setFirework(ItemStack stack, int duration){
+    public static void setFirework(ItemStack stack, int duration) {
         stack.set(DataComponents.FIREWORKS, new Fireworks(duration, List.of()));
     }
 
-    public static <T> T getAttachment(LivingEntity entity, Supplier<AttachmentType<T>> attachmentType){
+    public static <T> T getAttachment(LivingEntity entity, Supplier<AttachmentType<T>> attachmentType) {
         return entity.getData(attachmentType);
     }
 
-    public static <T> @Nullable T getDataComponent(ItemStack itemStack, DataComponentType<T> dataComponentType){
+    public static <T> @Nullable T getDataComponent(ItemStack itemStack, DataComponentType<T> dataComponentType) {
         return itemStack.get(dataComponentType);
     }
 
-    public static <T> @Nullable T getDataComponent(ItemStack itemStack, Supplier<DataComponentType<T>> dataComponentType){
+    public static <T> @Nullable T getDataComponent(ItemStack itemStack, Supplier<DataComponentType<T>> dataComponentType) {
         return itemStack.get(dataComponentType);
     }
 }

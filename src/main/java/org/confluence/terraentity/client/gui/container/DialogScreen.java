@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DialogScreen extends Screen {
     Button tradeButton;
@@ -43,7 +45,8 @@ public class DialogScreen extends Screen {
     protected void init() {
         super.init();
 
-        holder = ((IPlayer) Minecraft.getInstance().player).terra_entity$getTradeHolder();
+        LocalPlayer player = Minecraft.getInstance().player;
+        this.holder = Objects.requireNonNull(IPlayer.of(player)).terra_entity$getTradeHolder();
 
         if (trade) {
             initTradeButton();
@@ -56,7 +59,7 @@ public class DialogScreen extends Screen {
 
             if (LibDateUtils.isNight(npc.level()) && npc.getType() == TENpcEntities.OLD_MAN.get()) {
                 summonButton = Button.builder(Component.translatable("dialogs.terra_entity.summon"), p -> {
-                    ServerBoundEventPacket.summonSkeletron();
+                    ServerBoundEventPacket.summonSkeletron(player);
                     Minecraft.getInstance().setScreen(null); // 关闭对话框
                 }).width(50).pos(width / 2 - 160, height / 2 + 25).build();
                 addRenderableWidget(summonButton);

@@ -27,7 +27,7 @@ import java.util.EnumMap;
 import java.util.function.Consumer;
 
 @ScheduledForMove(since = "1.2.0", inVersion = "2.0.0")
-public class ServerBoundEventPacket implements CustomPacketPayload{
+public class ServerBoundEventPacket implements CustomPacketPayload {
     private enum TypeEnum {
         SUMMON_SKELETRON,
         MOUSE_LEFT_CLICK,
@@ -36,10 +36,12 @@ public class ServerBoundEventPacket implements CustomPacketPayload{
         WHEEL_DOWN,
         RIDE_OR_LEAVE
     }
-    static EnumMap<TypeEnum, Consumer<Player>> handlers = new EnumMap<>(ImmutableMap.<TypeEnum, Consumer<Player>>builder()
-            .put(TypeEnum.SUMMON_SKELETRON, (player)-> {
+
+    static final EnumMap<TypeEnum, Consumer<Player>> handlers = new EnumMap<>(ImmutableMap.<TypeEnum, Consumer<Player>>builder()
+            .put(TypeEnum.SUMMON_SKELETRON, (player) -> {
+                if (player.level().isClientSide) return;
                 Vec3 pos = player.position();
-                if (((IPlayer) player).terra_entity$getTradeHolder() instanceof AbstractTerraNPC npc && npc.getType() == TENpcEntities.OLD_MAN.get()) {
+                if (IPlayer.of(player).terra_entity$getTradeHolder() instanceof AbstractTerraNPC npc && npc.getType() == TENpcEntities.OLD_MAN.get()) {
                     confluenceHook(npc);
                     TEUtils.spawnEntity(TEBossEntities.SKELETRON.get(),
                             (ServerLevel) player.level(),
@@ -47,34 +49,34 @@ public class ServerBoundEventPacket implements CustomPacketPayload{
                     );
                 }
             })
-            .put(TypeEnum.MOUSE_LEFT_CLICK, (player)-> {
+            .put(TypeEnum.MOUSE_LEFT_CLICK, (player) -> {
                 WeaponStorage.of(player).leftClicking = true;
                 ItemStack stack = player.getMainHandItem();
-                if(stack.getItem() instanceof ILeftClickStateItem item){
+                if (stack.getItem() instanceof ILeftClickStateItem item) {
                     item.onLeftClick(player, stack);
                 }
             })
-            .put(TypeEnum.MOUSE_RELEASE, (player)-> {
+            .put(TypeEnum.MOUSE_RELEASE, (player) -> {
                 WeaponStorage.of(player).leftClicking = false;
                 ItemStack stack = player.getMainHandItem();
-                if(stack.getItem() instanceof ILeftClickStateItem item){
+                if (stack.getItem() instanceof ILeftClickStateItem item) {
                     item.onLeftRelease(player, stack);
                 }
             })
-            .put(TypeEnum.WHEEL_UP, (player)-> {
+            .put(TypeEnum.WHEEL_UP, (player) -> {
                 ItemStack stack = player.getMainHandItem();
-                if(stack.getItem() instanceof ILeftClickStateItem item){
+                if (stack.getItem() instanceof ILeftClickStateItem item) {
                     item.onWhellScroll(player, stack, 1);
                 }
             })
-            .put(TypeEnum.WHEEL_DOWN, (player)-> {
+            .put(TypeEnum.WHEEL_DOWN, (player) -> {
                 ItemStack stack = player.getMainHandItem();
-                if(stack.getItem() instanceof ILeftClickStateItem item){
+                if (stack.getItem() instanceof ILeftClickStateItem item) {
                     item.onWhellScroll(player, stack, -1);
                 }
-             })
-            .put(TypeEnum.RIDE_OR_LEAVE, (player)-> {
-                if(ModChecker.curios.isLoaded()) {
+            })
+            .put(TypeEnum.RIDE_OR_LEAVE, (player) -> {
+                if (ModChecker.curios.isLoaded()) {
                     CuriosHelper.rideOrLeave(player);
                 }
             })
@@ -100,15 +102,16 @@ public class ServerBoundEventPacket implements CustomPacketPayload{
     }
 
     public static void handle(ServerBoundEventPacket packet, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            Player player = context.player();
-            TypeEnum type = packet._type;
-            if (handlers.containsKey(type)) {
-                handlers.get(type).accept(player);
-            }else{
-                TerraEntity.LOGGER.warn("Unknown server-bound event packet type: {}", type);
-            }
-        });
+        context.enqueueWork(() -> work(packet._type, context.player()));
+    }
+
+    private static void work(TypeEnum type, Player player) {
+        Consumer<Player> consumer = handlers.get(type);
+        if (consumer == null) {
+            TerraEntity.LOGGER.warn("Unknown server-bound event packet type: {}", type);
+        } else {
+            consumer.accept(player);
+        }
     }
 
     private static void confluenceHook(AbstractTerraNPC npc) {
@@ -116,31 +119,37 @@ public class ServerBoundEventPacket implements CustomPacketPayload{
     }
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public Type<ServerBoundEventPacket> type() {
         return TYPE;
     }
 
-    public static void summonSkeletron(){
+    public static void summonSkeletron(Player player) {
         AdapterUtils.sendToServer(new ServerBoundEventPacket(TypeEnum.SUMMON_SKELETRON));
+        work(TypeEnum.SUMMON_SKELETRON, player);
     }
 
-    public static void mouseLeftClick(){
+    public static void mouseLeftClick(Player player) {
         AdapterUtils.sendToServer(new ServerBoundEventPacket(TypeEnum.MOUSE_LEFT_CLICK));
+        work(TypeEnum.MOUSE_LEFT_CLICK, player);
     }
 
-    public static void mouseRelease(){
+    public static void mouseRelease(Player player) {
         AdapterUtils.sendToServer(new ServerBoundEventPacket(TypeEnum.MOUSE_RELEASE));
+        work(TypeEnum.MOUSE_RELEASE, player);
     }
 
-    public static void wheelUp(){
+    public static void wheelUp(Player player) {
         AdapterUtils.sendToServer(new ServerBoundEventPacket(TypeEnum.WHEEL_UP));
+        work(TypeEnum.WHEEL_UP, player);
     }
 
-    public static void wheelDown(){
+    public static void wheelDown(Player player) {
         AdapterUtils.sendToServer(new ServerBoundEventPacket(TypeEnum.WHEEL_DOWN));
+        work(TypeEnum.WHEEL_DOWN, player);
     }
 
-    public static void rideOrLeave(){
+    public static void rideOrLeave(Player player) {
         AdapterUtils.sendToServer(new ServerBoundEventPacket(TypeEnum.RIDE_OR_LEAVE));
+        work(TypeEnum.RIDE_OR_LEAVE, player);
     }
 }

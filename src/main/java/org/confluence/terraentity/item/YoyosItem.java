@@ -68,6 +68,7 @@ public class YoyosItem<T extends BaseProj<?>> extends CustomRarityItem implement
 
     @Override
     public void onLeftClick(Player player, ItemStack itemStack) {
+        if (player.level().isClientSide) return;
         WeaponStorage weaponStorage = WeaponStorage.of(player);
         if (weaponStorage.yoyosEntity != null && weaponStorage.yoyosEntity.isAlive()) {
             weaponStorage.yoyosEntity.onReceiveLeftClick(player, itemStack);
@@ -88,11 +89,11 @@ public class YoyosItem<T extends BaseProj<?>> extends CustomRarityItem implement
 
     @Override
     public void onLeftRelease(Player player, ItemStack itemStack) {
+        if (player.level().isClientSide) return;
         WeaponStorage weaponStorage = WeaponStorage.of(player);
         if (weaponStorage.yoyosEntity != null && weaponStorage.yoyosEntity.isAlive()) {
             weaponStorage.yoyosEntity.onReceiveLeftRelease(player, itemStack);
         }
-
     }
 
     @Override
@@ -102,6 +103,7 @@ public class YoyosItem<T extends BaseProj<?>> extends CustomRarityItem implement
 
     @Override
     public void onWhellScroll(Player player, ItemStack itemStack, int scrollAmount) {
+        if (player.level().isClientSide) return;
         WeaponStorage weaponStorage = WeaponStorage.of(player);
         if (weaponStorage.yoyosEntity != null && weaponStorage.yoyosEntity.isAlive()) {
             weaponStorage.yoyosEntity.onReceiveWhellScroll(player, itemStack, scrollAmount);

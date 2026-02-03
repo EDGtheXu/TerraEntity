@@ -69,6 +69,7 @@ public class Boomerang extends Item implements ILeftClickStateItem {
 
     @Override
     public void onLeftClick(Player player, ItemStack itemStack) {
+        if (player.level().isClientSide) return;
         // 等待返回且未到达最大等待时间
         if(boomerangModifier.shouldWaitForBack && !isBacked(itemStack)
                 && player.getCooldowns().isOnCooldown(this)
@@ -101,9 +102,7 @@ public class Boomerang extends Item implements ILeftClickStateItem {
     }
 
     @Override
-    public void onLeftRelease(Player player, ItemStack itemStack) {
-
-    }
+    public void onLeftRelease(Player player, ItemStack itemStack) {}
 
     @Override
     public boolean canSwitchWithoutRelease(Player player, ItemStack itemStack) {

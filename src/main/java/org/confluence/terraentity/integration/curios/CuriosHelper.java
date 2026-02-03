@@ -14,14 +14,13 @@ import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 import java.util.Optional;
 
 public class CuriosHelper {
-
     public static final String MOUNT_KEY = "mount";
     public static final String PET_KEY = "pet";
     public static final String LIGHT_PET_KEY = "light_pet";
 
 
     public static void registerCurios() {
-        TERideableItems.ITEMS.getEntries().forEach(item->{
+        TERideableItems.ITEMS.getEntries().forEach(item -> {
             CuriosApi.registerCurio(item.get(), new ICurioItem() {
                 @Override
                 public boolean hasCurioCapability(ItemStack stack) {
@@ -34,12 +33,12 @@ public class CuriosHelper {
                 }
             });
         });
-
     }
 
-    public static void rideOrLeave(Player player){
+    public static void rideOrLeave(Player player) {
+        if (player.level().isClientSide) return;
         Optional<ICuriosItemHandler> curiosInventory = CuriosApi.getCuriosInventory(player);
-        if(!player.isPassenger()) {
+        if (!player.isPassenger()) {
             curiosInventory.ifPresent(handler -> {
                 ICurioStacksHandler itemStackHandler = handler.getCurios().get(CuriosHelper.MOUNT_KEY);
                 if (itemStackHandler != null) {
@@ -52,11 +51,8 @@ public class CuriosHelper {
                     }
                 }
             });
-        }else{
+        } else {
             player.stopRiding();
         }
     }
-
-
-
 }

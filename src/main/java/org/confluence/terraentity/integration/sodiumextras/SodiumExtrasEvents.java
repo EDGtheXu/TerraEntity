@@ -1,6 +1,5 @@
 package org.confluence.terraentity.integration.sodiumextras;
 
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.init.entity.TEBossEntities;
@@ -10,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SodiumExtrasEvents {
-
-    @SubscribeEvent
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(SodiumExtrasEvents::addEntitiesToWhitelist);
     }

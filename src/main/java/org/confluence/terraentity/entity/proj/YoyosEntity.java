@@ -36,6 +36,7 @@ import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.item.YoyosItem;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
 import org.confluence.terraentity.utils.TEUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -46,18 +47,16 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-/**
- * 悠悠球
- */
+/// 悠悠球
 public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEntity, ICollisionAttackEntity {
-    boolean isBacking = false;
     int maxRetrieveTicks = 40;
     int retrieveTicks = 0;
     float maxRange = 10;
-    @Nullable YoyosItem item;  // TODO: 临时解决空物品问题，具体逻辑仍需重新考量
+    @Nullable YoyosItem item;
     public ResourceLocation texture;
 
     protected static final EntityDataAccessor<ItemStack> DATA_WEAPON_ITEM = SynchedEntityData.defineId(YoyosEntity.class, EntityDataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<Boolean> DATA_IS_BAKING = SynchedEntityData.defineId(YoyosEntity.class, EntityDataSerializers.BOOLEAN);
 
     public YoyosEntity(EntityType<? extends YoyosEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -67,17 +66,19 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
     public void tick() {
         super.tick();
         Entity owner = getOwner();
-        if (owner == null) {
+        if (owner == null || item == null) {
             discard();
             return;
         }
 
+        this.xOld = getX();
+        this.yOld = getY();
+        this.zOld = getZ();
+
         // 存在时间
-        if (this.item != null) { // TODO: 临时解决空物品问题，具体逻辑仍需重新考量
-            if (this.tickCount > this.item.getExistTime() * 20) {
-                this.isBacking = true;
-                this.noPhysics = true;
-            }
+        if (this.tickCount > this.item.getExistTime() * 20) {
+            entityData.set(DATA_IS_BAKING, true);
+            this.noPhysics = true;
         }
         Vec3 lookVec = owner.getLookAngle().normalize();
         this.setXRot(0);
@@ -86,7 +87,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
         Vec3 targetPos;
 
         float speedModifier = 1.0f;
-        if (this.isBacking) {
+        if (isBaking()) {
             targetPos = owner.position().add(0, owner.getBbHeight() * 0.5f, 0);
             if (!level().isClientSide) {
                 if (targetPos.distanceTo(position()) < 0.5F) {
@@ -111,7 +112,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
 
 
         this.setDeltaMovement(dist.scale(0.2f * speedModifier));
-        if (this.isBacking) {
+        if (isBaking()) {
             this.retrieveTicks++;
             Vec3 force = dist.normalize().scale(this.retrieveTicks * 1.0f / this.maxRetrieveTicks);
             this.addDeltaMovement(force);
@@ -137,8 +138,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
             if (!this.isInWater()) {
                 f = 0.95F;
             } else {
-                for(int i = 0; i < 4; ++i) {
-                    float f1 = 0.25F;
+                for (int i = 0; i < 4; ++i) {
                     this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25, d1 - vec3.y * 0.25, d2 - vec3.z * 0.25, vec3.x, vec3.y, vec3.z);
                 }
                 f = 0.8F;
@@ -152,23 +152,30 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
 
     }
 
+    private boolean isBaking() {
+        return entityData.get(DATA_IS_BAKING);
+    }
+
+    private void setBaking(boolean is) {
+        entityData.set(DATA_IS_BAKING, is);
+    }
+
     @Override
     protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {}
 
-
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        if(!isBacking){
+        if (!isBaking()) {
             this.playSound(SoundEvents.WOOD_PLACE, 0.5f, 1.5f);
             Vec3 normal = Vec3.atLowerCornerOf(result.getDirection().getNormal()).normalize();
-            this.setDeltaMovement(this.getDeltaMovement().add(normal.multiply(this.getDeltaMovement().multiply(normal)).multiply(-1,-1,-1)));
+            this.setDeltaMovement(this.getDeltaMovement().add(normal.multiply(this.getDeltaMovement().multiply(normal)).multiply(-1, -1, -1)));
         }
         super.onHitBlock(result);
-        if(level().isClientSide) {
+        if (level().isClientSide) {
             BlockPos blockpos = result.getBlockPos();
             BlockState blockstate = this.level().getBlockState(blockpos);
             Vec3 dir = this.getDeltaMovement().normalize().scale(2);
-            Vec3 mid = new Vec3(blockpos.getX()+0.5f , blockpos.getY()+0.5f, blockpos.getZ()+0.5f).add(Vec3.atLowerCornerOf(result.getDirection().getNormal()));
+            Vec3 mid = new Vec3(blockpos.getX() + 0.5f, blockpos.getY() + 0.5f, blockpos.getZ() + 0.5f).add(Vec3.atLowerCornerOf(result.getDirection().getNormal()));
             this.level().addParticle((new BlockParticleOption(ParticleTypes.BLOCK, blockstate)).setPos(blockpos), mid.x, mid.y, mid.z, -dir.x, -dir.y, -dir.z);
             this.level().addParticle((new BlockParticleOption(ParticleTypes.BLOCK, blockstate)).setPos(blockpos), mid.x, mid.y, mid.z, -dir.x, -dir.y, -dir.z);
         }
@@ -176,7 +183,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_WEAPON_ITEM, ItemStack.EMPTY);
+        builder.define(DATA_WEAPON_ITEM, ItemStack.EMPTY).define(DATA_IS_BAKING, false);
     }
 
     @Override
@@ -196,7 +203,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
     }
 
     @Override
-    public ItemStack getWeaponItem() {
+    public @NotNull ItemStack getWeaponItem() {
         return this.entityData.get(DATA_WEAPON_ITEM);
     }
 
@@ -210,7 +217,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
             if (owner instanceof Player player) {
                 player.getCooldowns().removeCooldown(item);
 
-                if (WeaponStorage.of(player).leftClicking){
+                if (WeaponStorage.of(player).leftClicking) {
                     item.onLeftClick(player, item.getDefaultInstance());
                 }
             }
@@ -230,19 +237,20 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
+
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {}
 
     @Override
     public void onReceiveLeftClick(Player player, ItemStack itemStack) {
-        this.isBacking = false;
+        setBaking(false);
         this.noPhysics = false;
         this.retrieveTicks = 0;
     }
 
     @Override
     public void onReceiveLeftRelease(Player player, ItemStack itemStack) {
-        this.isBacking = true;
+        setBaking(true);
         this.noPhysics = true;
     }
 
@@ -264,21 +272,21 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
         return true;
     }
 
-    public void doCollisionAttack(Predicate<Entity> filter, Consumer<Entity> attackCallback){
-        if(!this.shouldDoCollision() || this.collision$getSelf().level().isClientSide) return;
+    public void doCollisionAttack(Predicate<Entity> filter, Consumer<Entity> attackCallback) {
+        if (!this.shouldDoCollision() || this.collision$getSelf().level().isClientSide) return;
         CollisionProperties properties = this.getCollisionProperties();
         properties.reduceAttackInterval();
         if (this.canCollisionHurt() && !this.collision$getSelf().level().isClientSide && properties.canAttack()) {
             // 包围盒检测造成伤害
-            List<Entity> entities = this.collision$getSelf().level().getEntities(this.collision$getSelf(), this.collision$getSelf().getBoundingBox().inflate(properties.attackRangeExtent), e-> e!= this.collision$getSelf());
+            List<Entity> entities = this.collision$getSelf().level().getEntities(this.collision$getSelf(), this.collision$getSelf().getBoundingBox().inflate(properties.attackRangeExtent), e -> e != this.collision$getSelf());
             if (!entities.isEmpty()) {
                 for (var e : entities) {
-                    if (filter.test(e) ){
+                    if (filter.test(e)) {
                         attackCallback.accept(e);
                         properties.rewind();
                     }
                 }
-            }else{
+            } else {
                 properties.reDetect();
             }
         }
@@ -322,7 +330,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
     }
 
     public boolean summon_doHurtTarget(Entity entity) {
-        if (getOwner() instanceof LivingEntity owner){
+        if (getOwner() instanceof LivingEntity owner) {
 
             float f = 0;
             DamageSource damagesource = this.damageSources().mobAttack(owner);
@@ -349,6 +357,11 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
             }
             return flag;
         }
+        return false;
+    }
+
+    @Override
+    public boolean canChangeDimensions(Level oldLevel, Level newLevel) {
         return false;
     }
 }
