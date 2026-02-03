@@ -54,7 +54,7 @@ public class TerraEntity {
 
         modContainer.registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
 
-        ModChecker.registerEvents();
+        ModChecker.registerEvents(modEventBus);
         TERuntime.getInstance().start();
 //        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }

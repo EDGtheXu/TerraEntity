@@ -239,6 +239,7 @@ dependencies {
 
     compileOnly "curse.maven:sodium-394468:6382651"
     compileOnly "curse.maven:irisshaders-455508:6661598"
+    compileOnly "curse.maven:magnesium-extras-558905:6394141"
     if (true) {
         runtimeOnly "curse.maven:sodium-394468:6382651"
         runtimeOnly "curse.maven:irisshaders-455508:6661598"
