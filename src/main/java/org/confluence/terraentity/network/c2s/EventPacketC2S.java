@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 @ScheduledForMove(since = "1.2.0", inVersion = "2.0.0")
 public record EventPacketC2S(TypeEnum typeEnum) implements IPacketC2S {
     public static final Type<EventPacketC2S> TYPE = new Type<>(TerraEntity.space("event_c2s"));
-    public static final StreamCodec<FriendlyByteBuf, EventPacketC2S> STREAM_CODEC = LibStreamCodecUtils.fromEnum(TypeEnum.class)
+    public static final StreamCodec<FriendlyByteBuf, EventPacketC2S> STREAM_CODEC = LibStreamCodecUtils.fromEnum(TypeEnum.values())
             .map(EventPacketC2S::new, EventPacketC2S::typeEnum);
     private static final EnumMap<TypeEnum, Consumer<Player>> handlers = Util.make(new EnumMap<>(TypeEnum.class), map -> {
         map.put(TypeEnum.SUMMON_SKELETRON, (player) -> {

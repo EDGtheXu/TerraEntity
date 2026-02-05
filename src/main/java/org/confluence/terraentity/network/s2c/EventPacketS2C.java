@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 public record EventPacketS2C(TypeEnum typeEnum) implements IPacketS2C {
     public static final Type<EventPacketS2C> TYPE = new Type<>(TerraEntity.space("event_s2c"));
-    public static final StreamCodec<FriendlyByteBuf, EventPacketS2C> STREAM_CODEC = LibStreamCodecUtils.fromEnum(TypeEnum.class)
+    public static final StreamCodec<FriendlyByteBuf, EventPacketS2C> STREAM_CODEC = LibStreamCodecUtils.fromEnum(TypeEnum.values())
             .map(EventPacketS2C::new, EventPacketS2C::typeEnum);
     private static final EnumMap<TypeEnum, Consumer<Player>> handlers = Util.make(new EnumMap<>(TypeEnum.class), map -> {
         map.put(TypeEnum.RESET_CRIMSON_STORM, (player) -> {
