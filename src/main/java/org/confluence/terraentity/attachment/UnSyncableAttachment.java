@@ -7,7 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.confluence.terraentity.entity.boss.hillofflesh.HillOfFlesh;
 import org.confluence.terraentity.item.DebugItem;
-import org.confluence.terraentity.network.s2c.ClientBoundEventPacket;
+import org.confluence.terraentity.network.s2c.EventPacketS2C;
 import org.jetbrains.annotations.UnknownNullability;
 
 public class UnSyncableAttachment implements INBTSerializable<CompoundTag> {
@@ -31,7 +31,7 @@ public class UnSyncableAttachment implements INBTSerializable<CompoundTag> {
     public void triggerInvulnerableStorm(LivingEntity entity) {
         invulnerableStormTime = 40;
         if(entity instanceof ServerPlayer player){
-            ClientBoundEventPacket.resetCrimsonStorm(player);
+            EventPacketS2C.resetCrimsonStorm(player);
         }
     }
 

@@ -44,9 +44,7 @@ public class AdapterUtils {
     }
 
     public static void sendToServer(CustomPacketPayload payload) {
-        if (ServerLifecycleHooks.getCurrentServer() != null) {
-            PacketDistributor.sendToServer(payload);
-        }
+        PacketDistributor.sendToServer(payload);
     }
 
     public static <T extends Event> T postGameEvent(T event) {

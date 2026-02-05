@@ -18,7 +18,7 @@ import org.confluence.terraentity.entity.npc.mood.MoodInfo;
 import org.confluence.terraentity.entity.npc.mood.NPCMood;
 import org.confluence.terraentity.init.entity.TENpcEntities;
 import org.confluence.terraentity.mixed.IPlayer;
-import org.confluence.terraentity.network.c2s.ServerBoundEventPacket;
+import org.confluence.terraentity.network.c2s.EventPacketC2S;
 import org.confluence.terraentity.utils.AdapterUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +59,7 @@ public class DialogScreen extends Screen {
 
             if (LibDateUtils.isNight(npc.level()) && npc.getType() == TENpcEntities.OLD_MAN.get()) {
                 summonButton = Button.builder(Component.translatable("dialogs.terra_entity.summon"), p -> {
-                    ServerBoundEventPacket.summonSkeletron(player);
+                    EventPacketC2S.summonSkeletron(player);
                     Minecraft.getInstance().setScreen(null); // 关闭对话框
                 }).width(50).pos(width / 2 - 160, height / 2 + 25).build();
                 addRenderableWidget(summonButton);

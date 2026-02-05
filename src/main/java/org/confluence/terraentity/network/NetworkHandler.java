@@ -16,7 +16,7 @@ public final class NetworkHandler {
         registrar.playToClient(SyncDataS2C.TYPE, SyncDataS2C.STREAM_CODEC, SyncDataS2C::handle);
         registrar.playToClient(UpdateNPCTradePacket.TYPE, UpdateNPCTradePacket.STREAM_CODEC, UpdateNPCTradePacket::handle);
         registrar.playToClient(ChesterAttachmentPacketS2C.TYPE, ChesterAttachmentPacketS2C.STREAM_CODEC, ChesterAttachmentPacketS2C::handle);
-        registrar.playToClient(ClientBoundEventPacket.TYPE, ClientBoundEventPacket.STREAM_CODEC, ClientBoundEventPacket::handle);
+        registrar.playToClient(EventPacketS2C.TYPE, EventPacketS2C.STREAM_CODEC, EventPacketS2C::handle);
         registrar.playToClient(SummonBossPacket.TYPE, SummonBossPacket.STREAM_CODEC, SummonBossPacket::handle);
         registrar.playToClient(SyncLevelNamePacketS2C.TYPE, SyncLevelNamePacketS2C.STREAM_CODEC, SyncLevelNamePacketS2C::handle);
         registrar.playToClient(SetAnglerDialogPacketS2C.TYPE, SetAnglerDialogPacketS2C.STREAM_CODEC, SetAnglerDialogPacketS2C::handle);
@@ -27,7 +27,7 @@ public final class NetworkHandler {
         registrar.playToServer(ServerBoundVehicleExtensionPacket.TYPE, ServerBoundVehicleExtensionPacket.STREAM_CODEC, ServerBoundVehicleExtensionPacket::handle);
         registrar.playToServer(ServerBoundHousePacket.TYPE, ServerBoundHousePacket.STREAM_CODEC, ServerBoundHousePacket::handle);
         registrar.playToServer(NPCShopPacket.TYPE, NPCShopPacket.STREAM_CODEC, NPCShopPacket::handle);
-        registrar.playToServer(ServerBoundEventPacket.TYPE, ServerBoundEventPacket.STREAM_CODEC, ServerBoundEventPacket::handle);
+        registrar.playToServer(EventPacketC2S.TYPE, EventPacketC2S.STREAM_CODEC, EventPacketC2S::handle);
         registrar.playToServer(SetDebugModePacket.TYPE, SetDebugModePacket.STREAM_CODEC, SetDebugModePacket::handle);
 
     }
