@@ -175,7 +175,9 @@ public class TEEnglishProvider extends LanguageProvider {
         add("terra_entity.effect.strategy.mud", "Mud");
         add("terra_entity.effect.strategy.bat", "Blood absorb +1 hp");
         add("terra_entity.effect.strategy.lights_bane", "Summon lights bane");
-        add("terra_entity.effect.strategy.bee_keeper", "Summon bees");
+        add("terra_entity.effect.strategy.bee_keeper", "Summon bees.");
+        add("terra_entity.effect.strategy.bee_keeper_confused", "100% chance to inflict Confusion.");
+        add("terra_entity.effect.strategy.purple_clubberfish", "50% chance to inflict Confusion.");
         add("terra_entity.effect.strategy.snapthorn", "Poisoned");
         add("terra_entity.effect.strategy.firecracker", "Hell fire");
 

@@ -678,6 +678,8 @@ public class TEChineseProvider extends LanguageProvider {
         add("terra_entity.effect.strategy.bat", "吸血 +1 hp");
         add("terra_entity.effect.strategy.lights_bane", "召唤魔光剑");
         add("terra_entity.effect.strategy.bee_keeper", "召唤蜜蜂");
+        add("terra_entity.effect.strategy.bee_keeper_confused", "100%概率给予困惑");
+        add("terra_entity.effect.strategy.purple_clubberfish", "50%概率给予困惑");
 
         add("terra_entity.effect.strategy.frozen_burn_5_sec", "霜冻 10秒");
         add("terra_entity.effect.strategy.frozen_burn_3_sec_50_chance", "50%几率 霜冻 3秒");
