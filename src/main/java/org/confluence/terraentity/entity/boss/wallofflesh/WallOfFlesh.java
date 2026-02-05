@@ -933,7 +933,9 @@ public class WallOfFlesh extends AbstractTerraBossBase implements Boss, IExtende
 
     @Override
     public void remove(RemovalReason reason) {
-        AdapterUtils.sendToAllPlayers(new SyncWallOfFleshPositionsPacket(getId(), List.of(), List.of()));
+        if (!level().isClientSide) {
+            AdapterUtils.sendToAllPlayers(new SyncWallOfFleshPositionsPacket(getId(), List.of(), List.of()));
+        }
         super.remove(reason);
     }
 
