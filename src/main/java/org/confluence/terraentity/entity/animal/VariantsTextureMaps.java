@@ -36,7 +36,14 @@ public class VariantsTextureMaps {
     }
 
     public static final int GOLD_BUTTERFLY_ID = 0;
-    public static final int COMMON_BUTTERFLY_ID = 1;
+    public static final int JULIA_BUTTERFLY_ID = 1;
+    public static final int MONARCH_BUTTERFLY_ID = 2;
+    public static final int PURPLE_EMPEROR_BUTTERFLY_ID = 3;
+    public static final int RED_ADMIRAL_BUTTERFLY_ID = 4;
+    public static final int SULPHUR_BUTTERFLY_ID = 5;
+    public static final int TREE_NYMPH_BUTTERFLY_ID = 6;
+    public static final int ULYSSES_BUTTERFLY_ID = 7;
+    public static final int ZEBRA_SWALLOWTAIL_BUTTERFLY_ID = 8;
     public static final Map<Integer, ResourceLocation> butterflyTextures = makeAnimalTextureMap("butterfly", List.of(
             TerraEntity.space("gold_butterfly.png"),
             TerraEntity.space("julia_butterfly.png"),
@@ -48,8 +55,13 @@ public class VariantsTextureMaps {
             TerraEntity.space("ulysses_butterfly.png"),
             TerraEntity.space("zebra_swallowtail_butterfly.png")
     ));
+    public static final int BLACK_DRAGONFLY_ID = 0;
+    public static final int BLUE_DRAGONFLY_ID = 1;
     public static final int GOLD_DRAGONFLY_ID = 2;
-    public static final int COMMON_DRAGONFLY_ID = 3;
+    public static final int GREEN_DRAGONFLY_ID = 3;
+    public static final int ORANGE_DRAGONFLY_ID = 4;
+    public static final int RED_DRAGONFLY_ID = 5;
+    public static final int YELLOW_DRAGONFLY_ID = 6;
     public static final Map<Integer, ResourceLocation> dragonflyTextures = makeAnimalTextureMap("dragonfly", List.of(
             TerraEntity.space("black_dragonfly.png"),
             TerraEntity.space("blue_dragonfly.png"),
@@ -59,8 +71,8 @@ public class VariantsTextureMaps {
             TerraEntity.space("red_dragonfly.png"),
             TerraEntity.space("yellow_dragonfly.png")
     ));
-    public static final int BLUE_FAIRY_ID = 0;
-    public static final int GREEN_FAIRY_ID = 0;
+    public static final int BLUE_FAIRY_ID = 2;
+    public static final int GREEN_FAIRY_ID = 1;
     public static final int PINK_FAIRY_ID = 0;
     public static final Map<Integer, ResourceLocation> fairyTextures = makeAnimalTextureMap("fairy", List.of(
             TerraEntity.space("blue_fairy.png"),
