@@ -103,11 +103,11 @@ public class TrailSwordProj<T extends TrailSwordProj<T>> extends BaseProj<T> imp
     }
 
     @Override
-    public DamageSource getDamageSource(LivingEntity hurter){
+    public DamageSource getDamageSource(LivingEntity victim){
         if(getOwner() != null && getOwner() instanceof Player player){
             return damageSources().playerAttack(player);
         }
-        return super.getDamageSource(hurter);
+        return super.getDamageSource(victim);
     }
 
     @Override
