@@ -57,6 +57,8 @@ public class TENpcEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractTerraNPC>> ZOOLOGIST = register("zoologist", SimpleNPC::new, MobCategory.CREATURE, 0.6f, 1.85f);
     /// 松露人
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractTerraNPC>> TRUFFLE = register("truffle", SimpleNPC::new, MobCategory.CREATURE, 0.6f, 1.85f);
+    /// 巫师
+    public static final DeferredHolder<EntityType<?>, EntityType<AbstractTerraNPC>> WIZARD = register("wizard", SimpleNPC::new, MobCategory.CREATURE, 0.6f, 1.85f);
 
     private static <T extends Mob> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, EntityType.EntityFactory<T> entityFactory, MobCategory category, float width, float height) {
         DeferredHolder<EntityType<?>, EntityType<T>> holder = TEEntities.registerEntity(name, entityFactory, category, width, height);
@@ -86,6 +88,7 @@ public class TENpcEntities {
         event.registerEntityRenderer(CLOTHIER.get(), c -> new NPCRenderer<>(c, CLOTHIER.getId()));
         event.registerEntityRenderer(TRUFFLE.get(), c -> new NPCRenderer<>(c, TRUFFLE.getId()));
         event.registerEntityRenderer(ZOOLOGIST.get(), c -> new NPCRenderer<>(c, ZOOLOGIST.getId()));
+        event.registerEntityRenderer(WIZARD.get(), c -> new NPCRenderer<>(c, WIZARD.getId()));
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -108,6 +111,7 @@ public class TENpcEntities {
         event.put(CLOTHIER.get(), AbstractTerraNPC.createAttributes().build());
         event.put(TRUFFLE.get(), AbstractTerraNPC.createAttributes().build());
         event.put(ZOOLOGIST.get(), AbstractTerraNPC.createAttributes().build());
+        event.put(WIZARD.get(), AbstractTerraNPC.createAttributes().build());
     }
 
     public static void spawnPlacementRegister(RegisterSpawnPlacementsEvent event) {

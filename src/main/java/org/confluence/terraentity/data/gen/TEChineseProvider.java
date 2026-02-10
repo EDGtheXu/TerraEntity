@@ -402,6 +402,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TENpcEntities.CLOTHIER.get(), "服装商");
         add(TENpcEntities.ZOOLOGIST.get(), "动物学家");
         add(TENpcEntities.TRUFFLE.get(), "松露人");
+        add(TENpcEntities.WIZARD.get(), "巫师");
 
         add(TESpawnEggItems.GOBLIN_SORCERER_SPAWN_EGG.get(), "哥布林术士刷怪蛋");
         add(TESpawnEggItems.GOBLIN_ARCHER_SPAWN_EGG.get(), "哥布林弓箭手刷怪蛋");
@@ -437,6 +438,7 @@ public class TEChineseProvider extends LanguageProvider {
         add(TESpawnEggItems.CLOTHIER_SPAWN_EGG.get(), "服装商刷怪蛋");
         add(TESpawnEggItems.ZOOLOGIST_SPAWN_EGG.get(), "动物学家刷怪蛋");
         add(TESpawnEggItems.TRUFFLE_SPAWN_EGG.get(), "松露人刷怪蛋");
+        add(TESpawnEggItems.WIZARD_SPAWN_EGG.get(), "巫师刷怪蛋");
 
 
         // 动物
@@ -987,6 +989,15 @@ public class TEChineseProvider extends LanguageProvider {
         add("dialogs.terra_entity.truffle.5", "有个关于我的谣言正在盛传：“如果打不过他，那就吃掉他！");
         add("dialogs.terra_entity.truffle.6", "我感觉这里有更多同类...");
 
+        add("dialogs.terra_entity.wizard.0", "想让我从你耳朵后面掏出一个钱币吗？不想？好吧。");
+        add("dialogs.terra_entity.wizard.1", "想要一些魔法糖果吗？不想？好吧。");
+        add("dialogs.terra_entity.wizard.2", "我做了一杯诱人的热巧克力，你感不感……不感兴趣？好吧。");
+        add("dialogs.terra_entity.wizard.3", "你来这里是不是想看看我的水晶球？");
+        add("dialogs.terra_entity.wizard.4", "想不想要可以把石头变成史莱姆的魔戒？好吧，我也不想要。");
+        add("dialogs.terra_entity.wizard.5", "有人曾告诉我友谊是魔法。太荒谬了。你无法用友谊把人变成青蛙。");
+        add("dialogs.terra_entity.wizard.6", "我现在能看到你的未来……你会从我这里买很多物品！");
+        add("dialogs.terra_entity.wizard.7", "我曾经试过复活一座天使雕像。它啥都不干。");
+
         add("mood.terra_entity.goblin_tinkerer.like.dye_trader", "染料商知道把东西混在一起是多么有趣，我能理解！");
         add("mood.terra_entity.goblin_tinkerer.love.mechanic", "机械师让我像失了魂似的，心神不宁，不过我喜欢这种感觉！");
         add("mood.terra_entity.goblin_tinkerer.dislike.clothier", "我从服装商身上发现了怪异之处，仿佛他们掌握了黑暗秘密。我不喜欢这种感觉。");
@@ -1018,6 +1029,7 @@ public class TEChineseProvider extends LanguageProvider {
         add("mood.terra_entity.nurse.dislike.dryad", "我不太喜欢树妖，这个人有点奇怪。");
         add("mood.terra_entity.nurse.dislike.party_girl", "我不太喜欢派对女孩，这个人有点奇怪。");
         add("mood.terra_entity.nurse.hate.zoologist", "噢，我讨厌治疗动物学家，太难了！");
+        add("mood.terra_entity.nurse.like.wizard", "巫师是一个既聪明又可爱的傻瓜。");
         add("mood.terra_entity.truffle.love.guide", "我非常喜欢向导，因为能好好和我说话，而不会莫名其妙地就想吃我。");
         add("mood.terra_entity.truffle.like.dye_trader", "树妖对我很尊重，把我当作大自然的一部分。除了喜欢，我不知道该如何形容这种感觉。");
         add("mood.terra_entity.truffle.dislike.clothier", "服装商很多次想吃掉我。我发誓，有一次他们甚至毫无人性！很显然，我不喜欢这样。");
@@ -1027,6 +1039,7 @@ public class TEChineseProvider extends LanguageProvider {
         add("mood.terra_entity.clothier.hate.mechanic", "我讨厌机械师，我也不知道为什么。");
         add("mood.terra_entity.party_girl.dislike.merchant", "我觉得商人在派对上很扫兴。");
         add("mood.terra_entity.party_girl.love.zoologist", "我喜欢动物学家在我的派对上总是光彩夺目。");
+        add("mood.terra_entity.party_girl.love.wizard", "我喜欢巫师在我的派对上总是光彩夺目。");
         add("mood.terra_entity.witch_doctor.like.dryad", "树妖是志同道合的大自然精灵，有他们在，我的心灵就能得到安宁。");
         add("mood.terra_entity.witch_doctor.like.guide", "向导是志同道合的大自然精灵，有他们在，我的心灵就能得到安宁。");
         add("mood.terra_entity.witch_doctor.dislike.nurse", "我不喜欢护士的做法。用金属和玻璃是做不到真正地治愈的。");
@@ -1038,6 +1051,8 @@ public class TEChineseProvider extends LanguageProvider {
         add("mood.terra_entity.zoologist.dislike.angler", "我不喜欢残酷的渔夫！");
         add("mood.terra_entity.zoologist.like.female_angler", "她并没有真正伤害它们。");
         add("mood.terra_entity.zoologist.hate.arms_dealer", "我真的非常讨厌军火商对动物所做的事情！");
+        add("mood.terra_entity.wizard.like.merchant", "商人和我相识已久，我喜欢我们共同的智慧。");
+        add("mood.terra_entity.wizard.dislike.witch_doctor", "巫医涉足了不该被打扰的领域，我不喜欢这样。");
 
 
     }

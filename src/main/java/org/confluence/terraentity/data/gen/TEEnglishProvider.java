@@ -412,6 +412,15 @@ public class TEEnglishProvider extends LanguageProvider {
         add("dialogs.terra_entity.truffle.5", "There's been such a huge rumor that's being spread about me, 'If you can't beat him, eat him!'");
         add("dialogs.terra_entity.truffle.6", "I feel there are more of my kind here...");
 
+        add("dialogs.terra_entity.wizard.0", "Want me to pull a coin from behind your ear? No? Ok.");
+        add("dialogs.terra_entity.wizard.1", "Do you want some magic candy? No? Ok.");
+        add("dialogs.terra_entity.wizard.2", "I make a rather enchanting hot chocolate if you'd be inter...No? Ok.");
+        add("dialogs.terra_entity.wizard.3", "Are you here for a peek at my crystal ball?");
+        add("dialogs.terra_entity.wizard.4", "Ever wanted an enchanted ring that turns rocks into slimes? Well neither did I.");
+        add("dialogs.terra_entity.wizard.5", "Someone once told me friendship is magic. That's ridiculous. You can't turn people into frogs with friendship.");
+        add("dialogs.terra_entity.wizard.6", "I can see your future now... You will buy a lot of items from me!");
+        add("dialogs.terra_entity.wizard.7", "I once tried to bring an Angel Statue to life. It didn't do anything.");
+
         add("mood.terra_entity.goblin_tinkerer.like.dye_trader", "Dye Trader understands how fun it is to mix things together, I can respect that!");
         add("mood.terra_entity.goblin_tinkerer.love.mechanic", "Mechanic makes my cardiac core function improperly, it appears I love how that feels!");
         add("mood.terra_entity.goblin_tinkerer.dislike.clothier", "I detect eerie vibes from <name of Clothier>, as if they contain dark secrets. I don't like the feeling.");
@@ -443,6 +452,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("mood.terra_entity.nurse.dislike.dryad", "I don't like Dryad that much, kinda weirds me out.");
         add("mood.terra_entity.nurse.dislike.party_girl", "I don't like Party Girl that much, kinda weirds me out.");
         add("mood.terra_entity.nurse.hate.zoologist", "Oh, I hate treating Zoologist , so difficult!");
+        add("mood.terra_entity.nurse.like.wizard", "Wizard is a smart and likeable goof.");
         add("mood.terra_entity.truffle.love.guide", "I love Guide for being able to talk to me without mysteriously getting hungry.");
         add("mood.terra_entity.truffle.like.dye_trader", " Dryad treats me with respect, as though I'm a true part of nature. I don't know how to feel about that, except I like it.");
         add("mood.terra_entity.truffle.dislike.clothier", " Clothier has tried to eat me so many times. I swear, one time they weren't even human! I, obviously, dislike it.");
@@ -452,6 +462,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("mood.terra_entity.clothier.hate.mechanic", "I hate Mechanic and I don't know why.");
         add("mood.terra_entity.party_girl.dislike.merchant", "I think Merchant is a killjoy at parties.");
         add("mood.terra_entity.party_girl.love.zoologist", "I love that Zoologist always dazzles at my parties.");
+        add("mood.terra_entity.party_girl.love.wizard", "I love that Wizard always dazzles at my parties.");
         add("mood.terra_entity.witch_doctor.like.dryad", "the Dryad is a kindred spirit of nature, my soul is at peace in their presence.");
         add("mood.terra_entity.witch_doctor.like.guide", "the Guide is a kindred spirit of nature, my soul is at peace in their presence.");
         add("mood.terra_entity.witch_doctor.dislike.nurse", "I dislike the practices of the Nurse. True healing cannot come from metal and glass.");
@@ -463,6 +474,8 @@ public class TEEnglishProvider extends LanguageProvider {
         add("mood.terra_entity.zoologist.dislike.angler", "I don't like how cruel Angler is!");
         add("mood.terra_entity.zoologist.like.female_angler", "She didn't really hurt them.");
         add("mood.terra_entity.zoologist.hate.arms_dealer", "I really totally hate what Arms Dealer does to animals!");
+        add("mood.terra_entity.wizard.like.merchant", "Merchant and I share a very long history, I like the mutual wisdom.");
+        add("mood.terra_entity.wizard.dislike.witch_doctor", "Witch Doctor dabbles in things that shouldn't be disturbed, and I don't like that.");
         // sound
         add("terra_entity.subtitle.routine_hurt", "Mob: Hurt");
         add("terra_entity.subtitle.routine_death", "Mob: Death");

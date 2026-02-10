@@ -83,6 +83,9 @@ public class TEBiomeModifier {
         register(context, TENpcEntities.PARTY_GIRL,
                 HolderSet.direct(biomeLookup.getOrThrow(Biomes.BEACH)),
                 HolderSet.direct(), 1, 1, 1);
+        register(context, TENpcEntities.WIZARD,
+                HolderSet.direct(biomeLookup.getOrThrow(Biomes.CHERRY_GROVE)),
+                HolderSet.direct(), 2, 1, 1);
         register(context, createModifierKey("addition_bloody"), new BiomeModifiers.AddSpawnsBiomeModifier(
                 HolderSet.direct(biomeLookup.getOrThrow(Biomes.CRIMSON_FOREST)),
                 List.of(
