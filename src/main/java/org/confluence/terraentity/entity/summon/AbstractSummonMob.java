@@ -156,6 +156,11 @@ public abstract class AbstractSummonMob extends TamableAnimal implements GeoEnti
     }
 
     @Override
+    public boolean startRiding(Entity entity, boolean force) {
+        return false;
+    }
+
+    @Override
     public boolean doHurtTarget(Entity entity) {
         return summon_doHurtTarget(entity);
     }
