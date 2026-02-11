@@ -15,6 +15,7 @@ public class ModChecker {
     public static final ModLoadPair veil = create("veil");
     public static final ModLoadPair sodiumdynamiclights = create("sodiumdynamiclights");
     public static final ModLoadPair sodiumextras = create("sodiumextras");
+    public static final ModLoadPair nyfsspiders = create("nyfsspiders");
 
     public static void registerEvents(IEventBus modBus) {
         if (irons_spellbooks.isLoaded()) {
@@ -25,6 +26,9 @@ public class ModChecker {
         }
         if (sodiumextras.isLoaded()) {
             modBus.addListener(SodiumExtrasEvents::onCommonSetup);
+        }
+        if (nyfsspiders.isLoaded()) {
+            NeoForge.EVENT_BUS.register(NyfsSpidersEvents.class);
         }
     }
 

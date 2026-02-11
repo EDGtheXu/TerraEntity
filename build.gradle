@@ -279,6 +279,9 @@ dependencies {
 //        exclude group: "me.fallenbreath"
 //    }
 
+    // 蜘蛛爬行优化
+    compileOnly "maven.modrinth:nyfs-spiders:pjXVTyLu"
+//    runtimeOnly "maven.modrinth:nyfs-spiders:pjXVTyLu"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

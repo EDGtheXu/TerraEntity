@@ -3,7 +3,7 @@
     "minVersion": "0.8",
     "package": "org.confluence.terraentity.mixin",
     "compatibilityLevel": "JAVA_21",
-    "refmap": "confluence.refmap.json",
+    "refmap": "terraentity.refmap.json",
     "mixins": [
         "AttributeInstanceMixin",
         "BlockStateBaseMixin",
@@ -38,5 +38,5 @@
     ],
     "injectors": {
         "defaultRequire": 1
-  }
+    }
 }
