@@ -37,7 +37,7 @@ import software.bernie.geckolib.constant.DefaultAnimations;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
+import java.util.ConcurrentModificationException;
 
 /**
  * 人形怪，可以远程攻击也可以近战，根据手中物品决定
@@ -49,6 +49,8 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
     AttributeBuilder builder;
     protected final TERangedAttackGoal<?> bowGoal = this.createBowGoal();
     protected final Goal meleeGoal = this.createMeleeGoal();
+
+    private boolean isUsingBowGoal = false;
 
     public HumanoidMonster(EntityType<? extends HumanoidMonster> entityType, Level level, AttributeBuilder builder) {
         super(entityType, level, builder);
@@ -87,28 +89,25 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
     @Override
     public boolean doHurtTarget(@NotNull Entity entity) {
         this.swing(InteractionHand.MAIN_HAND, true);
-        return super.doHurtTarget(entity);
+        try {
+            return super.doHurtTarget(entity);
+        } catch (ConcurrentModificationException e) {
+            return false;
+        }
     }
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "Walk/Idle", 5, state ->{
+        controllers.add(new AnimationController<>(this, "Walk/Idle", 5, state -> {
             state.setControllerSpeed((float) (this.getAttributeValue(Attributes.MOVEMENT_SPEED) / 0.25f));
             return state.setAndContinue(state.isMoving() ? DefaultAnimations.WALK : DefaultAnimations.IDLE);
-        }
-        ));
+        }));
     }
 
     @Override
     public int getCurrentSwingDuration() {
         return 10;
     }
-
-//    protected void playStepSound(BlockPos pos, BlockState block) {
-//        this.playSound(this.getStepSound(), 0.15F, 1.0F);
-//    }
-//
-//    protected abstract SoundEvent getStepSound();
 
     @Override
     public void aiStep() {
@@ -124,7 +123,6 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
                         this.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
                     }
                 }
-
                 flag = false;
             }
 
@@ -132,18 +130,15 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
                 this.igniteForSeconds(8.0F);
             }
         }
-
         super.aiStep();
     }
 
     @Override
     public void rideTick() {
         super.rideTick();
-        Entity var2 = this.getControlledVehicle();
-        if (var2 instanceof PathfinderMob pathfindermob) {
+        if (this.getControlledVehicle() instanceof PathfinderMob pathfindermob) {
             this.yBodyRot = pathfindermob.yBodyRot;
         }
-
     }
 
     @Override
@@ -151,11 +146,11 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
         super.populateDefaultEquipmentSlots(random, difficulty);
         if(builder instanceof HumanoidMonster.HumanoidBuilder builder1){
             this.setItemSlot(EquipmentSlot.MAINHAND, builder1.mainHand);
-
         }
     }
 
     @Nullable
+    @Override
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
         spawnGroupData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
         RandomSource randomsource = level.getRandom();
@@ -163,47 +158,50 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
         this.populateDefaultEquipmentEnchantments(level, randomsource, difficulty);
         this.reassessWeaponGoal();
         this.setCanPickUpLoot(randomsource.nextFloat() < 0.55F * difficulty.getSpecialMultiplier());
+
         if (this.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
             LocalDate localdate = LocalDate.now();
-            int i = localdate.get(ChronoField.DAY_OF_MONTH);
-            int j = localdate.get(ChronoField.MONTH_OF_YEAR);
-            if (j == 10 && i == 31 && randomsource.nextFloat() < 0.25F) {
+            int day = localdate.getDayOfMonth();
+            int month = localdate.getMonthValue();
+            if (month == 10 && day == 31 && randomsource.nextFloat() < 0.25F) {
                 this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(randomsource.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
                 this.armorDropChances[EquipmentSlot.HEAD.getIndex()] = 0.0F;
             }
         }
-
         return spawnGroupData;
     }
 
     public void reassessWeaponGoal() {
         if (!this.level().isClientSide) {
-            this.goalSelector.removeGoal(this.meleeGoal);
-            this.goalSelector.removeGoal(this.bowGoal);
-            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, (item) -> {
-                return item instanceof BowItem;
-            }));
-            if (itemstack.getItem() instanceof BowItem) {
-                int i = this.getHardAttackInterval();
-                if (this.level().getDifficulty() != Difficulty.HARD) {
-                    i = this.getAttackInterval();
-                }
+            ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, (item) -> item instanceof BowItem));
 
-                this.bowGoal.setMinAttackInterval(i);
-                this.goalSelector.addGoal(4, this.bowGoal);
+            if (itemstack.getItem() instanceof BowItem) {
+                if (!isUsingBowGoal) {
+                    this.goalSelector.removeGoal(this.meleeGoal);
+                    int i = (this.level().getDifficulty() != Difficulty.HARD) ? this.getAttackInterval() : this.getHardAttackInterval();
+                    this.bowGoal.setMinAttackInterval(i);
+                    this.goalSelector.addGoal(4, this.bowGoal);
+                    this.isUsingBowGoal = true;
+                }
             } else {
-                this.goalSelector.addGoal(4, this.meleeGoal);
+                if (isUsingBowGoal || this.goalSelector.getAvailableGoals().stream().noneMatch(g -> g.getGoal() == this.meleeGoal)) {
+                    this.goalSelector.removeGoal(this.bowGoal);
+                    this.goalSelector.addGoal(4, this.meleeGoal);
+                    this.isUsingBowGoal = false;
+                }
             }
         }
     }
 
     protected Goal createMeleeGoal() {
         return new MeleeAttackGoal(this, 1.2, false) {
+            @Override
             public void stop() {
                 super.stop();
                 HumanoidMonster.this.setAggressive(false);
             }
 
+            @Override
             public void start() {
                 super.start();
                 HumanoidMonster.this.setAggressive(true);
@@ -225,13 +223,10 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
 
     @Override
     public void performRangedAttack(@NotNull LivingEntity target, float distanceFactor) {
-        ItemStack weapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, (item) -> {
-            return item instanceof BowItem;
-        }));
+        ItemStack weapon = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof BowItem));
         ItemStack itemstack1 = this.getProjectile(weapon);
         AbstractArrow abstractarrow = this.getArrow(itemstack1, distanceFactor, weapon);
-        Item var7 = weapon.getItem();
-        if (var7 instanceof ProjectileWeaponItem weaponItem) {
+        if (weapon.getItem() instanceof ProjectileWeaponItem weaponItem) {
             abstractarrow = weaponItem.customArrow(abstractarrow, itemstack1, weapon);
         }
 
@@ -265,7 +260,6 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
         if (!this.level().isClientSide) {
             this.reassessWeaponGoal();
         }
-
     }
 
     public boolean isShaking() {
@@ -273,47 +267,33 @@ public class HumanoidMonster extends AbstractMonster implements RangedAttackMob,
     }
 
     @Override
-    public boolean isChargingCrossbow() {
-        return false;
-    }
+    public boolean isChargingCrossbow() { return false; }
 
     @Override
-    public int getChargingTicks() {
-        return 0;
-    }
+    public int getChargingTicks() { return 0; }
 
     @Override
-    public BoneStateMachine<BoneStates> getLeftArmBoneStateMachine() {
-        return leftArmBoneStateMachine;
-    }
+    public BoneStateMachine<BoneStates> getLeftArmBoneStateMachine() { return leftArmBoneStateMachine; }
 
     @Override
-    public BoneStateMachine<BoneStates> getRightArmBoneStateMachine() {
-        return rightArmBoneStateMachine;
-    }
+    public BoneStateMachine<BoneStates> getRightArmBoneStateMachine() { return rightArmBoneStateMachine; }
 
     @Override
-    public boolean isLieDown() {
-        return false;
-    }
+    public boolean isLieDown() { return false; }
 
     @Override
-    public Vec3 getVehicleAttachmentPoint(Entity entity) {
-        return super.getVehicleAttachmentPoint(entity).add(0,0.65,0);
+    public @NotNull Vec3 getVehicleAttachmentPoint(Entity entity) {
+        return super.getVehicleAttachmentPoint(entity).add(0, 0.65, 0);
     }
 
     public static class HumanoidBuilder extends AttributeBuilder {
         private ItemStack mainHand = ItemStack.EMPTY;
 
-        public HumanoidBuilder() {
-        }
+        public HumanoidBuilder() {}
 
         public HumanoidBuilder setMainHand(ItemStack mainHand) {
             this.mainHand = mainHand;
             return this;
         }
-
     }
-
-
 }
