@@ -14,8 +14,9 @@ import java.nio.charset.Charset;
 
 @Pseudo
 @Mixin(targets = {
-        "mod.azure.azurelib.common.internal.common.loading.FileLoader", // < 3.1.3
-        "mod.azure.azurelib.common.loading.FileLoader" // >= 3.1.3
+        "mod.azure.azurelib.common.internal.common.loading.FileLoader", // AzureLib < 3.1.3
+        "mod.azure.azurelib.common.loading.FileLoader", // AzureLib >= 3.1.3
+        "mod.azure.azurelibarmor.common.loading.FileLoader" // AzureLibArmor
 }, remap = false)
 public class AzurelibFileLoaderMixin {
     @WrapOperation(method = "getFileContents", at = @At(value = "INVOKE", target = "Lorg/apache/commons/io/IOUtils;toString(Ljava/io/InputStream;Ljava/nio/charset/Charset;)Ljava/lang/String;"))
