@@ -1,5 +1,6 @@
 package org.confluence.terraentity.entity.ai.goal.behavior;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.goal.Goal;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.SelectorNode;
@@ -9,6 +10,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.decoration.ConditionNo
 import org.confluence.terraentity.entity.ai.goal.behavior.decoration.InverterNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.decoration.RepeaterNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.GoalWrapper;
+import org.confluence.terraentity.entity.ai.goal.behavior.leaf.RandomWaitAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.WaitAction;
 
 /**
@@ -48,6 +50,14 @@ public class BTFactory {
         return new WaitAction(ticks);
     }
 
+    public static BTNode waitRandom(int minInclusive, int maxInclusive, RandomSource random) {
+        return new RandomWaitAction(minInclusive, maxInclusive, random);
+    }
+
+    public static BTNode waitRandom(int minInclusive, int maxInclusive) {
+        return waitRandom(minInclusive, maxInclusive, RandomSource.create());
+    }
+
     public static BTNode success(Runnable runnable) {
         return new BTNode() {
             @Override
@@ -81,8 +91,6 @@ public class BTFactory {
     public static GoalWrapper goal(Goal goal) {
         return new GoalWrapper(goal);
     }
-
-
 
 
 }

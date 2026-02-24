@@ -6,8 +6,8 @@ import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
  * 等待节点，到达指定时间返回{@link BTStatus#SUCCESS SUCCESS}
  */
 public class WaitAction extends BTNode {
-    private final int waitTicks;
-    private int currentTicks = 0;
+    protected int waitTicks;
+    protected int currentTicks = 0;
 
     public WaitAction(int waitTicks) {
         this.waitTicks = waitTicks;
