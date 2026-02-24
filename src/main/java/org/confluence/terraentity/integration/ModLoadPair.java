@@ -1,6 +1,6 @@
 package org.confluence.terraentity.integration;
 
-import net.neoforged.fml.ModList;
+import org.confluence.lib.util.LibUtils;
 
 public class ModLoadPair {
     private final String id;
@@ -8,7 +8,7 @@ public class ModLoadPair {
 
     public ModLoadPair(String key) {
         this.id = key;
-        this.loaded = ModList.get().isLoaded(key);
+        this.loaded = LibUtils.isModLoaded(key);
     }
 
     public boolean isLoaded() {
