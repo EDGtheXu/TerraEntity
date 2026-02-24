@@ -108,7 +108,7 @@ public class SpikedSlime extends BaseSlime implements GeoEntity {
             return BTFactory.sequence()
                     .addChild(BTFactory.withTimer(20, new RandomLookAction(this.mob)))
                     .addChild(new AnimTriggerAction(this.mob, "Controller", "jump"))
-                    .addChild(BTFactory.waitRandom(10, 20, mob.random))
+                    .addChild(BTFactory.wait(10))
                     .addChild(new JumpForwardAction(this.mob, 0.5f, 0f))
                     .addChild(BTFactory.waitRandom(20, 30, mob.random))
 
