@@ -4,6 +4,8 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.entity.npc.house.HouseDetectInfo;
 import org.confluence.terraentity.init.TEEffects;
 import org.confluence.terraentity.init.TEEntities;
@@ -11,9 +13,8 @@ import org.confluence.terraentity.init.TEItems;
 import org.confluence.terraentity.init.item.*;
 import org.confluence.terraentity.integration.curios.CuriosHelper;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static org.confluence.terraentity.TerraEntity.MODID;
 
@@ -22,16 +23,9 @@ public class TEEnglishProvider extends LanguageProvider {
         super(output, MODID, "en_us");
     }
 
-    private static String toTitleCase(String raw) {
-        return Arrays.stream(raw.split("_"))
-                .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
-                .collect(Collectors.joining(" "));
-    }
-
     @Override
     protected void addTranslations() {
-
-        Consumer<DeferredHolder<Item, ? extends Item>> itemAction = item -> add(item.get(), toTitleCase(item.getId().getPath()));
+        Consumer<DeferredHolder<Item, ? extends Item>> itemAction = item -> add(item.get(), LibUtils.toTitleCase(item.getId().getPath()));
         TESpawnEggItems.ITEMS.getEntries().forEach(itemAction);
         TESummonItems.ITEMS.getEntries().forEach(itemAction);
         TEWhipItems.ITEMS.getEntries().forEach(itemAction);
@@ -41,8 +35,10 @@ public class TEEnglishProvider extends LanguageProvider {
         TEBossSummonsItems.ITEMS.getEntries().forEach(itemAction);
         TEYoyosItems.ITEMS.getEntries().forEach(itemAction);
         add(TEItems.HOUSE_DETECTOR.get(), "House Detector");
-        TEEntities.ENTITIES.getEntries().forEach(entity -> add(entity.get(), toTitleCase(entity.getId().getPath())));
-        TEEffects.EFFECTS.getEntries().forEach(effect -> add(effect.get(), toTitleCase(effect.getId().getPath())));
+
+        TEEntities.getEntities().map(DeferredRegister::getEntries).flatMap(Collection::stream).forEach(entity -> add(entity.get(), LibUtils.toTitleCase(entity.getId().getPath())));
+
+        TEEffects.EFFECTS.getEntries().forEach(effect -> add(effect.get(), LibUtils.toTitleCase(effect.getId().getPath())));
 
         add("terra_entity.trade_lock.drawer.time.title", "Time");
         add("terra_entity.trade_lock.drawer.time.title.expect", "Except");
@@ -73,8 +69,6 @@ public class TEEnglishProvider extends LanguageProvider {
         add("entity.terra_entity.baby_slime", "Baby Slime");
 
         add("message.terra_entity.trade.not_enough_items", "Not Enough Items");
-
-
 
 
         // Config
@@ -140,7 +134,7 @@ public class TEEnglishProvider extends LanguageProvider {
         add("tooltip.terra_entity.chester.desc", "Press shift and right click to switch target container. You can bind a container to it.");
         add("tooltip.terra_entity.chester.current", "Current Container");
 
-            // boomerang
+        // boomerang
         add("tooltip.terra_entity.boomerang.penetration", "Penetrates Count");
         add("tooltip.terra_entity.boomerang.on_hit_effects", "Effects");
         add("tooltip.terra_entity.boomerang.max_count", "Max Count");

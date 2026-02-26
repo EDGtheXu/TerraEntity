@@ -1,5 +1,6 @@
 package org.confluence.terraentity.init.entity;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -12,10 +13,12 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.client.entity.model.GeoModelTextureDecoration;
 import org.confluence.terraentity.client.entity.model.GeoNormalModel;
@@ -28,36 +31,37 @@ import org.confluence.terraentity.init.TEEntities;
 import java.util.List;
 
 public class TEAnimals {
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, TerraEntity.MODID);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<Duck>> DUCK = TEEntities.ENTITIES.register("duck", () -> EntityType.Builder.of(Duck::new, MobCategory.CREATURE).sized(0.4F, 0.7F).eyeHeight(0.644F).passengerAttachments(new Vec3(0.0, 0.7, -0.1)).clientTrackingRange(10).build(TEEntities.Key("duck")));
-    public static final DeferredHolder<EntityType<?>, EntityType<Bunny>> BUNNY = TEEntities.ENTITIES.register("bunny", () -> EntityType.Builder.of(Bunny::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("bunny")));
-    public static final DeferredHolder<EntityType<?>, EntityType<JewelBunny>> JEWEL_BUNNY = TEEntities.ENTITIES.register("jewel_bunny", () -> EntityType.Builder.of(JewelBunny::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("jewel_bunny")));
-    public static final DeferredHolder<EntityType<?>, EntityType<BoomBunny>> EXPLOSIVE_BUNNY = TEEntities.ENTITIES.register("explosive_bunny", () -> EntityType.Builder.of(BoomBunny::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("boom_bunny")));
-    public static final DeferredHolder<EntityType<?>, EntityType<Squirrel>> SQUIRREL = TEEntities.ENTITIES.register("squirrel", () -> EntityType.Builder.of(Squirrel::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("squirrel")));
-    public static final DeferredHolder<EntityType<?>, EntityType<JewelSquirrel>> JEWEL_SQUIRREL = TEEntities.ENTITIES.register("jewel_squirrel", () -> EntityType.Builder.of(JewelSquirrel::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("jewel_squirrel")));
-    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> BIRD = TEEntities.ENTITIES.register("bird", () -> EntityType.Builder.of(Bird::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("bird")));
-    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> BLUE_JAY = TEEntities.ENTITIES.register("blue_jay", () -> EntityType.Builder.of(Bird::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("blue_jay")));
-    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> CARDINAL = TEEntities.ENTITIES.register("cardinal", () -> EntityType.Builder.of(Bird::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("cardinal")));
-    public static final DeferredHolder<EntityType<?>, EntityType<Crab>> CRAB = TEEntities.registerCreature("crab", Crab::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Duck>> DUCK = ENTITIES.register("duck", () -> EntityType.Builder.of(Duck::new, MobCategory.CREATURE).sized(0.4F, 0.7F).eyeHeight(0.644F).passengerAttachments(new Vec3(0.0, 0.7, -0.1)).clientTrackingRange(10).build(TEEntities.Key("duck")));
+    public static final DeferredHolder<EntityType<?>, EntityType<Bunny>> BUNNY = ENTITIES.register("bunny", () -> EntityType.Builder.of(Bunny::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("bunny")));
+    public static final DeferredHolder<EntityType<?>, EntityType<JewelBunny>> JEWEL_BUNNY = ENTITIES.register("jewel_bunny", () -> EntityType.Builder.of(JewelBunny::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("jewel_bunny")));
+    public static final DeferredHolder<EntityType<?>, EntityType<BoomBunny>> EXPLOSIVE_BUNNY = ENTITIES.register("explosive_bunny", () -> EntityType.Builder.of(BoomBunny::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("boom_bunny")));
+    public static final DeferredHolder<EntityType<?>, EntityType<Squirrel>> SQUIRREL = ENTITIES.register("squirrel", () -> EntityType.Builder.of(Squirrel::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("squirrel")));
+    public static final DeferredHolder<EntityType<?>, EntityType<JewelSquirrel>> JEWEL_SQUIRREL = ENTITIES.register("jewel_squirrel", () -> EntityType.Builder.of(JewelSquirrel::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("jewel_squirrel")));
+    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> BIRD = ENTITIES.register("bird", () -> EntityType.Builder.of(Bird::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("bird")));
+    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> BLUE_JAY = ENTITIES.register("blue_jay", () -> EntityType.Builder.of(Bird::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("blue_jay")));
+    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> CARDINAL = ENTITIES.register("cardinal", () -> EntityType.Builder.of(Bird::new, MobCategory.CREATURE).sized(0.4F, 0.5F).clientTrackingRange(8).build(TEEntities.Key("cardinal")));
+    public static final DeferredHolder<EntityType<?>, EntityType<Crab>> CRAB = TEEntities.registerCreature(ENTITIES, "crab", Crab::new, 0.5F, 0.3F);
 
     // 昆虫
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> GLOWING_SNAIL = TEEntities.registerCreature("glowing_snail", SimpleAnimal::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> GRUBBY = TEEntities.registerCreature("grubby", SimpleAnimal::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> MAGGOT = TEEntities.registerCreature("maggot", SimpleAnimal::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> MAGMA_SNAIL = TEEntities.registerCreature("magma_snail", SimpleAnimal::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> SLUGGY = TEEntities.registerCreature("sluggy", SimpleAnimal::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> SNAIL = TEEntities.registerCreature("snail", SimpleAnimal::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> GLOWING_SNAIL = TEEntities.registerCreature(ENTITIES, "glowing_snail", SimpleAnimal::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> GRUBBY = TEEntities.registerCreature(ENTITIES, "grubby", SimpleAnimal::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> MAGGOT = TEEntities.registerCreature(ENTITIES, "maggot", SimpleAnimal::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> MAGMA_SNAIL = TEEntities.registerCreature(ENTITIES, "magma_snail", SimpleAnimal::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> SLUGGY = TEEntities.registerCreature(ENTITIES, "sluggy", SimpleAnimal::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> SNAIL = TEEntities.registerCreature(ENTITIES, "snail", SimpleAnimal::new, 0.5F, 0.3F);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> BUTTERFLY = TEEntities.registerCreature("butterfly", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.butterflyTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> HELL_BUTTERFLY = TEEntities.registerCreature("hell_butterfly", Bird::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> PRISMATIC_LACEWING = TEEntities.registerCreature("prismatic_lacewing", Bird::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> DRAGONFLY = TEEntities.registerCreature("dragonfly", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.dragonflyTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FAIRY = TEEntities.registerCreature("fairy", (e, l) -> new Fairy(e, l, VariantsTextureMaps.fairyTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FEALING = TEEntities.registerCreature("fealing", (e, l) -> new Fairy(e, l, VariantsTextureMaps.fealingTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<JumpableVariantAnimal>> GRASSHOPPER = TEEntities.registerCreature("grasshopper", (e, l) -> new JumpableVariantAnimal(e, l, VariantsTextureMaps.grasshopperTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> LADYBUG = TEEntities.registerCreature("ladybug", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.ladybugTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> SCORPION = TEEntities.registerCreature("scorpion", (e, l) -> new SimpleVariantAnimal(e, l, VariantsTextureMaps.scorpionTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> WORM = TEEntities.registerCreature("worm", (e, l) -> new SimpleVariantAnimal(e, l, VariantsTextureMaps.wormTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> BUTTERFLY = TEEntities.registerCreature(ENTITIES, "butterfly", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.butterflyTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> HELL_BUTTERFLY = TEEntities.registerCreature(ENTITIES, "hell_butterfly", Bird::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Bird>> PRISMATIC_LACEWING = TEEntities.registerCreature(ENTITIES, "prismatic_lacewing", Bird::new, 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> DRAGONFLY = TEEntities.registerCreature(ENTITIES, "dragonfly", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.dragonflyTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FAIRY = TEEntities.registerCreature(ENTITIES, "fairy", (e, l) -> new Fairy(e, l, VariantsTextureMaps.fairyTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FEALING = TEEntities.registerCreature(ENTITIES, "fealing", (e, l) -> new Fairy(e, l, VariantsTextureMaps.fealingTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JumpableVariantAnimal>> GRASSHOPPER = TEEntities.registerCreature(ENTITIES, "grasshopper", (e, l) -> new JumpableVariantAnimal(e, l, VariantsTextureMaps.grasshopperTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> LADYBUG = TEEntities.registerCreature(ENTITIES, "ladybug", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.ladybugTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> SCORPION = TEEntities.registerCreature(ENTITIES, "scorpion", (e, l) -> new SimpleVariantAnimal(e, l, VariantsTextureMaps.scorpionTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> WORM = TEEntities.registerCreature(ENTITIES, "worm", (e, l) -> new SimpleVariantAnimal(e, l, VariantsTextureMaps.wormTextures), 0.5F, 0.3F);
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -160,6 +164,7 @@ public class TEAnimals {
         return Animal::checkAnimalSpawnRules; // confluence mixin here
     }
 
-    public static void register() {
+    public static void register(IEventBus bus) {
+        ENTITIES.register(bus);
     }
 }

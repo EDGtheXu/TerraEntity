@@ -1,5 +1,6 @@
 package org.confluence.terraentity.init.entity;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
@@ -7,19 +8,20 @@ import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.client.entity.renderer.mob.NPCRenderer;
 import org.confluence.terraentity.entity.npc.*;
 import org.confluence.terraentity.init.TEEntities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TENpcEntities {
-    public static final List<DeferredHolder<EntityType<?>, ? extends EntityType<?>>> NPCS = new ArrayList<>();
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, TerraEntity.MODID);
+
     /// 向导
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractTerraNPC>> GUIDE = register("guide", SimpleNPC::new, MobCategory.CREATURE, 0.6f, 1.85f);
     /// 爆破专家
@@ -61,9 +63,7 @@ public class TENpcEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractTerraNPC>> WIZARD = register("wizard", SimpleNPC::new, MobCategory.CREATURE, 0.6f, 1.85f);
 
     private static <T extends Mob> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, EntityType.EntityFactory<T> entityFactory, MobCategory category, float width, float height) {
-        DeferredHolder<EntityType<?>, EntityType<T>> holder = TEEntities.registerEntity(name, entityFactory, category, width, height);
-        NPCS.add(holder);
-        return holder;
+        return TEEntities.registerEntity(ENTITIES, name, entityFactory, category, width, height);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -136,7 +136,7 @@ public class TENpcEntities {
         event.register(ZOOLOGIST.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, AbstractTerraNPC::checkRoutineMonsterSpawn, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 
-    public static void register() {
-
+    public static void register(IEventBus bus) {
+        ENTITIES.register(bus);
     }
 }

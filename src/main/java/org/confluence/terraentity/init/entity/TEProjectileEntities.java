@@ -1,6 +1,7 @@
 package org.confluence.terraentity.init.entity;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -8,8 +9,10 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.client.entity.model.*;
 import org.confluence.terraentity.client.entity.renderer.mob.GeoNegativeVolumeRenderer;
@@ -21,8 +24,10 @@ import org.confluence.terraentity.init.TEEntities;
 import org.confluence.terraentity.init.TEParticles;
 
 public class TEProjectileEntities {
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, TerraEntity.MODID);
+
     // 回旋镖
-    public static final DeferredHolder<EntityType<?>, EntityType<BoomerangProjectile>> BOOMERANG_PROJECTILE = TEEntities.ENTITIES.register("boomerang_projectile", () -> EntityType.Builder.<BoomerangProjectile>of(BoomerangProjectile::new, MobCategory.MISC).sized(0.5F, 0.5F).build(TEEntities.Key("boomerang_projectile")));
+    public static final DeferredHolder<EntityType<?>, EntityType<BoomerangProjectile>> BOOMERANG_PROJECTILE = ENTITIES.register("boomerang_projectile", () -> EntityType.Builder.<BoomerangProjectile>of(BoomerangProjectile::new, MobCategory.MISC).sized(0.5F, 0.5F).build(TEEntities.Key("boomerang_projectile")));
     public static final DeferredHolder<EntityType<?>, EntityType<ThrowableProj>> CABBAGE_PROJ = registerProj("cabbage_proj", ThrowableProj::new, 0.5F, 0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<LineProj>> BEE_STICK_PROJ = registerProj("bee_stick_proj", (e, l) ->
             new LineProj(e, l).setTexture(TerraEntity.space("textures/entity/model/stinger.png")), 0.5F, 0.5F);
@@ -50,15 +55,15 @@ public class TEProjectileEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<SpikeBallProjectile>> SPIKE_BALL = registerProj("spike_ball_proj", SpikeBallProjectile::new, 1.5F, 1.5F);
 
     // 鞭子
-    public static final DeferredHolder<EntityType<?>, EntityType<WhipEntity>> WHIP_PROJECTILE = TEEntities.ENTITIES.register("whip_projectile", () -> EntityType.Builder.<WhipEntity>of(WhipEntity::new, MobCategory.MISC).updateInterval(1).clientTrackingRange(1).sized(0.5F, 0.5F).build(TEEntities.Key("whip_projectile")));
+    public static final DeferredHolder<EntityType<?>, EntityType<WhipEntity>> WHIP_PROJECTILE = ENTITIES.register("whip_projectile", () -> EntityType.Builder.<WhipEntity>of(WhipEntity::new, MobCategory.MISC).updateInterval(1).clientTrackingRange(1).sized(0.5F, 0.5F).build(TEEntities.Key("whip_projectile")));
 
     //子弹
-    public static final DeferredHolder<EntityType<?>, EntityType<TrailProjectile>> TRAIL_PROJECTILE = TEEntities.ENTITIES.register("trail_projectile", () -> EntityType.Builder.<TrailProjectile>of(TrailProjectile::new, MobCategory.MISC)
+    public static final DeferredHolder<EntityType<?>, EntityType<TrailProjectile>> TRAIL_PROJECTILE = ENTITIES.register("trail_projectile", () -> EntityType.Builder.<TrailProjectile>of(TrailProjectile::new, MobCategory.MISC)
             .sized(0.25F, 0.25F).setUpdateInterval(2).setTrackingRange(64).setShouldReceiveVelocityUpdates(true)
             .build(TEEntities.Key("trail_projectile")));
 
     // OBB剑气
-    public static final DeferredHolder<EntityType<?>, EntityType<TrailSwordProj>> TRAIL_SWORD_PROJECTILE = TEEntities.ENTITIES.register("trail_sword_projectile", () -> EntityType.Builder.<TrailSwordProj>of(TrailSwordProj::new, MobCategory.MISC).updateInterval(1).clientTrackingRange(1).sized(0.5F, 0.5F).build(TEEntities.Key("trail_sword_projectile")));
+    public static final DeferredHolder<EntityType<?>, EntityType<TrailSwordProj>> TRAIL_SWORD_PROJECTILE = ENTITIES.register("trail_sword_projectile", () -> EntityType.Builder.<TrailSwordProj>of(TrailSwordProj::new, MobCategory.MISC).updateInterval(1).clientTrackingRange(1).sized(0.5F, 0.5F).build(TEEntities.Key("trail_sword_projectile")));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BeeProj>> BEE_PROJ = registerProj("bee_proj", BeeProj::new, 1.2F, 1.2F);
 
@@ -117,12 +122,14 @@ public class TEProjectileEntities {
     }
 
     public static <T extends Projectile> DeferredHolder<EntityType<?>, EntityType<T>> registerProj(String name, EntityType.EntityFactory<T> entityFactory, float w, float h) {
-        return TEEntities.ENTITIES.register(name, () -> EntityType.Builder.of(entityFactory, MobCategory.MISC).clientTrackingRange(10).sized(w, h).build(TEEntities.Key(name)));
+        return ENTITIES.register(name, () -> EntityType.Builder.of(entityFactory, MobCategory.MISC).clientTrackingRange(10).sized(w, h).build(TEEntities.Key(name)));
     }
 
     public static <T extends Projectile> DeferredHolder<EntityType<?>, EntityType<T>> registerProj(String name, EntityType.EntityFactory<T> entityFactory) {
         return registerProj(name, entityFactory, 1, 1);
     }
 
-    public static void register() {}
+    public static void register(IEventBus bus) {
+        ENTITIES.register(bus);
+    }
 }
