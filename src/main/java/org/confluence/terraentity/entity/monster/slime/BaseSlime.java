@@ -71,11 +71,11 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
 
     Predicate<FloatRGB> colorTest = c ->
             c.equals(SlimeColor_Green) ||
-            c.equals(SlimeColor_Blue) ||
-            c.equals(SlimeColor_Purple) ||
-            c.equals(SlimeColor_Pink) ||
-            c.equals(SlimeColor_Ice) ||
-            c.equals(SlimeColor_Jungle) ;
+                    c.equals(SlimeColor_Blue) ||
+                    c.equals(SlimeColor_Purple) ||
+                    c.equals(SlimeColor_Pink) ||
+                    c.equals(SlimeColor_Ice) ||
+                    c.equals(SlimeColor_Jungle);
 
     @Override
     protected void registerGoals() {
@@ -235,19 +235,17 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
 
     @Override
     protected void dealDamage(@NotNull LivingEntity pLivingEntity) {
-        if (isAlive()) {
-            if (this.isAlive() && this.isWithinMeleeAttackRange(pLivingEntity) && this.hasLineOfSight(pLivingEntity) && pLivingEntity.hurt(damageSources().mobAttack(this), getAttackDamage())) {
-                playSound(SoundEvents.SLIME_ATTACK, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
-                DamageSource damagesource = this.damageSources().mobAttack(this);
-                if (this.level() instanceof ServerLevel serverlevel)
-                    EnchantmentHelper.doPostAttackEffects(serverlevel, pLivingEntity, damagesource);
-                if (getType() == TEMonsterEntities.ICE_SLIME.get()) {
-                    if (TEUtils.isMaster(level(), blockPosition()) || (TEUtils.isAtLeastExpert(level(), blockPosition()) && level().random.nextBoolean())) {
-                        pLivingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 0), this);
-                    }
-                } else if (getType() == TEMonsterEntities.LAVA_SLIME.get()) {
-                    pLivingEntity.setRemainingFireTicks(100);
+        if (this.isAlive() && this.isWithinMeleeAttackRange(pLivingEntity) && this.hasLineOfSight(pLivingEntity) && pLivingEntity.hurt(damageSources().mobAttack(this), getAttackDamage())) {
+            playSound(SoundEvents.SLIME_ATTACK, 1.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
+            DamageSource damagesource = this.damageSources().mobAttack(this);
+            if (this.level() instanceof ServerLevel serverlevel)
+                EnchantmentHelper.doPostAttackEffects(serverlevel, pLivingEntity, damagesource);
+            if (getType() == TEMonsterEntities.ICE_SLIME.get()) {
+                if (TEUtils.isMaster(level(), blockPosition()) || (TEUtils.isAtLeastExpert(level(), blockPosition()) && level().random.nextBoolean())) {
+                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 0), this);
                 }
+            } else if (getType() == TEMonsterEntities.LAVA_SLIME.get()) {
+                pLivingEntity.setRemainingFireTicks(100);
             }
         }
     }
