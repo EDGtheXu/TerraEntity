@@ -2,6 +2,7 @@ package org.confluence.terraentity.entity.animal;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.random.SimpleWeightedRandomList;
 import org.confluence.terraentity.TerraEntity;
 
 import java.util.AbstractMap;
@@ -14,6 +15,7 @@ import java.util.stream.IntStream;
  * 存储变种的TextureMap
  */
 public class VariantsTextureMaps {
+    public static final int GOLD_RARITY = 400;
 
     private VariantsTextureMaps() {
         throw new IllegalStateException("Utility class");
@@ -55,6 +57,8 @@ public class VariantsTextureMaps {
             TerraEntity.space("ulysses_butterfly.png"),
             TerraEntity.space("zebra_swallowtail_butterfly.png")
     ));
+    public static final SimpleWeightedRandomList<Integer> butterflyVariants = WeightedVariantAnimal.createFromRarity(butterflyTextures.size(), GOLD_BUTTERFLY_ID, GOLD_RARITY);
+
     public static final int BLACK_DRAGONFLY_ID = 0;
     public static final int BLUE_DRAGONFLY_ID = 1;
     public static final int GOLD_DRAGONFLY_ID = 2;
@@ -71,6 +75,8 @@ public class VariantsTextureMaps {
             TerraEntity.space("red_dragonfly.png"),
             TerraEntity.space("yellow_dragonfly.png")
     ));
+    public static final SimpleWeightedRandomList<Integer> dragonflyVariants = WeightedVariantAnimal.createFromRarity(dragonflyTextures.size(), GOLD_DRAGONFLY_ID, GOLD_RARITY);
+
     public static final int BLUE_FAIRY_ID = 2;
     public static final int GREEN_FAIRY_ID = 1;
     public static final int PINK_FAIRY_ID = 0;
@@ -79,28 +85,37 @@ public class VariantsTextureMaps {
             TerraEntity.space("green_fairy.png"),
             TerraEntity.space("pink_fairy.png")
     ));
+    public static final SimpleWeightedRandomList<Integer> fairyVariants = WeightedVariantAnimal.createAverage(fairyTextures.size());
+
     public static final int COMMON_FEALING_ID = 0;
     public static final Map<Integer, ResourceLocation> fealingTextures = makeAnimalTextureMap("fairy", List.of(
             TerraEntity.space("faeling.png")
     ));
+    public static final SimpleWeightedRandomList<Integer> fealingVariants = WeightedVariantAnimal.createSingleton();
+
     public static final int GOLD_GRASSHOPPER_ID = 0;
     public static final int COMMON_GRASSHOPPER_ID = 1;
     public static final Map<Integer, ResourceLocation> grasshopperTextures = makeAnimalTextureMap("grasshopper", List.of(
             TerraEntity.space("gold_grasshopper.png"),
             TerraEntity.space("grasshopper.png")
     ));
+    public static final SimpleWeightedRandomList<Integer> grasshopperVariants = WeightedVariantAnimal.createFromRarity(grasshopperTextures.size(), GOLD_GRASSHOPPER_ID, GOLD_RARITY);
+
     public static final int GOLD_LADYBUG_ID = 0;
     public static final int COMMON_LADYBUG_ID = 1;
     public static final Map<Integer, ResourceLocation> ladybugTextures = makeAnimalTextureMap("ladybug", List.of(
             TerraEntity.space("gold_ladybug.png"),
             TerraEntity.space("ladybug.png")
     ));
+    public static final SimpleWeightedRandomList<Integer> ladybugVariants = WeightedVariantAnimal.createFromRarity(ladybugTextures.size(), GOLD_LADYBUG_ID, GOLD_RARITY);
+
     public static final int BLACK_SCORPION_ID = 0;
     public static final int SCORPION_ID = 1;
     public static final Map<Integer, ResourceLocation> scorpionTextures = makeAnimalTextureMap("scorpion", List.of(
             TerraEntity.space("black_scorpion.png"),
             TerraEntity.space("scorpion.png")
     ));
+
     public static final int ENCHANTED_NIGHTCRAWLER_ID = 0;
     public static final int GOLD_WORM_ID = 1;
     public static final int COMMON_WORM_ID = 2;
@@ -109,4 +124,5 @@ public class VariantsTextureMaps {
             TerraEntity.space("gold_worm.png"),
             TerraEntity.space("worm.png")
     ));
+    public static final SimpleWeightedRandomList<Integer> wormVariants = WeightedVariantAnimal.createFromRarity(wormTextures.size(), GOLD_WORM_ID, GOLD_RARITY);
 }

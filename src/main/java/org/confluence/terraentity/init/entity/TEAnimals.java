@@ -30,6 +30,8 @@ import org.confluence.terraentity.init.TEEntities;
 
 import java.util.List;
 
+import static org.confluence.terraentity.entity.animal.VariantsTextureMaps.*;
+
 public class TEAnimals {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, TerraEntity.MODID);
 
@@ -52,16 +54,16 @@ public class TEAnimals {
     public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> SLUGGY = TEEntities.registerCreature(ENTITIES, "sluggy", SimpleAnimal::new, 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<SimpleAnimal>> SNAIL = TEEntities.registerCreature(ENTITIES, "snail", SimpleAnimal::new, 0.5F, 0.3F);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> BUTTERFLY = TEEntities.registerCreature(ENTITIES, "butterfly", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.butterflyTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> BUTTERFLY = TEEntities.registerCreature(ENTITIES, "butterfly", (e, l) -> new BirdVariantAnimal(e, l, butterflyTextures, butterflyVariants), 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<Bird>> HELL_BUTTERFLY = TEEntities.registerCreature(ENTITIES, "hell_butterfly", Bird::new, 0.5F, 0.3F);
     public static final DeferredHolder<EntityType<?>, EntityType<Bird>> PRISMATIC_LACEWING = TEEntities.registerCreature(ENTITIES, "prismatic_lacewing", Bird::new, 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> DRAGONFLY = TEEntities.registerCreature(ENTITIES, "dragonfly", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.dragonflyTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FAIRY = TEEntities.registerCreature(ENTITIES, "fairy", (e, l) -> new Fairy(e, l, VariantsTextureMaps.fairyTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FEALING = TEEntities.registerCreature(ENTITIES, "fealing", (e, l) -> new Fairy(e, l, VariantsTextureMaps.fealingTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<JumpableVariantAnimal>> GRASSHOPPER = TEEntities.registerCreature(ENTITIES, "grasshopper", (e, l) -> new JumpableVariantAnimal(e, l, VariantsTextureMaps.grasshopperTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> LADYBUG = TEEntities.registerCreature(ENTITIES, "ladybug", (e, l) -> new BirdVariantAnimal(e, l, VariantsTextureMaps.ladybugTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> SCORPION = TEEntities.registerCreature(ENTITIES, "scorpion", (e, l) -> new SimpleVariantAnimal(e, l, VariantsTextureMaps.scorpionTextures), 0.5F, 0.3F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> WORM = TEEntities.registerCreature(ENTITIES, "worm", (e, l) -> new SimpleVariantAnimal(e, l, VariantsTextureMaps.wormTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> DRAGONFLY = TEEntities.registerCreature(ENTITIES, "dragonfly", (e, l) -> new BirdVariantAnimal(e, l, dragonflyTextures, dragonflyVariants), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FAIRY = TEEntities.registerCreature(ENTITIES, "fairy", (e, l) -> new Fairy(e, l, fairyTextures, fairyVariants), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Fairy>> FEALING = TEEntities.registerCreature(ENTITIES, "fealing", (e, l) -> new Fairy(e, l, fealingTextures, fealingVariants), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JumpableVariantAnimal>> GRASSHOPPER = TEEntities.registerCreature(ENTITIES, "grasshopper", (e, l) -> new JumpableVariantAnimal(e, l, grasshopperTextures, grasshopperVariants), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<BirdVariantAnimal>> LADYBUG = TEEntities.registerCreature(ENTITIES, "ladybug", (e, l) -> new BirdVariantAnimal(e, l, ladybugTextures, ladybugVariants), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> SCORPION = TEEntities.registerCreature(ENTITIES, "scorpion", (e, l) -> new SimpleVariantAnimal(e, l, scorpionTextures), 0.5F, 0.3F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SimpleVariantAnimal>> WORM = TEEntities.registerCreature(ENTITIES, "worm", (e, l) -> new WeightedVariantAnimal(e, l, wormTextures, wormVariants), 0.5F, 0.3F);
 
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
