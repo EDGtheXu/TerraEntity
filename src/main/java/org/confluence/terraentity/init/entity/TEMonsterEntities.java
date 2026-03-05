@@ -108,10 +108,10 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> SNOW_FLINX = registerSimpleMonster("snow_flinx", LandMonsterPrefab.SNOW_FLINX_BUILDER, 1.25F, 1.25F);
 
     // 水怪
-    public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> PIRANHA = TEEntities.registerMonster(ENTITIES, "piranha", (e, l) -> new Piranha(e, l), 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> BLUE_JELLYFISH = TEEntities.registerMonster(ENTITIES, "blue_jellyfish", (e, l) -> new JellyFish(e, l), 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> PINK_JELLYFISH = TEEntities.registerMonster(ENTITIES, "pink_jellyfish", (e, l) -> new JellyFish(e, l), 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> SHARK = TEEntities.registerMonster(ENTITIES, "shark", (e, l) -> new Piranha(e, l), 2.5F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> PIRANHA = TEEntities.registerMonster(ENTITIES, "piranha", Piranha::new, 0.5F, 0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> BLUE_JELLYFISH = TEEntities.registerMonster(ENTITIES, "blue_jellyfish", JellyFish::new, 0.5F, 0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> PINK_JELLYFISH = TEEntities.registerMonster(ENTITIES, "pink_jellyfish", JellyFish::new, 0.5F, 0.5F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> SHARK = TEEntities.registerMonster(ENTITIES, "shark", Piranha::new, 2.5F, 1F);
 
 
     // 蜜蜂

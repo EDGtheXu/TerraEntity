@@ -118,7 +118,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
             this.addDeltaMovement(force);
         }
 
-        doCollisionAttack(this::canAttackTarget, this::doHurtTarget);
+        doCollisionAttack(this::canHitEntity, this::doHurtTarget);
 
         Entity entity = this.getOwner();
         if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
@@ -150,6 +150,12 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
             this.discard();
         }
 
+    }
+
+    @Override
+    protected boolean canHitEntity(Entity target) {
+        return (!(getOwner() instanceof LivingEntity living) || !target.isInvulnerableTo(getDamageSource(living))) &&
+                TEUtils.projectileCanHurtEntityTest.test(this, target);
     }
 
     private boolean isBaking() {
@@ -292,20 +298,6 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
         }
     }
 
-    public boolean canAttackTarget(Entity target) {
-        Entity entity = getOwner();
-        // 不能攻击主人
-        if (entity == target) return false;
-
-        if (!target.isAttackable()) {
-            // 不可攻击的实体
-            return false;
-        }
-
-        // 不能攻击坐骑
-        return entity == null || !entity.isPassengerOfSameVehicle(target);
-    }
-
     public boolean doHurtTarget(Entity entity) {
         if (summon_doHurtTarget(entity)) {
             LivingEntity target = null;
@@ -333,7 +325,7 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
         if (getOwner() instanceof LivingEntity owner) {
 
             float f = 0;
-            DamageSource damagesource = this.damageSources().mobAttack(owner);
+            DamageSource damagesource = getDamageSource(owner);
             Level var5 = this.level();
             if (var5 instanceof ServerLevel) {
                 f = item.getAttackDamage();
@@ -358,6 +350,10 @@ public class YoyosEntity extends Projectile implements ILeftClickReceiver, GeoEn
             return flag;
         }
         return false;
+    }
+
+    protected DamageSource getDamageSource(LivingEntity owner) {
+        return damageSources().mobAttack(owner);
     }
 
     @Override
