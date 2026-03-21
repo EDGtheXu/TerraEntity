@@ -1,7 +1,9 @@
 package org.confluence.terraentity.entity.ai.goal.behavior;
 
 import net.minecraft.world.entity.Mob;
+import org.confluence.terraentity.api.event.RedirectBTEvent;
 import org.confluence.terraentity.entity.ai.goal.behavior.webviewer.BTServer;
+import org.confluence.terraentity.utils.AdapterUtils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,7 +38,8 @@ public abstract class BTRoot<T extends Mob> extends BTNode {
     public void start() {
         super.start();
         if(this.child == null) {
-            this.child = this.createBehaviorTree();
+            RedirectBTEvent event = AdapterUtils.postEvent(new RedirectBTEvent(mob));
+            this.child = event.getRedirectionOrDefault(this::createBehaviorTree);
         }
         child.start();
     }

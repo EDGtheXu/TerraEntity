@@ -30,6 +30,7 @@ public class TEChineseProvider extends LanguageProvider {
 
         add("container.terra_entity.chester", "切斯特");
 
+        add("key.terra_entity.gameplay", "Terra Entity");
         add("key.terra_entity.ride", "使用坐骑(需要CuriosAPI)");
 
 

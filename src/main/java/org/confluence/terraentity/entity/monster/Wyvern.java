@@ -157,7 +157,7 @@ public class Wyvern<S extends BaseWormPart> extends BaseWorm<S> implements IDisc
         }
     }
 
-    static class WyvernAttackGoal<T extends Mob & IHeightControlMob> extends ComeAndBackDashAttackGoal<T> {
+    public static class WyvernAttackGoal<T extends Mob & IHeightControlMob> extends ComeAndBackDashAttackGoal<T> {
 
         ResourceLocation followRangeModifier;
         int triggerDash = 0;

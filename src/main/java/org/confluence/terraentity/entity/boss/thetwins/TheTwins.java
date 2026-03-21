@@ -202,6 +202,9 @@ public class TheTwins extends AbstractTerraBossBase implements Boss {
                 } else {
                     retinazerUUID = retinazer.getUUID();
                 }
+                entityData.set(DATA_RETINAZER_ID, retinazer.getId());
+                entityData.set(DATA_SPAZMATISM_ID, spazmatism.getId());
+
             }
         }
         return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);

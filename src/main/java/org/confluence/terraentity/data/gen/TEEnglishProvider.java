@@ -62,7 +62,8 @@ public class TEEnglishProvider extends LanguageProvider {
 
         add("container.terra_entity.chester", "Chester");
 
-        add("key.terra_entity.ride", "Use Ride(need CuriosAPI");
+        add("key.terra_entity.gameplay", "Terra Entity");
+        add("key.terra_entity.ride", "Use Ride(need CuriosAPI)");
 
 
         add("entity.terra_entity.mother_slime", "Mother Slime");
