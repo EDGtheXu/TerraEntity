@@ -143,7 +143,7 @@ public class TEBossEntities {
         event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(15.6, 1040, 24).build());
         event.put(TEBossEntities.PLANTERA_TENTACLE.get(), AttBuilder.createBoss(15.6, PlanteraTentacle.MAX_HEALTH, 20).build());
 
-        event.put(TEBossEntities.PRIME_ENDER_DRAGON.get(), AttBuilder.createBoss(1, 999999, 0).build());
+        event.put(TEBossEntities.PRIME_ENDER_DRAGON.get(), AttBuilder.createBoss(32, 4624, 20).build());
     }
 
     public static void register(IEventBus bus) {

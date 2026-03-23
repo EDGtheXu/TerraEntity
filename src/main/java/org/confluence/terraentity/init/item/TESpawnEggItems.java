@@ -101,6 +101,7 @@ public class TESpawnEggItems {
     public static final DeferredItem<SpawnEggItem> DEERCLOPS_SPAWN_EGG = registerEgg("deerclops_spawn_egg", TEBossEntities.DEERCLOPS, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> WALL_OF_FLESH_SPAWN_EGG = registerEgg("wall_of_flesh_spawn_egg", TEBossEntities.WALL_OF_FLESH, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> HILL_OF_FLESH_SPAWN_EGG = registerEgg("hill_of_flesh_spawn_egg", TEBossEntities.HILL_OF_FLESH, 0xffffff, 0xffffff);
+    public static final DeferredItem<SpawnEggItem> PRIME_ENDER_DRAGON_SPAWN_EGG = registerEgg("prime_ender_dragon_spawn_egg", TEBossEntities.PRIME_ENDER_DRAGON, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> RETINAZER_SPAWN_EGG = registerEgg("retinazer_spawn_egg", TEBossEntities.RETINAZER, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> SPAZMATISM_SPAWN_EGG = registerEgg("spazmatism_spawn_egg", TEBossEntities.SPAZMATISM, 0xffffff, 0xffffff);
     public static final DeferredItem<SpawnEggItem> THE_TWINS_SPAWN_EGG = registerEgg("the_twins_spawn_egg", TEBossEntities.THE_TWINS, 0xffffff, 0xffffff);

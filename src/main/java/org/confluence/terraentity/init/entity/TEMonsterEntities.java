@@ -62,7 +62,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> ICE_SLIME = registerSlime("ice_slime", 0xB3F0EA, 2);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> LAVA_SLIME = ENTITIES.register("lava_slime", () -> EntityType.Builder.<BaseSlime>of((entityType, level) -> new BaseSlime(entityType, level, 0xFFB150, 2), MobCategory.MONSTER).sized(0.6F, 0.6F).clientTrackingRange(10).fireImmune().build(TEEntities.Key("lava_slime")));
     public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> LUMINOUS_SLIME = registerSlime("luminous_slime", 0xFFFFFF, 2);
-    public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> CRIMSLIME = registerSlime("crimson_slime", 0x8B4949, 2);
+    public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> CRIMSLIME = registerSlime("crimslime", 0x8B4949, 2);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> PURPLE_SLIME = registerSlime("purple_slime", 0xf334f8, 2);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> RED_SLIME = registerSlime("red_slime", 0xf83434, 2);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseSlime>> TROPIC_SLIME = registerSlime("tropic_slime", 0x73bcf4, 2);
