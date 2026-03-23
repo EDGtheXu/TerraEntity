@@ -11,6 +11,7 @@ import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.client.buffer.DebugBlocksHelper;
@@ -29,8 +30,10 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
 import software.bernie.geckolib.animation.RawAnimation;
 
+import java.util.List;
+
 public class PrimeEnderDragon extends BaseBehaviorTreeMob implements FlyingAnimal, Boss {
-    public final double[][] positions = new double[64][3];
+    public final double[][] positions = new double[64][6];
     public int posPointer = -1;
 
     private static float _turnSpeedBase = 0.7f;
@@ -127,7 +130,7 @@ public class PrimeEnderDragon extends BaseBehaviorTreeMob implements FlyingAnima
                             ))
                             // 直到满足条件后退出技能一
                             .addChild(new RepeatUntilNode(BTStatus.SUCCESS, new ConditionAction(
-                                    Condition.and(new AngleLowerThanCondition(mob, Math.PI / 4), new DistanceLowerThanCondition(mob, 5))
+                                    Condition.and(new AngleLowerThanCondition(mob, Math.PI / 4), new DistanceLowerThanCondition(mob, 8))
                             )))
                     )
                     // 惯性冲刺一段时间
@@ -218,8 +221,10 @@ public class PrimeEnderDragon extends BaseBehaviorTreeMob implements FlyingAnima
             } else {
                 if (this.posPointer < 0) {
                     for (int i = 0; i < this.positions.length; i++) {
-                        this.positions[i][0] = (double)this.getYRot();
-                        this.positions[i][1] = this.getY();
+                        this.positions[i][0] = this.getYRot();
+                        this.positions[i][1] = this.getX();
+                        this.positions[i][2] = this.getY();
+                        this.positions[i][3] = this.getZ();
                     }
                 }
 
@@ -228,7 +233,9 @@ public class PrimeEnderDragon extends BaseBehaviorTreeMob implements FlyingAnima
                 }
 
                 this.positions[this.posPointer][0] = this.getYRot();
-                this.positions[this.posPointer][1] = this.getY();
+                this.positions[this.posPointer][1] = this.getX();
+                this.positions[this.posPointer][2] = this.getY();
+                this.positions[this.posPointer][3] = this.getZ();
 
                 if (this.level().isClientSide) {
 //                    if (this.lerpSteps > 0) {
@@ -319,21 +326,44 @@ public class PrimeEnderDragon extends BaseBehaviorTreeMob implements FlyingAnima
         partialTicks = 1.0F - partialTicks;
         int i = this.posPointer - bufferIndexOffset & 63;
         int j = this.posPointer - bufferIndexOffset - 1 & 63;
-        double[] adouble = new double[3];
+
+        double[] adouble = new double[6];
         double d0 = this.positions[i][0];
         double d1 = Mth.wrapDegrees(this.positions[j][0] - d0);
         adouble[0] = d0 + d1 * (double)partialTicks;
-        d0 = this.positions[i][1];
-        d1 = this.positions[j][1] - d0;
-        adouble[1] = d0 + d1 * (double)partialTicks;
-        adouble[2] = Mth.lerp(partialTicks, this.positions[i][2], this.positions[j][2]);
+
+//        d0 = this.positions[i][1];
+//        d1 = this.positions[j][1] - d0;
+//        adouble[1] = d0 + d1 * (double)partialTicks;
+//
+//        d0 = this.positions[i][2];
+//        d1 = this.positions[j][2] - d0;
+//        adouble[2] = d0 + d1 * (double)partialTicks;
+//
+//        d0 = this.positions[i][3];
+//        d1 = this.positions[j][3] - d0;
+//        adouble[3] = d0 + d1 * (double)partialTicks;
+//
+//        // 计算XZ平面法向量
+//        d0 = this.positions[i][4];
+//        d1 = this.positions[j][4] - d0;
+//        adouble[4] = d0 + d1 * (double)partialTicks;
+//
+//        d0 = this.positions[i][5];
+//        d1 = this.positions[j][5] - d0;
+//        adouble[5] = d0 + d1 * (double)partialTicks;
+
+
+//        adouble[3] = Mth.lerp(partialTicks, this.positions[i][2], this.positions[j][2]);
+
         return adouble;
     }
     public float getTurnSpeed() {
         float f = (float)this.getDeltaMovement().horizontalDistance() + 1.0F;
         float f1 = Math.min(f, 40.0F);
-        return this.turnSpeed / f1 / f;
+        return 0.2F / f1 / f;
     }
+
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {

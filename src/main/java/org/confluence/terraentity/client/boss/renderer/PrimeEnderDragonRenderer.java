@@ -31,22 +31,34 @@ public class PrimeEnderDragonRenderer extends GeoNormalRenderer<PrimeEnderDragon
         if(name.startsWith("bone")) {
 //            bone.setPosX(80);
             String indexStr = name.substring(4);
+            float factor = -1f;
             if(!indexStr.isEmpty()) {
                 int index = Integer.parseInt(indexStr);
                 if (index >= 6 && index <= 16) {
+                    // 尾巴
                     index -= 1;
                     var t = animatable.getLatencyPos(index, partialTick);
                     bone.setRotY(Mth.wrapDegrees(yaw - (float) t[0]) * 0.017453292F * 0.15F);
                 }else if(index == 2) {
+                    // 后腿
                     var t = animatable.getLatencyPos(4, partialTick);
-                    bone.setRotY(Mth.wrapDegrees(yaw - (float) t[0]) * 0.017453292F );
+                    float angle = Mth.wrapDegrees(yaw - (float) t[0]) * 0.017453292F;
+                    bone.setRotY(angle);
+                    bone.setRotZ(angle * -4F);
                 }else if(index == 19) {
+                    // 前腿和翅膀
                     var t = animatable.getLatencyPos(3, partialTick);
-                    bone.setRotY(Mth.wrapDegrees(yaw - (float) t[0]) * 0.017453292F );
+                    float angle = Mth.wrapDegrees(yaw - (float) t[0]) * 0.017453292F;
+
+                    bone.setRotY(angle);
+                    bone.setRotZ(angle * -2F);
                 }else if(index >= 3 && index <= 5) {
-                    index = 5 - index;
+                    // 头和颈部
+                    index = 7 - index;
                     var t = animatable.getLatencyPos(index, partialTick);
-                    bone.setRotY(Mth.wrapDegrees(-yaw + (float) t[0]) * 0.017453292F * 0.2F);
+                    float angle = Mth.wrapDegrees(-yaw + (float) t[0]) * 0.017453292F * 0.2F;
+                    bone.setRotY(angle);
+                    bone.setRotZ(angle * 5F);
                 }
 
             }

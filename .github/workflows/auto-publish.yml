@@ -52,7 +52,7 @@ jobs:
 #          curseforge-name: "terra_entity-1.1.17-1.21.1-neo"
           modrinth-id: BZKgbCzw
           curseforge-id: 1173196
-          github-tag: 1.1.17-neo
+          github-tag: 1.2.3-neo
 
 
           java: Java 21
