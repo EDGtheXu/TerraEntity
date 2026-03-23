@@ -126,7 +126,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> ICE_BAT = registerSimpleMonster("ice_bat", FlyMonsterPrefab.ICE_BAT_BUILDER, 1.6f, 1.6f);
     public static final DeferredHolder<EntityType<?>, EntityType<AbstractMonster>> SPORE_BAT = registerSimpleMonster("spore_bat", FlyMonsterPrefab.SPORE_BAT_BUILDER, 1.6f, 1.6f);
     // 蠕虫
-    public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> DEVOURER = TEEntities.registerMonster(ENTITIES, "devourer", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get().setSpawnWithoutLight()), 2F, 2F);
+    public static final DeferredHolder<EntityType<?>, EntityType<SurefaceWorm<BaseWormPart>>> DEVOURER = TEEntities.registerMonster(ENTITIES, "devourer", (e, l) ->new SurefaceWorm<>(e, l, new AbstractPrefab().getPrefab().setSpawnWithoutLight().setNoGravity()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> TOMB_CRAWLER = TEEntities.registerMonster(ENTITIES, "tomb_crawler", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> GIANT_WORM = TEEntities.registerMonster(ENTITIES, "giant_worm", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);
     public static final DeferredHolder<EntityType<?>, EntityType<BaseWorm<BaseWormPart>>> LEECH = TEEntities.registerMonster(ENTITIES, "leech", (e, l) -> BaseWorm.simpleWorm(e, l, AbstractPrefab.WARM_BUILDER.get()), 2F, 2F);

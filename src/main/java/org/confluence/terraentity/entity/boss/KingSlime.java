@@ -96,7 +96,7 @@ public class KingSlime extends Slime implements DeathAnimOptions, IBossFSM, Boss
         ).apply(instance, SkillParams::new));
 
         public static SkillParams getDefaultParams() {
-            return new SkillParams(0, 0x73bcf4, 20,
+            return new SkillParams(800, 0x73bcf4, 20,
                     List.of(30, 50, 75, 100),
                     List.of(1.1f, 1.35f, 1.55f, 1.80f),
                     List.of(1.5f, 1.75f, 2f, 2.25f),
