@@ -166,12 +166,9 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
         );
         tag(EntityTypeTags.AXOLOTL_HUNT_TARGETS).add(
                 TEMonsterEntities.PIRANHA.get(),
-                TEMonsterEntities.BLUE_JELLYFISH.get(),
-                TEMonsterEntities.PINK_JELLYFISH.get(),
                 TEMonsterEntities.ARAPAIMA.get(),
-                TEMonsterEntities.CRAWDAD.get(),
-                TEMonsterEntities.GREEN_JELLYFISH.get()
-        );
+                TEMonsterEntities.CRAWDAD.get()
+        ).addTag(TETags.EntityTypes.JELLY_FISH);
         tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(
                 TEMonsterEntities.SNOW_FLINX.get(),
                 TEMonsterEntities.ICE_MIMIC.get(),
@@ -179,12 +176,9 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
         );
         tag(EntityTypeTags.CAN_BREATHE_UNDER_WATER).add(
                 TEMonsterEntities.PIRANHA.get(),
-                TEMonsterEntities.BLUE_JELLYFISH.get(),
-                TEMonsterEntities.PINK_JELLYFISH.get(),
                 TEMonsterEntities.ARAPAIMA.get(),
-                TEMonsterEntities.CRAWDAD.get(),
-                TEMonsterEntities.GREEN_JELLYFISH.get()
-        );
+                TEMonsterEntities.CRAWDAD.get()
+        ).addTag(TETags.EntityTypes.JELLY_FISH);
         tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(
                 TEMonsterEntities.GIANT_SHELLY.get(),
                 TEMonsterEntities.POSSESS_ARMOR.get(),
@@ -193,6 +187,11 @@ public class TEEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 TEMonsterEntities.SAND_POACHER.get(),
                 TEMonsterEntities.HERPLING.get()
                 );
+        tag(TETags.EntityTypes.JELLY_FISH).add(
+                TEMonsterEntities.PINK_JELLYFISH.get(),
+                TEMonsterEntities.GREEN_JELLYFISH.get(),
+                TEMonsterEntities.BLUE_JELLYFISH.get()
+        );
 
     }
 }

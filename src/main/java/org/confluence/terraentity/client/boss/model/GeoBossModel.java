@@ -16,7 +16,10 @@ public class GeoBossModel<T extends Entity & GeoAnimatable> extends GeoModel<T> 
     private final ResourceLocation ANIMATION ;
 
     public GeoBossModel(Supplier<EntityType<T>> entityType) {
-        this(BuiltInRegistries.ENTITY_TYPE.getKey(entityType.get()).getPath());
+        this(BuiltInRegistries.ENTITY_TYPE.getKey(entityType.get()));
+    }
+    public GeoBossModel(ResourceLocation location) {
+        this(location.getPath());
     }
     public GeoBossModel(String entityName) {
         MODEL = TerraEntity.space("geo/entity/boss/" + entityName + ".geo.json");

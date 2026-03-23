@@ -111,7 +111,7 @@ public class TEMonsterEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> PIRANHA = TEEntities.registerMonster(ENTITIES, "piranha", Piranha::new, 0.5F, 0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> BLUE_JELLYFISH = TEEntities.registerMonster(ENTITIES, "blue_jellyfish", JellyFish::new, 0.5F, 0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<JellyFish>> PINK_JELLYFISH = TEEntities.registerMonster(ENTITIES, "pink_jellyfish", JellyFish::new, 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<Piranha>> SHARK = TEEntities.registerMonster(ENTITIES, "shark", Piranha::new, 2.5F, 1F);
+    public static final DeferredHolder<EntityType<?>, EntityType<Shark>> SHARK = TEEntities.registerMonster(ENTITIES, "shark", Shark::new, 2.5F, 1F);
 
 
     // 蜜蜂
@@ -439,12 +439,12 @@ public class TEMonsterEntities {
         event.put(METEOR_HEAD.get(), AttBuilder.fly(AttBuilder.createAttributes(13, 6, 21, 32, 1f, 0.64f)).build());
 
         // swim
-        event.put(PIRANHA.get(), AttBuilder.createAttributes(15, 2, 13, 20, 0.1f, 0.5f).build());
-        event.put(BLUE_JELLYFISH.get(), AttBuilder.createAttributes(17, 4, 13, 16, 0.1f, 0.5f).build());
-        event.put(PINK_JELLYFISH.get(), AttBuilder.createAttributes(36, 6, 15, 16, 0.1f, 0.5f).build());
-        event.put(GREEN_JELLYFISH.get(), AttBuilder.createAttributes(62, 18, 41, 20, 0.1f, 0.5f).build());
-        event.put(SHARK.get(), AttBuilder.createAttributes(156, 2, 20, 48, 0.1f, 0.37f).build());
-        event.put(ARAPAIMA.get(), AttBuilder.createAttributes(104, 30, 39, 32, 0.1f, 0.1f).build());
+        event.put(PIRANHA.get(), AttBuilder.createAttributes(15, 2, 13, 20, 0.1f, 0.5f).moveSpeed(1.2).build());
+        event.put(BLUE_JELLYFISH.get(), AttBuilder.createAttributes(17, 4, 13, 16, 0.1f, 0.5f).moveSpeed(1.2).build());
+        event.put(PINK_JELLYFISH.get(), AttBuilder.createAttributes(36, 6, 15, 16, 0.1f, 0.5f).moveSpeed(1.2).build());
+        event.put(GREEN_JELLYFISH.get(), AttBuilder.createAttributes(62, 18, 41, 20, 0.1f, 0.5f).moveSpeed(1.2).build());
+        event.put(SHARK.get(), AttBuilder.createAttributes(156, 2, 20, 48, 0.1f, 0.37f).moveSpeed(1.2).build());
+        event.put(ARAPAIMA.get(), AttBuilder.createAttributes(104, 30, 39, 32, 0.1f, 0.1f).moveSpeed(1.2).build());
 
 
         // bat

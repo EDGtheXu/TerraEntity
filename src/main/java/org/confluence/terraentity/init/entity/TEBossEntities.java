@@ -69,6 +69,8 @@ public class TEBossEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<PlanteraHook>> PLANTERA_HOOK = TEEntities.registerMonster(ENTITIES, "plantera_hook", PlanteraHook::new, 1.25F, 1.25F);
     public static final DeferredHolder<EntityType<?>, EntityType<PlanteraTentacle>> PLANTERA_TENTACLE = TEEntities.registerMonster(ENTITIES, "plantera_tentacle", PlanteraTentacle::new, 2F, 2F);
 
+    public static final DeferredHolder<EntityType<?>, EntityType<PrimeEnderDragon>> PRIME_ENDER_DRAGON = TEEntities.registerMonster(ENTITIES, "prime_ender_dragon", PrimeEnderDragon::new, 10F, 10F);
+
     @OnlyIn(Dist.CLIENT)
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(TEBossEntities.CROWN_OF_KING_SLIME_MODEL.get(), CrownOfKingSlimeModelRenderer::new);
@@ -103,6 +105,8 @@ public class TEBossEntities {
         event.registerEntityRenderer(TEBossEntities.PLANTERA.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
         event.registerEntityRenderer(TEBossEntities.PLANTERA_HOOK.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 2.2f, 0));
         event.registerEntityRenderer(TEBossEntities.PLANTERA_TENTACLE.get(), c -> new GeoNormalRenderer<>(c, TEMonsterEntities.VISUAL_NEURON.getId(), true, 1f, 0));
+
+        event.registerEntityRenderer(TEBossEntities.PRIME_ENDER_DRAGON.get(), PrimeEnderDragonRenderer::new);
     }
 
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
@@ -138,6 +142,8 @@ public class TEBossEntities {
         event.put(TEBossEntities.PLANTERA.get(), AttBuilder.createBoss(26, 10920, 36).build());
         event.put(TEBossEntities.PLANTERA_HOOK.get(), AttBuilder.createBoss(15.6, 1040, 24).build());
         event.put(TEBossEntities.PLANTERA_TENTACLE.get(), AttBuilder.createBoss(15.6, PlanteraTentacle.MAX_HEALTH, 20).build());
+
+        event.put(TEBossEntities.PRIME_ENDER_DRAGON.get(), AttBuilder.createBoss(1, 999999, 0).build());
     }
 
     public static void register(IEventBus bus) {

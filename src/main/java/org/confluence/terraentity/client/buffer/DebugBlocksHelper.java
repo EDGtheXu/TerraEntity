@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.confluence.terraentity.client.util.ShaderUtil.renderDebugBlock;
 
@@ -17,7 +18,8 @@ import static org.confluence.terraentity.client.util.ShaderUtil.renderDebugBlock
  */
 public class DebugBlocksHelper extends AbstractBufferManager{
 
-    private final Map<BlockPos, DebugInfo> debugInfoMap = new HashMap<>();
+    // 如果在生产环境出现CME，尝试使用ConcurrentHashMap，正常情况不会在服务端添加方块
+    private final Map<BlockPos, DebugInfo> debugInfoMap = new ConcurrentHashMap<>();
     private final int continueTick;
     private static DebugBlocksHelper instance;
 
