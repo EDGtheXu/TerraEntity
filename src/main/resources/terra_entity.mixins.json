@@ -20,7 +20,15 @@
         "accessor.MobAccessor",
         "accessor.ProjectileWeaponAccessor",
         "accessor.SlimeAccessor",
-        "azurelib.AzurelibFileLoaderMixin"
+        "azurelib.AzurelibFileLoaderMixin",
+        "server.LootDataManagerMixin",
+        "server.MobSpawnSettingsBuilderMixin",
+        "server.MobSpawnSettingsMixin",
+        "server.ModifiableBiomeInfoMixin",
+        "server.NaturalSpawnerMixin",
+        "server.RecipeManagerMixin",
+        "server.RegistryDataLoaderMixin",
+        "server.ReloadableServerResourcesMixin"
     ],
     "client": [
         "accessor.CameraAccessor",
@@ -38,5 +46,5 @@
     ],
     "injectors": {
         "defaultRequire": 1
-    }
+  }
 }
