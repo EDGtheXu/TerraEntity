@@ -28,18 +28,18 @@ public class JellyFishRenderer extends GeoNormalRenderer<JellyFish> {
     }
 
     public JellyFishRenderer(EntityRendererProvider.Context renderManager, GeoModel<JellyFish> model) {
-        super(renderManager, model, false, 1,0);
+        super(renderManager, model, false, 1, 0);
 
-        this.addRenderLayer(new AutoGlowingGeoLayer<>(this){
+        this.addRenderLayer(new AutoGlowingGeoLayer<>(this) {
 
             @Override
             public void render(PoseStack poseStack, JellyFish animatable, BakedGeoModel bakedModel, @Nullable RenderType renderType,
                                MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, float partialTick,
                                int packedLight, int packedOverlay) {
-                if(animatable.getSkills().index == 0){
+                if (animatable.getSkills().index == 0) {
                     return;
                 }
-                super.render(poseStack,animatable,bakedModel,renderType,bufferSource,buffer,partialTick,packedLight,packedOverlay);
+                super.render(poseStack, animatable, bakedModel, renderType, bufferSource, buffer, partialTick, packedLight, packedOverlay);
             }
 
             @Override
@@ -51,38 +51,38 @@ public class JellyFishRenderer extends GeoNormalRenderer<JellyFish> {
 
     @Override
     protected void adjustPose(PoseStack poseStack, JellyFish animatable, BakedGeoModel model, float partialTick) {
+        poseStack.translate(0, 0.25F, 0);
+        if (animatable.getSkills().index == 0) {
 
-        if(animatable.getSkills().index == 0){
-
-            Vec3 from = new Vec3(0,1,0);
+            Vec3 from = new Vec3(0, 1, 0);
             Vec3 dir = animatable.lastMovement.lerp(animatable.currentMovement, partialTick);
             Optional<Integer> curContinue = animatable.getSkills().getCurContinue();
-            if(curContinue.isEmpty()){
+            if (curContinue.isEmpty()) {
                 return;
             }
             float progress;
 
-            if(animatable.getSkills().tick < curContinue.get() + 2){
+            if (animatable.getSkills().tick < curContinue.get() + 2) {
                 progress = (animatable.getSkills().tick + partialTick) / curContinue.get();
-                progress = progress * ( 1 - progress) * 7;
-            }else{
+                progress = progress * (1 - progress) * 7;
+            } else {
                 progress = 1;
             }
 
             Vec3 lerp = from.lerp(dir, Mth.clamp(progress, 0, 1));
 
-            Quaternionf rotate = TEUtils.rotateFromV1ToV2(new Vector3f(0,1,0), lerp.toVector3f());
+            Quaternionf rotate = TEUtils.rotateFromV1ToV2(new Vector3f(0, 1, 0), lerp.toVector3f());
             poseStack.mulPose(rotate);
 
         }
 
-        poseStack.mulPose(Axis.YN.rotationDegrees((animatable.tickCount + partialTick) * 3 ));
+        poseStack.mulPose(Axis.YN.rotationDegrees((animatable.tickCount + partialTick) * 3));
     }
 
     @Override
     public void reRender(BakedGeoModel model, PoseStack poseStack, MultiBufferSource bufferSource, JellyFish animatable,
-                          RenderType renderType, VertexConsumer buffer, float partialTick,
-                          int packedLight, int packedOverlay, int colour) {
+                         RenderType renderType, VertexConsumer buffer, float partialTick,
+                         int packedLight, int packedOverlay, int colour) {
         poseStack.pushPose();
         actuallyRender(poseStack, animatable, model, renderType, bufferSource, buffer, true, partialTick, packedLight, packedOverlay, colour);
         postRender(poseStack, animatable, model, bufferSource, buffer, true, partialTick, packedLight, packedOverlay, colour);

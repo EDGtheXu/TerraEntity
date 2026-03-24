@@ -5,6 +5,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.confluence.terraentity.api.entity.IVanillaVariant;
@@ -14,10 +15,17 @@ import java.util.Map;
 
 public class BirdVariantAnimal extends Bird implements IVanillaVariant<Integer> {
     public static final String VARIANT_KEY = "Variant";
+    private final SimpleWeightedRandomList<Integer> variants;
 
-    public BirdVariantAnimal(EntityType<? extends BirdVariantAnimal> entityType, Level level, Map<Integer, ResourceLocation> texturesMap) {
+    public BirdVariantAnimal(
+            EntityType<? extends BirdVariantAnimal> entityType,
+            Level level,
+            Map<Integer, ResourceLocation> texturesMap,
+            SimpleWeightedRandomList<Integer> variants
+    ) {
         super(entityType, level);
         this.texturesMap = texturesMap;
+        this.variants = variants;
     }
 
     Map<Integer, ResourceLocation> texturesMap;
@@ -28,7 +36,7 @@ public class BirdVariantAnimal extends Bird implements IVanillaVariant<Integer> 
     public void onAddedToLevel() {
         super.onAddedToLevel();
         if (!level().isClientSide && !initializedVariant) {
-            this.setVariant(random.nextInt(getTexturesMap().size()));
+            setVariant(variants.getRandomValue(random).orElse(0));
         }
     }
 

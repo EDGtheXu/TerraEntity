@@ -64,7 +64,7 @@ public class TEWhipItems {
                     new TimePossibilityAmplifierEffect("snapthorn", MobEffects.POISON, 60,1,1,2)
                     // 丛林之怒效果，增加攻速
             )));
-    public static final DeferredItem<BaseWhipItem> SPINAL_TAP = registerWhip("spinal_tap", 27f, 4, 0.8f, 13,1.6f, p->p  // 11
+    public static final DeferredItem<BaseWhipItem> SPINAL_TAP = registerWhip("spinal_tap", 29f, 4, 0.8f, 13,1.6f, p->p  // 11
             .setDurability(3600));
     public static final DeferredItem<BaseWhipItem> FIRECRACKER = registerWhip("firecracker", 37f, 0, 0.5f, 15,1.85f, p->p  // 16 0.1=2格距离，生存为准，需要多加俩格
             .setDurability(3600)

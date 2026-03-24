@@ -25,7 +25,6 @@ import org.confluence.terraentity.client.gui.CustomizeBossHealthBar;
 import org.confluence.terraentity.client.post.BossSpawnCameraManager;
 import org.confluence.terraentity.client.post.BrainTranslucent;
 import org.confluence.terraentity.client.post.TongueRenderer;
-import org.confluence.terraentity.client.post.WallOfFleshTranslucent;
 import org.confluence.terraentity.integration.ModChecker;
 import org.confluence.terraentity.item.BaseWhipItem;
 import org.confluence.terraentity.item.YoyosItem;
@@ -64,7 +63,6 @@ public class RenderEvent {
     public static void renderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             BrainTranslucent.render(event);
-            WallOfFleshTranslucent.render(event);
             DebugBlocksHelper.Singleton().render(event);
             NPCChatBubbleBuffer.getInstance().render(event);
             isAfterSky = false;
@@ -135,15 +133,11 @@ public class RenderEvent {
                 poseStack.popPose();
             }
         }
-
-
     }
 
 
     @SubscribeEvent
     public static void calculateCameraDistance(CalculateDetachedCameraDistanceEvent event) {
         BossSpawnCameraManager.INSTANCE.update(Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true));
-
-
     }
 }

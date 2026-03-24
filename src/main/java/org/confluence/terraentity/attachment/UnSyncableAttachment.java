@@ -6,7 +6,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.confluence.terraentity.entity.boss.hillofflesh.HillOfFlesh;
-import org.confluence.terraentity.network.s2c.ClientBoundEventPacket;
+import org.confluence.terraentity.item.DebugItem;
+import org.confluence.terraentity.network.s2c.EventPacketS2C;
 import org.jetbrains.annotations.UnknownNullability;
 
 public class UnSyncableAttachment implements INBTSerializable<CompoundTag> {
@@ -16,6 +17,7 @@ public class UnSyncableAttachment implements INBTSerializable<CompoundTag> {
      * 防止在风暴中走不出来
      */
     int invulnerableStormTime = 20;
+    DebugItem.DebugMode debugMode = DebugItem.DebugMode.BT_WEB_VIEWER;
 
 
     public void setFightingHillOfFlesh(HillOfFlesh fightingHillOfFlesh) {
@@ -29,7 +31,7 @@ public class UnSyncableAttachment implements INBTSerializable<CompoundTag> {
     public void triggerInvulnerableStorm(LivingEntity entity) {
         invulnerableStormTime = 40;
         if(entity instanceof ServerPlayer player){
-            ClientBoundEventPacket.resetCrimsonStorm(player);
+            EventPacketS2C.resetCrimsonStorm(player);
         }
     }
 
@@ -43,6 +45,13 @@ public class UnSyncableAttachment implements INBTSerializable<CompoundTag> {
         return invulnerableStormTime > 0;
     }
 
+    public DebugItem.DebugMode getDebugMode() {
+        return this.debugMode;
+    }
+
+    public void setDebugMode(DebugItem.DebugMode debugMode) {
+        this.debugMode = debugMode;
+    }
 
 
     @Override

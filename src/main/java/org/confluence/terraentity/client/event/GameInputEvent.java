@@ -15,7 +15,7 @@ import org.confluence.terraentity.api.item.ILeftClickStateItem;
 import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.integration.ModChecker;
 import org.confluence.terraentity.item.BaseWhipItem;
-import org.confluence.terraentity.network.c2s.ServerBoundEventPacket;
+import org.confluence.terraentity.network.c2s.EventPacketC2S;
 import org.lwjgl.glfw.GLFW;
 
 import static org.confluence.terraentity.TerraEntity.MODID;
@@ -40,9 +40,9 @@ public class GameInputEvent {
         if (!player.isSpectator() && item instanceof ILeftClickStateItem item1) {
             if (Minecraft.getInstance().mouseHandler.isLeftPressed()) { // 暂时可以这样写省性能，如果后面有新需求，需要注释掉
                 if (event.getScrollDeltaY() > 0) {
-                    ServerBoundEventPacket.wheelUp();
+                    EventPacketC2S.wheelUp(player);
                 } else {
-                    ServerBoundEventPacket.wheelDown();
+                    EventPacketC2S.wheelDown(player);
                 }
             }
 
@@ -63,7 +63,7 @@ public class GameInputEvent {
                     data.leftClicking = false;
                     if (clicking) {
 //                        player.sendSystemMessage(Component.literal("not clicking"));
-                        ServerBoundEventPacket.mouseRelease();
+                        EventPacketC2S.mouseRelease(player);
                     }
                     return;
                 }
@@ -73,7 +73,7 @@ public class GameInputEvent {
                         if (!clicking) {
                             data.leftClicking = true;
 //                            player.sendSystemMessage(Component.literal("clicking"));
-                            ServerBoundEventPacket.mouseLeftClick();
+                            EventPacketC2S.mouseLeftClick(player);
                         }
                     }
                 }
@@ -84,8 +84,9 @@ public class GameInputEvent {
     @SubscribeEvent
     public static void KeyPressed(InputEvent.Key event) {
         if (event.getAction() == InputConstants.PRESS && ModChecker.curios.isLoaded()) {
-            if (TEKeyBindings.RIDE.get().isDown()) { // 这个方法不会在其它地方触发导致崩溃
-                ServerBoundEventPacket.rideOrLeave();
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null && TEKeyBindings.RIDE.get().isDown()) { // 这个方法不会在其它地方触发导致崩溃
+                EventPacketC2S.rideOrLeave(player);
             }
         }
     }

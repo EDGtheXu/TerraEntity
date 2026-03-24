@@ -32,7 +32,9 @@ public class TEBlockTagsProvider extends BlockTagsProvider {
                         Blocks.PEARLESCENT_FROGLIGHT,Blocks.OCHRE_FROGLIGHT,Blocks.VERDANT_FROGLIGHT,
                         Blocks.VERDANT_FROGLIGHT,Blocks.REDSTONE_LAMP,Blocks.COPPER_BULB,Blocks.EXPOSED_COPPER_BULB,
                         Blocks.OXIDIZED_COPPER_BULB,Blocks.WAXED_COPPER_BULB,Blocks.WEATHERED_COPPER_BULB,Blocks.WAXED_EXPOSED_COPPER_BULB,
-                        Blocks.WAXED_OXIDIZED_COPPER_BULB,Blocks.WAXED_WEATHERED_COPPER_BULB);
+                        Blocks.WAXED_OXIDIZED_COPPER_BULB,Blocks.WAXED_WEATHERED_COPPER_BULB)
+                .addOptionalTag(ResourceLocation.parse("terra_furniture:light_source"));
+        ;
 
         this.tag(TETags.Blocks.NPC_HOUSE_CHAIR)
                 .addTag(BlockTags.BEDS)

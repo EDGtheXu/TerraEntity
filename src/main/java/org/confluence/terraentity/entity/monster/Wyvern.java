@@ -16,8 +16,8 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.api.entity.IDiscardWhenRespawnEntity;
 import org.confluence.terraentity.TerraEntity;
-import org.confluence.terraentity.api.entity.IDiscardWhenRespawnEntity;
 import org.confluence.terraentity.api.entity.IHeightControlMob;
 import org.confluence.terraentity.entity.ai.goal.ComeAndBackDashAttackGoal;
 import org.confluence.terraentity.entity.ai.goal.MutableRangeNearestAttackableTargetGoal;
@@ -157,7 +157,7 @@ public class Wyvern<S extends BaseWormPart> extends BaseWorm<S> implements IDisc
         }
     }
 
-    static class WyvernAttackGoal<T extends Mob & IHeightControlMob> extends ComeAndBackDashAttackGoal<T> {
+    public static class WyvernAttackGoal<T extends Mob & IHeightControlMob> extends ComeAndBackDashAttackGoal<T> {
 
         ResourceLocation followRangeModifier;
         int triggerDash = 0;

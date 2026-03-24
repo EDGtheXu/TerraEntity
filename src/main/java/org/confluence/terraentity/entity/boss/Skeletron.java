@@ -22,7 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.data.codec.TECodecs;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;

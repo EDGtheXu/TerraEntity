@@ -218,7 +218,7 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
         return this.house;
     }
 
-    public @org.jetbrains.annotations.Nullable BlockPos getSpawnAtPos() {
+    public @Nullable BlockPos getSpawnAtPos() {
         return spawnAtPos;
     }
 
@@ -230,7 +230,7 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
         }
     }
 
-    public void setSpawnAtPos(@org.jetbrains.annotations.Nullable BlockPos spawnAtPos) {
+    public void setSpawnAtPos(@Nullable BlockPos spawnAtPos) {
         this.spawnAtPos = spawnAtPos;
     }
 
@@ -572,26 +572,13 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
 
         if (stack.getItem() instanceof ArmorItem armorItem) {
             // 如果是装备，则穿上
-            if (armorItem.getEquipmentSlot() == EquipmentSlot.BODY) {
-                this.setItemSlot(EquipmentSlot.BODY, stack);
-            } else if (armorItem.getEquipmentSlot() == EquipmentSlot.LEGS) {
-                this.setItemSlot(EquipmentSlot.LEGS, stack);
-            } else if (armorItem.getEquipmentSlot() == EquipmentSlot.FEET) {
-                this.setItemSlot(EquipmentSlot.FEET, stack);
-            } else if (armorItem.getEquipmentSlot() == EquipmentSlot.CHEST) {
-                this.setItemSlot(EquipmentSlot.CHEST, stack);
-            } else if (armorItem.getEquipmentSlot() == EquipmentSlot.HEAD) {
-                this.setItemSlot(EquipmentSlot.HEAD, stack);
-            }
-            player.setItemInHand(hand, ItemStack.EMPTY);
+            swapItem(player, armorItem.getEquipmentSlot(), hand, stack);
             return InteractionResult.SUCCESS;
         } else if (player.isShiftKeyDown()) {
             // 如果按下shift
             if (!stack.isEmpty()) {
-                // 如果是物品，则交换物品
-                this.dropEquipmentToHand(EquipmentSlot.MAINHAND, player, hand);
-                this.setItemSlot(EquipmentSlot.MAINHAND, stack);
-                player.setItemInHand(hand, ItemStack.EMPTY);
+                // 如果玩家手中有物品，则交换物品
+                swapItem(player, EquipmentSlot.MAINHAND, hand, stack);
                 return InteractionResult.SUCCESS;
             }
             // 如果是空手，则取下装备
@@ -630,6 +617,12 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
         });
         tradingPlayer = player;
         return event.getResult();
+    }
+
+    private void swapItem(Player player, EquipmentSlot slot, InteractionHand hand, ItemStack stack) {
+        ItemStack npcItem = getItemBySlot(slot);
+        this.setItemSlot(slot, stack);
+        player.setItemInHand(hand, npcItem);
     }
 
     private void dropEquipmentToHand(EquipmentSlot slot, Player player, InteractionHand hand) {
@@ -734,6 +727,11 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
                 }
             });
         }
+    }
+
+    @Override
+    public boolean canChangeDimensions(Level oldLevel, Level newLevel) {
+        return false;
     }
 
     public static boolean checkRoutineMonsterSpawn(EntityType<? extends Mob> type, ServerLevelAccessor pLevel, MobSpawnType pSpawnType, BlockPos pPos, RandomSource pRandom) {

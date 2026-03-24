@@ -5,6 +5,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.confluence.terraentity.api.entity.IVanillaVariant;
@@ -16,12 +17,19 @@ public class JumpableVariantAnimal extends JumpableAnimal implements IVanillaVar
 
     public static final String VARIANT_KEY = "Variant";
 
-    public JumpableVariantAnimal(EntityType<? extends JumpableAnimal> entityType, Level level, Map<Integer, ResourceLocation> texturesMap) {
+    public JumpableVariantAnimal(
+            EntityType<? extends JumpableAnimal> entityType,
+            Level level,
+            Map<Integer, ResourceLocation> texturesMap,
+            SimpleWeightedRandomList<Integer> variants
+    ) {
         super(entityType, level);
         this.texturesMap = texturesMap;
+        this.variants = variants;
     }
 
     Map<Integer, ResourceLocation> texturesMap;
+    private final SimpleWeightedRandomList<Integer> variants;
     private boolean initializedVariant = false;
     private static final EntityDataAccessor<Integer> DATA_VARIANT_ID = SynchedEntityData.defineId(JumpableVariantAnimal.class, EntityDataSerializers.INT);
 
@@ -30,7 +38,7 @@ public class JumpableVariantAnimal extends JumpableAnimal implements IVanillaVar
     public void onAddedToLevel() {
         super.onAddedToLevel();
         if (!level().isClientSide && !initializedVariant) {
-            this.setVariant(random.nextInt(getTexturesMap().size()));
+            setVariant(variants.getRandomValue(random).orElse(0));
         }
     }
 

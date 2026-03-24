@@ -51,12 +51,12 @@ public class GameEvent {
 
     @SubscribeEvent
     public static void serverStarted(ServerStartedEvent event) {
-        HouseStoreSaver.get(event.getServer().overworld());
+        HouseStoreSaver.get(event.getServer());
     }
 
     @SubscribeEvent
     public static void serverStopped(ServerStoppedEvent event) {
-        HouseStoreSaver.get(event.getServer().overworld());
+        HouseStoreSaver.get(event.getServer());
     }
 
     @SubscribeEvent

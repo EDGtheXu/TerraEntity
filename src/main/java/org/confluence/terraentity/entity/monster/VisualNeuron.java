@@ -4,6 +4,7 @@ import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Monster;
@@ -84,6 +85,11 @@ public class VisualNeuron extends AbstractMonster{
                 lookAt(EntityAnchorArgument.Anchor.EYES, position().scale(2).subtract(owner.position()));
             }
         }
+    }
+
+    @Override
+    public boolean startRiding(Entity entity, boolean force) {
+        return false;
     }
 
     @Override

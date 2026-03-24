@@ -1,20 +1,28 @@
 package org.confluence.terraentity.entity.ai.goal.behavior.composite;
 
+import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
+import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 序列节点（按顺序执行，全部成功才算成功）
  */
-public class SequenceNode extends BTNode {
-    private final List<BTNode> children = new ArrayList<>();
+public class SequenceNode extends CompositeNode {
     private int currentIndex = 0;
 
     public SequenceNode addChild(BTNode child) {
         children.add(child);
+        return this;
+    }
+
+    public SequenceNode addWithCondition(Condition condition, BTNode child) {
+        children.add(BTFactory.condition(condition, child));
+        return this;
+    }
+
+    public SequenceNode addWithCondition(Condition condition, String desc, BTNode child) {
+        children.add(BTFactory.condition(condition, child).setDesc(desc));
         return this;
     }
 
@@ -46,6 +54,7 @@ public class SequenceNode extends BTNode {
 
     @Override
     public @NotNull String toString() {
+
         return children.stream().reduce(
                 new StringBuilder("SequenceNode[").append(currentIndex).append("/").append(children.size()).append("|"),
                 (sb, node)-> sb.append(",").append(node.getClass().getSimpleName()),
@@ -60,5 +69,9 @@ public class SequenceNode extends BTNode {
                 child.stop();
 //            }
         }
+    }
+
+    public int getCurrentIndex() {
+        return currentIndex;
     }
 }

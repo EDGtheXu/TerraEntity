@@ -14,28 +14,25 @@ import java.util.Map;
 
 public class SimpleVariantAnimal extends SimpleAnimal implements IVanillaVariant<Integer> {
     public static final String VARIANT_KEY = "Variant";
-
-    public SimpleVariantAnimal(EntityType<? extends SimpleVariantAnimal> entityType, Level level) {
-        this(entityType, level, Map.of());
-    }
+    protected static final EntityDataAccessor<Integer> DATA_VARIANT_ID = SynchedEntityData.defineId(SimpleVariantAnimal.class, EntityDataSerializers.INT);
+    protected Map<Integer, ResourceLocation> texturesMap;
+    private transient boolean initializedVariant = false;
 
     public SimpleVariantAnimal(EntityType<? extends SimpleVariantAnimal> entityType, Level level, Map<Integer, ResourceLocation> texturesMap) {
         super(entityType, level);
         this.texturesMap = texturesMap;
     }
 
-
-    Map<Integer, ResourceLocation> texturesMap;
-    private boolean initializedVariant = false;
-    private static final EntityDataAccessor<Integer> DATA_VARIANT_ID = SynchedEntityData.defineId(SimpleVariantAnimal.class, EntityDataSerializers.INT);
-
-
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
         if (!level().isClientSide && !initializedVariant) {
-            this.setVariant(random.nextInt(getTexturesMap().size()));
+            initVariant();
         }
+    }
+
+    protected void initVariant() {
+        setVariant(random.nextInt(getTexturesMap().size()));
     }
 
     @Override

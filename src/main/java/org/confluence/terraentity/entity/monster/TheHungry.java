@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
 import org.confluence.terraentity.api.entity.IMinion;
 import org.confluence.terraentity.entity.boss.wallofflesh.WallOfFlesh;
 import org.confluence.terraentity.entity.monster.prefab.AbstractPrefab;
@@ -474,6 +474,14 @@ public class   TheHungry extends AbstractMonster implements IMinion, Boss.BossPa
             minion_setOwnerUUID(owner.getUUID());
             this.owner = wall;
         }
+    }
+
+    @Override
+    public boolean shouldBeSaved(){
+        if(owner!=null){
+            return owner.shouldBeSaved();
+        }
+        return super.shouldBeSaved();
     }
 
     @Override

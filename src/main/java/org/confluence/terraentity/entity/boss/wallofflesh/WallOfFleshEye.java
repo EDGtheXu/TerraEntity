@@ -15,17 +15,19 @@ import org.confluence.terraentity.entity.util.DifficultSelector;
 import org.confluence.terraentity.init.TETags;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+
 public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
 
     int shootDamage;
     int _shootDelay = 10;
-    int _shootInterval = 40;
+    int _shootInterval = 20;
     final int __shootInterval = _shootInterval;
     int _shootCount = 1;
     int shootDelay;
     int shootCount;
 
-    private static final int summonCDAll = 60;
+    private static final int summonCDAll = 20;
     private int summonCD = summonCDAll;
 
     public float calculatedYaw = 0.0f;
@@ -34,11 +36,20 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
     public WallOfFleshEye(WallOfFlesh parentMob, String name, float width, float height) {
         super(parentMob, name, width, height);
         DifficultSelector difficultSelector = parentMob.getDifficultSelector();
-        this.shootDamage = difficultSelector.switchBy(8,10,12,15);
+        this.shootDamage = difficultSelector.switchBy(8, 10, 12, 15);
         this.shootCount = _shootCount;
         this.shootDelay = _shootDelay;
-        collisionProperties.detectInternal = 20;
+        this.collisionProperties.detectInternal = 20;
     }
+
+    @Override
+    public boolean canBeAttack(@NotNull LivingEntity target) {
+        if (!(target instanceof Player player)) {
+            return true;
+        }
+        return this.parentMob != null && this.parentMob.isNearestEyeForPlayer(this, player);
+    }
+
 
     protected boolean canShoot(Entity target, float range) {
         LivingEntity currentTarget = this.target;
@@ -52,35 +63,28 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-
+    protected void defineSynchedData(@Nonnull SynchedEntityData.Builder builder) {
     }
 
     @Override
-    public boolean isNoGravity(){ return true; }
+    public boolean isNoGravity() {return true;}
 
     @Override
-    public boolean hurt(DamageSource pSource, float pAmount) {
-        return super.hurt(pSource, pAmount) && parentMob.hurt(this,pSource,pAmount);
-    }
-
-    @Override
-    public boolean shouldBeSaved(){
-        if(this.parentMob != null)return this.parentMob.shouldBeSaved();
-        return  false;
+    public boolean shouldBeSaved() {
+        if (this.parentMob != null) return this.parentMob.shouldBeSaved();
+        return false;
     }
 
     @Override
     public void tickPart(double offsetX, double offsetY, double offsetZ) {
         this.findTarget();
-        if (this.parentMob== null || !this.parentMob.isAlive()) return;
+        if (this.parentMob == null || !this.parentMob.isAlive()) return;
 
+        // 确保目标跑到墙体后方时，不会出现眼睛转到背后的情况
         Vec3 forward = this.parentMob.getForward().normalize();
 
-        // 检查目标是否为创造模式或观察者模式的玩家
-        if(this.target != null && this.target instanceof Player) {
-            Player player = (Player) this.target;
-            if(player.isCreative() || player.isSpectator()) {
+        if (this.target != null && this.target instanceof Player player) {
+            if (player.isCreative() || player.isSpectator()) {
                 this.target = null;
             }
         }
@@ -89,59 +93,36 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
         if (this.target != null && this.target.isAlive() && !this.target.isRemoved()) {
 
             if (!this.level().isClientSide) {
-                // 采样计算目标速度
                 this.aimTracker.tick(this.target, this.level().getGameTime());
             }
 
-            WallOfFlesh parentMob = this.parentMob;
-            if (parentMob.isAlive()) {
-                Vec3 wallForward = parentMob.getForward();
-                Vec3 targetPos = this.target.getEyePosition();
-                Vec3 entityPos = this.getEyePosition();
+            // 同步 Hill：直接使用「眼睛自身位置 -> 目标位置」向量计算 yaw/pitch（弧度）
+            Vec3 dist = this.target.getEyePosition().subtract(this.getEyePosition());
 
-                // 计算到目标的方向向量
-                Vec3 toTarget = targetPos.subtract(entityPos);
+            // 如果目标在墙体后方，则不更新注视角
+            Vec3 toTargetHorizontal = new Vec3(dist.x, 0, dist.z);
+            double hLenSqr = toTargetHorizontal.lengthSqr();
+            boolean inFront = !(hLenSqr > 1.0E-6 && forward.dot(toTargetHorizontal.normalize()) < 0.0);
 
-                // 计算水平距离
-                double horizontalDistance = Math.sqrt(toTarget.x * toTarget.x + toTarget.z * toTarget.z);
+            double horizontalDistance = Math.sqrt(dist.x * dist.x + dist.z * dist.z);
+            if (inFront && horizontalDistance > 1.0E-3) {
+                float yaw = (float) Math.atan2(dist.z, dist.x);
+                // Wall 眼睛的 X 轴方向与 Hill 相反：俯仰需要翻转符号，否则上下看会反
+                this.calculatedYaw = (float) (Math.PI / 2 - yaw);
+                this.calculatedPitch = (float) -Math.atan2(dist.y, horizontalDistance);
 
-                if (horizontalDistance > 0.001) {
-                    // 计算俯仰角（上下看的角度）
-                    float pitch = (float) Math.toDegrees(Math.atan2(-toTarget.y, horizontalDistance));
-                    pitch = Mth.clamp(pitch, -45.0F, 45.0F);
-
-                    // 计算偏航角（左右看的角度）
-                    float yaw = (float) Math.toDegrees(Math.atan2(-toTarget.x, toTarget.z));
-
-                    // 计算墙体的偏航角
-                    float wallYaw = (float) Math.toDegrees(Math.atan2(-wallForward.x, wallForward.z));
-
-                    // 计算相对于墙体的角度差
-                    float relativeYaw = yaw - wallYaw;
-                    relativeYaw = Mth.wrapDegrees(relativeYaw);
-
-                    // 限制头部转动范围
-                    relativeYaw = Mth.clamp(relativeYaw, -60.0F, 60.0F);
-
-                    this.calculatedYaw = relativeYaw * 0.017453292F;
-                    this.calculatedPitch = pitch * 0.017453292F;
-                } else {
-                    this.calculatedYaw = 0.0f;
-                    this.calculatedPitch = 0.0f;
-                }
-            } else {
-                this.calculatedYaw = 0.0f;
-                this.calculatedPitch = 0.0f;
+                // 有目标时才刷新插值目标值；无目标的回正/插值交给 WallOfFleshPart.findTarget()
+                this.stareYaw = this.calculatedYaw;
+                this.starePitch = this.calculatedPitch;
             }
         } else {
             this.aimTracker.reset(); // 失去目标就重置
-            this.calculatedYaw = 0.0f;
-            this.calculatedPitch = 0.0f;
+            // 无目标时不要在这里强制改 stareYaw/starePitch，避免与 part 自己的插值/回正逻辑打架
         }
 
         if (!this.level().isClientSide) {
             if (--summonCD > 0) return;
-            if (canShoot(this.target,0.75F) && this.target.isAlive() && this.stareCount >= 10) {
+            if (canShoot(this.target, 0.75F) && this.target.isAlive() && this.stareCount >= 10) {
                 this.shoot(this.target);
             }
         }
@@ -151,16 +132,16 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
         return this.position().y + this.getBbHeight() / 2;
     }
 
-    private void shoot(LivingEntity target){
-        if(--this.shootDelay <= 0){
+    private void shoot(LivingEntity target) {
+        if (--this.shootDelay <= 0) {
             --this.shootCount;
 
-            if(this.shootCount <= 0){
+            if (this.shootCount <= 0) {
                 this.shootCount = _shootCount;
                 this.shootDelay = _shootInterval + this.getRandom().nextInt(20);
 
                 this.performRangedAttack(target, 1.0f); // 最后一击增加射速
-            }else{
+            } else {
                 this.shootDelay = _shootDelay;
                 this.performRangedAttack(target, 0.5f);
             }
@@ -169,19 +150,19 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
 
     @Override
     public boolean canUsePortal(boolean allowPassengers) {
-        return this.parentMob==null?super.canUsePortal(allowPassengers):this.parentMob.canUsePortal(allowPassengers);
+        return this.parentMob == null ? super.canUsePortal(allowPassengers) : this.parentMob.canUsePortal(allowPassengers);
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        if(source.is(DamageTypeTags.IS_FIRE)||source.is(DamageTypeTags.IS_DROWNING)){
+    public boolean isInvulnerableTo(@Nonnull DamageSource source) {
+        if (source.is(DamageTypeTags.IS_FIRE) || source.is(DamageTypeTags.IS_DROWNING)) {
             return true;
         }
         return super.isInvulnerableTo(source);
     }
 
     @Override
-    public void performRangedAttack(LivingEntity livingEntity, float v) {
+    public void performRangedAttack(@Nonnull LivingEntity livingEntity, float v) {
         // 基础速度参数
         double v0 = 1.5;
 
@@ -196,7 +177,9 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
         Vec3 predictedPos = targetPos.add(result.offset);
         Vec3 dir = predictedPos.subtract(shooterPos);
 
-        TrailProjectile proj = new TrailProjectile(this.level(), ChatFormatting.DARK_PURPLE.getColor()) {
+        Integer colorObj = ChatFormatting.DARK_PURPLE.getColor();
+        int color = colorObj != null ? colorObj : 0xAA00AA;
+        TrailProjectile proj = new TrailProjectile(this.level(), color) {
             @Override
             protected boolean canHitEntity(@NotNull Entity target) {
                 return super.canHitEntity(target) && !target.getType().is(TETags.EntityTypes.FLESH_ALLIANCE);
@@ -205,7 +188,7 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
         proj.setDamage(this.shootDamage);
         proj.setOwner(this.parentMob);
         proj.setPos(shooterPos);
-        proj.shoot(dir.x, dir.y, dir.z, (float)v0, 0.0f);
+        proj.shoot(dir.x, dir.y, dir.z, (float) v0, 0.0f);
         level().addFreshEntity(proj);
     }
 
@@ -247,7 +230,8 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
                         if (manualVel.lengthSqr() < 0.0001) manualVel = Vec3.ZERO;
                     } else {
                         // 3. 异常速度限制：防止玩家传送或被击退导致激光乱飞
-                        if (instantVel.length() > 0.4) instantVel = instantVel.normalize().scale(0.3);
+                        if (instantVel.length() > 0.4)
+                            instantVel = instantVel.normalize().scale(0.3);
 
                         // 4. 动态平滑 (Lerp)：让预判线不抖动
                         // 0.2 表示 20% 权重给新速度，80% 保留旧速度
@@ -309,14 +293,14 @@ public class WallOfFleshEye extends WallOfFleshPart implements RangedAttackMob {
     /**
      * 预测结果的数据载体
      */
-    private record AimResult(Vec3 offset, double travelTime, double leadModifier, double distance, double targetSpeed) {}
+    private record AimResult(Vec3 offset, double travelTime, double leadModifier, double distance,
+                             double targetSpeed) {}
 
     @Override
-    protected void onParentChangeState(int state){
-        if(state == 2){
+    protected void onParentChangeState(int state) {
+        if (state == 2) {
             this._shootInterval = (int) (this.__shootInterval * 0.7f);
             this._shootCount = 3;
-            float healthPercent = parentMob.getHealthPercentage();
         }
     }
 }

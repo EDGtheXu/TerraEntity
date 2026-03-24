@@ -13,9 +13,9 @@ public class SummonBeeStick extends LineProj{
         super(pEntityType, pLevel);
     }
 
-    public DamageSource getDamageSource(LivingEntity hurter){
+    public DamageSource getDamageSource(LivingEntity victim){
         if(getOwner() instanceof ISummonMob mob)
             return TETags.DamageTypes.of(level(), TETags.DamageTypes.SUMMONER, mob.summon_getOwner());
-        return super.getDamageSource(hurter);
+        return super.getDamageSource(victim);
     }
 }

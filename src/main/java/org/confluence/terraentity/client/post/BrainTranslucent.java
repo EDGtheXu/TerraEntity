@@ -1,6 +1,7 @@
 package org.confluence.terraentity.client.post;
 
 import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.confluence.terraentity.TerraEntity;
@@ -13,6 +14,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11C.glIsEnabled;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 
 public class BrainTranslucent {
     public static class tuple{
@@ -31,6 +38,10 @@ public class BrainTranslucent {
     public static void render(RenderLevelStageEvent event){
 
         if(entityMap.isEmpty()) return;
+        // 保存当前渲染状态
+        int lastFbo = GlStateManager.getBoundFramebuffer();
+        boolean blendEnabled = glIsEnabled(GL_BLEND);
+        boolean depthEnabled = glIsEnabled(GL_DEPTH_TEST);
 
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
         List<BrainOfCthulhu> shouldBeRemoved = new ArrayList<>();
@@ -56,7 +67,7 @@ public class BrainTranslucent {
         TextureTarget in;
         int c = 0;
         for(BrainOfCthulhu brain : entityMap.keySet()){
-            if(brain!= null && brain.isAlive()){
+            if (Minecraft.getInstance().level != null && brain != null && brain.isAlive() && Minecraft.getInstance().level.getEntity(brain.getId()) == brain) {
                 // 对每个BOSS本体虚影渲染
                 c++;
                 out = (c & 1) == 0? temp: temp2;
@@ -103,5 +114,20 @@ public class BrainTranslucent {
         for(tuple t : entityMap.values()){
             t.target.clear(true);
         }
+
+        // 恢复状态
+        if (blendEnabled) {
+            glEnable(GL_BLEND);
+        } else {
+            glDisable(GL_BLEND);
+        }
+
+        if (depthEnabled) {
+            glEnable(GL_DEPTH_TEST);
+        } else {
+            glDisable(GL_DEPTH_TEST);
+        }
+
+        GlStateManager._glBindFramebuffer(GL_FRAMEBUFFER, lastFbo);
     }
 }

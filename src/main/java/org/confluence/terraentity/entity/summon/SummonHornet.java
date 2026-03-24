@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonFlyFlowOwnerGoal;
 import org.confluence.terraentity.entity.monster.Hornet;
@@ -22,11 +23,16 @@ import org.confluence.terraentity.entity.monster.prefab.FlyMonsterPrefab;
 import org.confluence.terraentity.entity.proj.LineProj;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.confluence.terraentity.utils.TEUtils;
+import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.entity.PartEntity;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public class SummonHornet extends Hornet implements ISummonMob {
+public class SummonHornet extends Hornet implements ISummonMob, IPartEntityTargetable {
+
+    @Nullable
+    private Entity actualTargetEntity;
 
     public SummonHornet(EntityType<? extends Monster> type, Level level) {
         super(type, level, FlyMonsterPrefab.BEE_BUILDER.get());
@@ -41,6 +47,46 @@ public class SummonHornet extends Hornet implements ISummonMob {
                 return true;
             }
 
+            @Override
+            public void tick() {
+                Entity actualTarget = getActualTarget();
+                if (actualTarget != null && actualTarget.isAlive()) {
+                    bee.lookAt(actualTarget, 10, 89);
+                    bee.getLookControl().setLookAt(actualTarget);
+                } else {
+                    super.tick();
+                }
+            }
+
+            @Override
+            public void stop() {
+                Entity actualTarget = getActualTarget();
+                if (actualTarget != null) {
+                    bee.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+                    LineProj proj = createProj();
+                    if (proj != null) {
+                        proj.setOwner(bee);
+                        proj.setPos(bee.position());
+                        proj.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 100, 0));
+                        double x = actualTarget.getX() - bee.getX();
+                        double y = actualTarget.getY() + (actualTarget instanceof LivingEntity living ? living.getEyeHeight() * 0.5f : 0) - bee.getY();
+                        double z = actualTarget.getZ() - bee.getZ();
+                        proj.shoot(x, y, z, 1, 0);
+                        level().addFreshEntity(proj);
+                    }
+                    timeToShoot = SHOOT_TIME;
+                } else {
+                    super.stop();
+                }
+            }
+
+            private Entity getActualTarget() {
+                if (bee instanceof IPartEntityTargetable targetable) {
+                    Entity actualTarget = targetable.getActualTargetEntity();
+                    if (actualTarget != null) return actualTarget;
+                }
+                return bee.getTarget();
+            }
         });
         this.goalSelector.addGoal(2, new BeeKeepOnTargetGoal(this));
         this.goalSelector.addGoal(9, new FloatGoal(this));
@@ -48,10 +94,17 @@ public class SummonHornet extends Hornet implements ISummonMob {
         registerTargetGoal(this.targetSelector);
     }
 
+    @Override
     public void tick() {
         super.tick();
-        if(getTarget() != null){
-            this.lookAt(getTarget(), 10, 85);
+        cleanupInvalidActualTarget();
+
+        Entity target = getActualTargetEntity();
+        if (target == null) {
+            target = getTarget();
+        }
+        if (target != null) {
+            this.lookAt(target, 10, 85);
         }
     }
 
@@ -166,6 +219,31 @@ public class SummonHornet extends Hornet implements ISummonMob {
     @Override
     public boolean shouldDoCollision() {
         return false;
+    }
+
+    /* IPartEntityTargetable API */
+
+    @Override
+    @Nullable
+    public Entity getActualTargetEntity() {
+        return actualTargetEntity;
+    }
+
+    @Override
+    public void setActualTargetEntity(@Nullable Entity entity) {
+        this.actualTargetEntity = entity;
+    }
+
+    @Override
+    public boolean canAttackTarget(Entity target) {
+        LivingEntity entity = null;
+        if(target instanceof PartEntity<?> part && part.getParent() instanceof LivingEntity parent){
+            entity = parent;
+        }else if(target instanceof LivingEntity living) {
+            entity = living;
+        }
+
+        return entity != null && this.canAttack(entity);
     }
 }
 

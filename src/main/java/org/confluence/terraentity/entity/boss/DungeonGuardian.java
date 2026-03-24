@@ -16,18 +16,19 @@ public class DungeonGuardian extends Skeletron {
     int _attackDelay = 50;
 
     int attackDelay = _attackDelay;
+
     public DungeonGuardian(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
-
     }
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(1,new SpinGoal(){
+        this.goalSelector.addGoal(1, new SpinGoal() {
             @Override
             public boolean canUse() {
                 return getTarget() != null;
             }
+
             @Override
             public void tick() {
                 Vec3 vec = getTarget().position().subtract(position());
@@ -42,9 +43,9 @@ public class DungeonGuardian extends Skeletron {
     @Override
     public void tick() {
         super.tick();
-        if(!level().isClientSide && --attackDelay == 0){
+        if (!level().isClientSide && --attackDelay == 0) {
             Player player = level().getNearestPlayer(this, 100);
-            if(player == null || !player.isAlive()){
+            if (player == null || !player.isAlive()) {
                 this.discard();
             }
         }
@@ -76,6 +77,11 @@ public class DungeonGuardian extends Skeletron {
 
     @Override
     public boolean shouldShowBossBar() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldBeSaved() {
         return false;
     }
 }

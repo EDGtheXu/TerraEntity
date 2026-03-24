@@ -30,6 +30,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;
 import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.config.ClientConfig;
+import org.confluence.terraentity.data.component.EffectStrategyComponent;
 import org.confluence.terraentity.data.component.SingleBooleanComponent;
 import org.confluence.terraentity.entity.util.trail.BoomerangTrail;
 import org.confluence.terraentity.init.TEDataComponentTypes;
@@ -120,14 +121,15 @@ public class BoomerangProjectile extends Projectile {
             if (hurter instanceof LivingEntity living && actualHurter.isAlive() && TEUtils.projectileCanHurtEntityTest.test(this, living)) {
                 penetrationCount--;
                 float damage = (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE) + modifier.damage - 1;
-                var data = weapon.get(TEDataComponentTypes.EFFECT_STRATEGY);
-                if (data != null) {
-                    data.applyAll((LivingEntity) this.getOwner(), living);
+                if (actualHurter.hurt(source, damage)) {
+                    EffectStrategyComponent data = weapon.get(TEDataComponentTypes.EFFECT_STRATEGY);
+                    if (data != null) {
+                        data.applyAll((LivingEntity) this.getOwner(), living);
+                    }
+                    owner.setLastHurtMob(actualHurter);
+                    //击退
+                    doKnockback(living);
                 }
-                owner.setLastHurtMob(actualHurter);
-                actualHurter.hurt(source, damage);
-                //击退
-                doKnockback(living);
             }
 
             IAttackableProjectile.tryHit(hurter, source);

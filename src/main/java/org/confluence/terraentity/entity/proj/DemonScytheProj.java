@@ -17,7 +17,7 @@ public class DemonScytheProj extends LineProj implements IAxisZRotate {
     public void baseTick() {
         super.baseTick();
         if (level().isClientSide) {
-            rotateZ(rotate, this::getDeltaMovement, 0.0F, 0.125F); // 无重力影响
+            rotateZ(rotate, getDeltaMovement().lengthSqr(), 0.125F); // 无重力影响
         }
     }
 

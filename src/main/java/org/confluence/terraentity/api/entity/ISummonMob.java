@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import org.confluence.terraentity.api.event.SummonEvent;
+import org.confluence.terraentity.entity.ai.goal.summon.SummonAttackPartEntityGoal;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonFollowOwnerGoal;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonOwnerHurtByTargetGoal;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonOwnerHurtTargetGoal;
@@ -144,14 +145,14 @@ public interface ISummonMob extends OwnableEntity {
      * 当距离平方超过这个数时，会尝试传送到owner附近
      */
     default float summon_getDistanceToTeleportToOwner() {
-        return 16 * 16;
+        return 40 * 40;
     }
 
     /**
      * 当距离平方超过这个数时，会尝试移动到owner附近
      */
     default float summon_getStartDistanceToOwner() {
-        return 10 * 10;
+        return 32 * 32;
     }
 
     default void summon_teleportToAroundBlockPos(BlockPos pos) {
@@ -277,6 +278,7 @@ public interface ISummonMob extends OwnableEntity {
         asEntity().targetSelector.addGoal(1, new SummonPriorAttackGoal<>(asEntity(), false));
         asEntity().targetSelector.addGoal(2, new SummonOwnerHurtByTargetGoal(asEntity()));
         asEntity().targetSelector.addGoal(3, new SummonOwnerHurtTargetGoal(asEntity()));
+        asEntity().targetSelector.addGoal(4, new SummonAttackPartEntityGoal(asEntity()));
         asEntity().targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(asEntity(), Monster.class, 10, true, true, living -> (living instanceof Enemy && !(living instanceof NeutralMob))));
         asEntity().targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(asEntity(), Slime.class, 10, true, true, living -> (living instanceof Enemy && !(living instanceof NeutralMob))));
     }

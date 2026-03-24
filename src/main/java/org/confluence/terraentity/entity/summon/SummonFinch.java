@@ -3,6 +3,7 @@ package org.confluence.terraentity.entity.summon;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -75,22 +76,22 @@ public class SummonFinch  extends AbstractSummonMob implements FlyingAnimal {
 
         @Override
         public boolean canUse() {
-            return mob.getTarget() != null;
+            return getActualTarget() != null;
         }
 
         @Override
         public void tick() {
             super.tick();
-            LivingEntity target = mob.getTarget();
-
-            if(target == null){
+            Entity actualTarget = getActualTarget();
+            if(actualTarget == null){
                 return;
             }
-            double distance = mob.distanceToSqr(mob.getTarget());
-            if (--this.cooledDown <= 0) {
 
-                mob.lookAt(target, 90, 85);
-                Vec3 dir = target.getEyePosition().subtract(mob.position());
+            double distance = mob.distanceToSqr(actualTarget);
+            if (--this.cooledDown <= 0) {
+                mob.lookAt(actualTarget, 90, 85);
+                Vec3 targetPos = actualTarget instanceof LivingEntity living ? living.getEyePosition() : actualTarget.position();
+                Vec3 dir = targetPos.subtract(mob.position());
                 if(TEUtils.angleBetween(mob.getLookAngle(), dir) < 0.5){
                     if(mob.getKnownMovement().length() < 1f) {
                         mob.addDeltaMovement(dir.normalize().scale(0.1f));
@@ -103,8 +104,16 @@ public class SummonFinch  extends AbstractSummonMob implements FlyingAnimal {
             else{
                 mob.addDeltaMovement(new Vec3(0,Math.min( 0.02, 1 / distance),0));
                 mob.addDeltaMovement(mob.getForward().normalize().scale(0.03f));
-                mob.lookAt(target, 10, 85);
+                mob.lookAt(actualTarget, 10, 85);
             }
+        }
+
+        private Entity getActualTarget() {
+            if (mob instanceof IPartEntityTargetable targetable) {
+                Entity actualTarget = targetable.getActualTargetEntity();
+                if (actualTarget != null) return actualTarget;
+            }
+            return mob.getTarget();
         }
     }
 

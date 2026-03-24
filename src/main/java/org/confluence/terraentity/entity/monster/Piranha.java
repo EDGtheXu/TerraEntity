@@ -39,8 +39,12 @@ public class Piranha extends WaterAnimal implements Enemy, GeoEntity {
 
     public Piranha(EntityType<? extends Piranha> entityType, Level level) {
         super(entityType, level);
-        this.moveControl = new SmoothSwimmingMoveControl(this, 85, 10, 0.02F, 0.1F, true);
+        this.moveControl = this.createMoveControl();
         this.lookControl = new SmoothSwimmingLookControl(this, 10);
+    }
+
+    protected SmoothSwimmingMoveControl createMoveControl() {
+        return new SmoothSwimmingMoveControl(this, 85, 10, 0.02F, 0.1F, true);
     }
 
     @Nullable
@@ -58,16 +62,20 @@ public class Piranha extends WaterAnimal implements Enemy, GeoEntity {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new TryFindWaterGoal(this));
         this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.2f,true));
-        this.goalSelector.addGoal(2, new BreathAirGoal(this));
-        this.goalSelector.addGoal(4, new RandomSwimmingGoal(this, 1.0, 10));
+//        this.goalSelector.addGoal(2, new BreathAirGoal(this));
+        this.goalSelector.addGoal(4, this.createStrollGoal());
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(8, new FollowBoatGoal(this));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, false));
     }
 
+    protected Goal createStrollGoal() {
+        return new RandomSwimmingGoal(this, 1.0, 10);
+    }
+
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 15.0).add(Attributes.ARMOR, 2).add(Attributes.MOVEMENT_SPEED, 1.2000000476837158).add(Attributes.ATTACK_DAMAGE, 13.0);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 15.0).add(Attributes.ARMOR, 2).add(Attributes.MOVEMENT_SPEED, 1.2).add(Attributes.ATTACK_DAMAGE, 13.0);
     }
 
     @Override
@@ -109,6 +117,7 @@ public class Piranha extends WaterAnimal implements Enemy, GeoEntity {
     @Override
     public void tick() {
         super.tick();
+        this.swinging = true;
         this.updateSwingTime();
 
         if (this.isNoAi()) {
@@ -198,5 +207,8 @@ public class Piranha extends WaterAnimal implements Enemy, GeoEntity {
         }));
     }
 
-
+    @Override
+    protected boolean shouldDespawnInPeaceful() {
+        return true;
+    }
 }

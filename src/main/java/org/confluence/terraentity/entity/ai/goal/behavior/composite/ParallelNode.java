@@ -1,16 +1,14 @@
 package org.confluence.terraentity.entity.ai.goal.behavior.composite;
 
+import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
+import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 并行节点（同时执行所有子节点）
  */
-public class ParallelNode extends BTNode {
-    private final List<BTNode> children = new ArrayList<>();
+public class ParallelNode extends CompositeNode {
     private final Policy successPolicy;
     private final Policy failurePolicy;
 
@@ -21,6 +19,16 @@ public class ParallelNode extends BTNode {
 
     public ParallelNode addChild(BTNode child) {
         children.add(child);
+        return this;
+    }
+
+    public ParallelNode addWithCondition(Condition condition, BTNode child) {
+        children.add(BTFactory.condition(condition, child));
+        return this;
+    }
+
+    public ParallelNode addWithCondition(Condition condition, String desc, BTNode child) {
+        children.add(BTFactory.condition(condition, child).setDesc(desc));
         return this;
     }
 

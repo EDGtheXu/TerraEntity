@@ -17,7 +17,8 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.confluence.terraentity.api.entity.Boss;
+import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.util.TaskScheduler;
 import org.confluence.terraentity.api.entity.IHeightControlMob;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
@@ -28,7 +29,6 @@ import org.confluence.terraentity.registries.mappeddata.MappedDataTypes;
 import org.confluence.terraentity.utils.CameraShakeData;
 import org.confluence.terraentity.utils.CameraShakeManager;
 import org.confluence.terraentity.utils.TEUtils;
-import org.confluence.terraentity.utils.TaskScheduler;
 
 import java.util.List;
 import java.util.Objects;
@@ -52,7 +52,7 @@ public class EaterOfWorlds extends AbstractTerraBossBase implements Boss, IHeigh
     boolean ifBaseHead = false;
     boolean truthDie = false;
     int genTick = 10;//生成体节延迟
-    boolean shouldMove = true;
+    boolean shouldMove = false;
     float moveSpeed;
     float turnSpeed;
     Vec3 targetPos = new Vec3(0, 0, 0);
