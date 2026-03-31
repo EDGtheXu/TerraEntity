@@ -6,9 +6,7 @@ import org.confluence.terraentity.entity.ai.goal.behavior.composite.ParallelNode
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.SelectorNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.composite.SequenceNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.condition.Condition;
-import org.confluence.terraentity.entity.ai.goal.behavior.decoration.ConditionNode;
-import org.confluence.terraentity.entity.ai.goal.behavior.decoration.InverterNode;
-import org.confluence.terraentity.entity.ai.goal.behavior.decoration.RepeaterNode;
+import org.confluence.terraentity.entity.ai.goal.behavior.decoration.*;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.GoalWrapper;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.RandomWaitAction;
 import org.confluence.terraentity.entity.ai.goal.behavior.leaf.WaitAction;
@@ -90,6 +88,18 @@ public class BTFactory {
 
     public static GoalWrapper goal(Goal goal) {
         return new GoalWrapper(goal);
+    }
+
+    public static DecorationNode reverse(BTNode child) {
+        return new ReverseNode(child);
+    }
+
+    public static DecorationNode fail2success(BTNode child) {
+        return new ReverseNode.F2TNode(child);
+    }
+
+    public static DecorationNode success2fail(BTNode child) {
+        return new ReverseNode.T2FNode(child);
     }
 
 

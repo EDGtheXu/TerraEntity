@@ -25,6 +25,7 @@ public class WeightNode extends CompositeNode {
     public void start() {
         super.start();
         this.currentChild = TEUtils.getRandomByWeightInt(children, weights);
+        this.currentChild.start();
     }
 
     @Override

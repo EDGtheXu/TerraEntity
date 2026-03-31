@@ -30,7 +30,7 @@ public class BrainOfCthulhuRenderer extends GeoNormalRenderer<BrainOfCthulhu> {
 
     @Override
     public void render(BrainOfCthulhu entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        if(consumeRender){
+        if(consumeRender || consumeColor != null){
             super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
             consumeRender = false;
             return;

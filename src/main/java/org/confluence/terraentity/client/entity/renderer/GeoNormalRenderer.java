@@ -25,7 +25,7 @@ public class GeoNormalRenderer<T extends Entity & GeoEntity> extends GeoEntityRe
     protected float offsetY;
     protected float motionAnimThreshold = 0.01F;
     protected boolean disableRenderModel;
-    Color consumeColor;
+    protected Color consumeColor;
 
     /**
      * @param path 实体文件位置 path.namespace/textures/entity/{name}.png

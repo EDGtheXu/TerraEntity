@@ -703,7 +703,7 @@ public final class TEUtils {
                 EntityHitResult entityHitResult = new EntityHitResult(e, vec3);
                 hits.add(entityHitResult);
             }//自瞄其他夹角小于一定度数的目标
-            else if (hits.isEmpty() && TEUtils.angleBetween(e.position().subtract(ori), end.subtract(ori)) < maxAngle * Math.PI / 180) {
+            else if (hits.isEmpty() && TEUtils.angleBetween(e.position().subtract(ori), direction) < maxAngle * Math.PI / 180) {
                 EntityHitResult entityHitResult = new EntityHitResult(e, e.position());
                 subHits.add(entityHitResult);
             }
@@ -719,12 +719,8 @@ public final class TEUtils {
                 return v1 < v2 ? -1 : 1;
             });
             for (HitResult hitResult : hits) {
-                if (hitResult instanceof EntityHitResult entityHitResult &&
-                        (
-                                entityHitResult.getEntity() instanceof LivingEntity livingEntity &&
-                                        livingEntity instanceof Enemy &&
-                                        !(livingEntity instanceof ISummonMob)
-                        )) {
+                // 这里改了一下，使用这个方法的武器可能会出问题。原本是只锁定怪物，如果武器出现了攻击到不该攻击的目标的话，在filter里面排除一下
+                if (hitResult instanceof EntityHitResult entityHitResult && (entityHitResult.getEntity() instanceof LivingEntity livingEntity)) {
                     return livingEntity;
                 }
             }
@@ -743,6 +739,52 @@ public final class TEUtils {
             }
         }
         return null;
+    }
+    /**
+     * 获取包围盒内锥形射线内的所有目标
+     *
+     * @param ori      起始点
+     * @param end      终止点
+     * @param range    若owner为null，则为包围盒范围，否则无效
+     * @param maxAngle 最大角度
+     * @return 若直接命中，返回命中的目标；否则返回最近有效的目标
+     */
+    public static List<LivingEntity> getAABBAngleTargets(Vec3 ori, Vec3 end, Level level, @Nullable Entity owner, double range, double maxAngle, Predicate<Entity> filter) {
+        //扩大包围盒
+        AABB aabb;
+        if (owner != null) {
+            aabb = owner.getBoundingBox().inflate(range);
+        } else {
+            aabb = new AABB(ori, end).inflate(range);
+        }
+        Vec3 direction = end.subtract(ori);
+        List<HitResult> hits = new ArrayList<>();
+        List<? extends Entity> entities = level.getEntities(owner, aabb, entity1 -> entity1.isPickable() && entity1.isAlive() && filter.test(entity1));
+        for (var e : entities) {
+            //获取视线交点
+            Vec3 vec3 = e.getBoundingBox().clip(ori, end).orElse(null);
+            //优先指向的目标
+            if (vec3 != null) {
+                //System.multiOut.println("point directly");
+                EntityHitResult entityHitResult = new EntityHitResult(e, vec3);
+                hits.add(entityHitResult);
+            }//自瞄其他夹角小于一定度数的目标
+            else if (hits.isEmpty() && TEUtils.angleBetween(e.position().subtract(ori), direction) < maxAngle * Math.PI / 180) {
+                EntityHitResult entityHitResult = new EntityHitResult(e, e.position());
+                hits.add(entityHitResult);
+            }
+        }
+
+        if (!hits.isEmpty()) {
+            List<LivingEntity> livingEntities = new ArrayList<>();
+            for (HitResult hitResult : hits) {
+                if (hitResult instanceof EntityHitResult entityHitResult && (entityHitResult.getEntity() instanceof LivingEntity livingEntity)) {
+                    livingEntities.add(livingEntity);
+                }
+            }
+            return livingEntities;
+        }
+        return List.of();
     }
 
     public static Vec3 getPlayerHandPos(Player player) {

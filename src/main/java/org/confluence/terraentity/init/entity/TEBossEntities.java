@@ -24,6 +24,7 @@ import org.confluence.terraentity.entity.boss.hillofflesh.HillOfFlesh;
 import org.confluence.terraentity.entity.boss.plantera.Plantera;
 import org.confluence.terraentity.entity.boss.plantera.PlanteraHook;
 import org.confluence.terraentity.entity.boss.plantera.PlanteraTentacle;
+import org.confluence.terraentity.entity.boss.primeenderdragon.PrimeEnderDragon;
 import org.confluence.terraentity.entity.boss.skeletronprime.SkeletronPrime;
 import org.confluence.terraentity.entity.boss.skeletronprime.SkeletronPrimePart;
 import org.confluence.terraentity.entity.boss.thedestroyer.TheDestroyer;

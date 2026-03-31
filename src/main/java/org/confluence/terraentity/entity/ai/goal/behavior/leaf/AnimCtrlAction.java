@@ -27,6 +27,8 @@ public class AnimCtrlAction<T extends GeoEntity & ISharedFlagControllerHolder> e
         super.start();
         if(isEnable) {
             entity.triggerAnim(controllerName, animationName);
+        }else {
+            entity.stopTriggeredAnim(controllerName, animationName);
         }
     }
 }
