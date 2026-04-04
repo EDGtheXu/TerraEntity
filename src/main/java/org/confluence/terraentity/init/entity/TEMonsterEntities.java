@@ -693,5 +693,6 @@ public class TEMonsterEntities {
 
     public static void register(IEventBus bus) {
         ENTITIES.register(bus);
+        ENTITIES.addAlias(TerraEntity.space("crimson_slime"), TerraEntity.space("crimslime"));
     }
 }
