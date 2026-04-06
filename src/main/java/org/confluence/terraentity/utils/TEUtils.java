@@ -18,7 +18,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.Npc;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -276,7 +275,7 @@ public final class TEUtils {
             return;
         if (entity.level() instanceof ServerLevel level) {
             float multiplier;
-            if (LibUtils.getChunkIfLoaded(level.getChunkSource(), entity.chunkPosition()) == null) {
+            if (LibUtils.getChunkIfLoaded(level, entity.chunkPosition()) == null) {
                 multiplier = 1;
             } else {
                 multiplier = getMultiple(entity.level(), entity.blockPosition(), Attributes.MAX_HEALTH);
