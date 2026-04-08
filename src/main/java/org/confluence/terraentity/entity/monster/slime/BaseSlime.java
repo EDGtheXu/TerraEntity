@@ -88,7 +88,6 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
     }
 
-
     public static AttributeSupplier.Builder createSlimeAttributes(float attackDamage, int armor, float maxHealth) {
         return Mob.createMobAttributes()
                 .add(Attributes.ATTACK_DAMAGE, attackDamage)
@@ -111,19 +110,18 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
             }
         }
 
-
         if (type == TEMonsterEntities.YELLOW_SLIME.get() || type == TEMonsterEntities.RED_SLIME.get() || type == TEMonsterEntities.DESERT_SLIME.get()) {
-            return pLevel.getBrightness(LightLayer.SKY, pPos) == 0 && pPos.getY() > 30;
+            return pLevel.getBrightness(LightLayer.SKY, pPos) == 0 && pPos.getY() >= 0 && pPos.getY() < 40;
         } else if (type == TEMonsterEntities.BLACK_SLIME.get() || type == TEMonsterEntities.DUNGEON_SLIME.get()) {
-            return pLevel.getBrightness(LightLayer.SKY, pPos) == 0 && pPos.getY() <= 30;
+            return pLevel.getBrightness(LightLayer.SKY, pPos) == 0 && pPos.getY() <= 40;
         } else if (type == TEMonsterEntities.LAVA_SLIME.get()) {  // 新增岩浆史莱姆的限制条件
             int y = pPos.getY();
-            return y >= 30 && y <= 100;
+            return y >= 30 && y < 100;
         } else if (type == TEMonsterEntities.BLUE_SLIME.get() || type == TEMonsterEntities.GREEN_SLIME.get() || type == TEMonsterEntities.PURPLE_SLIME.get()
                 || type == TEMonsterEntities.ICE_SLIME.get() || type == TEMonsterEntities.JUNGLE_SLIME.get()
                 || type == TEMonsterEntities.PINK_SLIME.get() || type == TEMonsterEntities.SWAMP_SLIME.get() || type == TEMonsterEntities.TROPIC_SLIME.get()) {
             int y = pPos.getY();
-            return y > 30 && y < 260 && level.isDay() && pLevel.canSeeSky(pPos);
+            return y >= 40 && y < 260 && level.isDay() && pLevel.canSeeSky(pPos);
         }
 
         // 剩下的条件用方块的isValidSpawn方法
