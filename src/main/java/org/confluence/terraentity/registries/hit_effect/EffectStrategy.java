@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import org.confluence.lib.util.LibUtils;
+import org.confluence.lib.util.LibMathUtils;
 import org.confluence.terraentity.api.item.IProjectileModifier;
 import org.confluence.terraentity.registries.TERegistries;
 import org.confluence.terraentity.registries.hit_effect.variant.PrefabEffect;
@@ -93,7 +93,7 @@ public class EffectStrategy implements IEffectStrategy {
      */
     public static final Function5<Holder<MobEffect>, Integer, Integer, Integer, Float, BiConsumer<LivingEntity, LivingEntity>> TIME_POSSIBILITY_AMPLIFIER_EFFECT = (effect, ticks, minAmplifier, maxAmplifier, possibility) ->
             (owner, entity) -> {
-                if (LibUtils.checkChance(possibility, entity.getRandom())) {
+                if (LibMathUtils.checkChance(possibility, entity.getRandom())) {
                     if (entity.hasEffect(effect)) {
                         MobEffectInstance effect1 = entity.getEffect(effect);
                         if (effect1 != null && effect1.getAmplifier() < maxAmplifier) {

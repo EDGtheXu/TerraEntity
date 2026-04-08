@@ -28,6 +28,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.api.entity.Boss;
 import org.confluence.lib.color.FloatRGB;
+import org.confluence.lib.util.LibMathUtils;
 import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.api.entity.ai.IBossFSM;
 import org.confluence.terraentity.client.gui.CustomizeBossHealthBar;
@@ -463,7 +464,7 @@ public class KingSlime extends Slime implements DeathAnimOptions, IBossFSM, Boss
             slime.setPos(pos.getX(), pos.getY() + 0.5, pos.getZ());
             slime.setTarget(target);
             level.addFreshEntity(slime);
-            if (LibUtils.checkChance(LibUtils.switchByDifficulty(level, pos, 0.0, 0.5, 0.75, 1.0), random)) {
+            if (LibMathUtils.checkChance(LibUtils.switchByDifficulty(level, pos, 0.0, 0.5, 0.75, 1.0), random)) {
                 SpikedSlime spikedSlime = new SpikedSlime(TEMonsterEntities.SPIKED_SLIME.get(), level, 2);
                 spikedSlime.setPos(pos.getX(), pos.getY() + 0.5, pos.getZ());
                 spikedSlime.setTarget(target);
