@@ -28,6 +28,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.api.entity.Boss;
 import org.confluence.lib.color.FloatRGB;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.lib.util.LibMathUtils;
 import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.api.entity.ai.IBossFSM;
@@ -346,7 +347,7 @@ public class KingSlime extends Slime implements DeathAnimOptions, IBossFSM, Boss
 
     public static AttributeSupplier.Builder createSlimeAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 728)
-                .add(Attributes.ATTACK_DAMAGE, 16.5)
+                .add(LibAttributes.getAttackDamage(), 16.5)
                 .add(Attributes.ATTACK_KNOCKBACK, 2.2)
                 .add(Attributes.ARMOR, 10)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1)

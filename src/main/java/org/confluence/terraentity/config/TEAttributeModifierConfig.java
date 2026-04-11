@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
 
@@ -58,7 +59,7 @@ public class TEAttributeModifierConfig extends AbstractJsonConfig {
         defaultModifiers.put(TEMonsterEntities.BASE_BONES.get(),
                 List.of(
                         new Modifier(Attributes.MOVEMENT_SPEED, 1.0),
-                        new Modifier(Attributes.ATTACK_DAMAGE, 1.0),
+                        new Modifier(LibAttributes.getAttackDamage(), 1.0),
                         new Modifier(Attributes.MAX_HEALTH, 1.0)
                 ));
 //        defaultConfig.add(CODEC.codec().encodeStart(JsonOps.INSTANCE, defaultModifiers).result().get().getAsJsonObject());

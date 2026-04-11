@@ -17,6 +17,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.IMeleeAttackPartGoal;
 import org.confluence.terraentity.api.entity.IOriented;
@@ -368,14 +369,14 @@ public class SummonSword extends AbstractSummonMob implements IOriented, FlyingA
             super.stop();
             triggered = false;
             this.triggerZRot();
-            Objects.requireNonNull(this.sword.getAttribute(Attributes.ATTACK_DAMAGE)).removeModifier(attackModifier);
+            Objects.requireNonNull(this.sword.getAttribute(LibAttributes.getAttackDamage())).removeModifier(attackModifier);
 
         }
 
         @Override
         public void start(){
             super.start();
-            Objects.requireNonNull(this.sword.getAttribute(Attributes.ATTACK_DAMAGE)).addOrUpdateTransientModifier(new AttributeModifier(attackModifier, 0.3f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+            Objects.requireNonNull(this.sword.getAttribute(LibAttributes.getAttackDamage())).addOrUpdateTransientModifier(new AttributeModifier(attackModifier, 0.3f, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         }
 
         protected void triggerZRot(){

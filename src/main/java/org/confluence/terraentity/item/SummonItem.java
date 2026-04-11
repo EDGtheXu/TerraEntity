@@ -23,11 +23,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.api.event.SummonEvent;
 import org.confluence.terraentity.attachment.SummonerAttachment;
 import org.confluence.terraentity.init.TEAttachments;
-import org.confluence.terraentity.init.TEAttributes;
 import org.confluence.terraentity.init.TESounds;
 import org.confluence.terraentity.utils.AdapterUtils;
 import org.confluence.terraentity.utils.TEUtils;
@@ -85,15 +85,16 @@ public class SummonItem<T extends Mob & ISummonMob> extends Item {
         return InteractionResultHolder.fail(itemstack);
     }
 
-    protected boolean canDiscard(Entity entity, Player player){
+    protected boolean canDiscard(Entity entity, Player player) {
         // 这里设计不合理，不过也没有其他需求
-        return entity instanceof ISummonMob summonMob && !summonMob.isPet() &&  summonMob.summon_getOwner() == player;
+        return entity instanceof ISummonMob summonMob && !summonMob.isPet() && summonMob.summon_getOwner() == player;
     }
 
 
     public void summon(Player player, ItemStack stack) {
         Level level = player.level();
-        if (AdapterUtils.postGameEvent(new SummonEvent.Pre<>(player, stack, entityType.get())).isCanceled()) return;
+        if (AdapterUtils.postGameEvent(new SummonEvent.Pre<>(player, stack, entityType.get())).isCanceled())
+            return;
 
         T entity = entityType.get().create(level);
         if (entity != null) {
@@ -119,7 +120,7 @@ public class SummonItem<T extends Mob & ISummonMob> extends Item {
 
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         if (localPlayer == null) return;
-        float additionAttackDamage = (float) localPlayer.getAttributeValue(TEAttributes.MARK_DAMAGE);
+        float additionAttackDamage = (float) localPlayer.getAttributeValue(ConfluenceMagicLib.MARK_DAMAGE);
 
         tooltipComponents.add(Component.translatable("attribute.name.player.summon_damage").append(": " +
                         (baseAttackDamage + (additionAttackDamage > 0 ? "  +%.1f".formatted((additionAttackDamage)) : "")))

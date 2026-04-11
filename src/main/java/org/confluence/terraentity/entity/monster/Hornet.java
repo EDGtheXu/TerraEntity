@@ -11,7 +11,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -30,6 +29,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.monster.prefab.AttributeBuilder;
 import org.confluence.terraentity.entity.proj.LineProj;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
@@ -301,7 +301,7 @@ public class Hornet extends AbstractMonster implements FlyingAnimal{
     public boolean doHurtTarget(Entity entity) {
         DamageSource damagesource = this.damageSources().sting(this);
         this.swing(InteractionHand.MAIN_HAND);
-        boolean flag = entity.hurt(damagesource, (float)((int)this.getAttributeValue(Attributes.ATTACK_DAMAGE)));
+        boolean flag = entity.hurt(damagesource, (float)((int)this.getAttributeValue(LibAttributes.getAttackDamage())));
         if (flag) {
             Level var5 = this.level();
             if (var5 instanceof ServerLevel) {

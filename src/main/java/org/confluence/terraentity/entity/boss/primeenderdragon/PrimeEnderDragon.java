@@ -1,6 +1,5 @@
 package org.confluence.terraentity.entity.boss.primeenderdragon;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.tags.DamageTypeTags;
@@ -9,7 +8,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.animal.FlyingAnimal;
@@ -18,7 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.lib.api.entity.Boss;
-import org.confluence.terraentity.client.buffer.DebugBlocksHelper;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTBossTwoStageRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
@@ -93,7 +91,7 @@ public class PrimeEnderDragon extends BaseBehaviorTreeMob implements FlyingAnima
         this.setId(ENTITY_COUNTER.getAndAdd(this.subEntities.length + 1) + 1);
 
         // todo：for debug
-        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(0.1);
+        this.getAttribute(LibAttributes.getAttackDamage()).setBaseValue(0.1);
     }
 
 

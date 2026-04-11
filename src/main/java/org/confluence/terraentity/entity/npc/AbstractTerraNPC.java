@@ -47,6 +47,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.lib.util.LibDateUtils;
 import org.confluence.terraentity.api.entity.animation.IUseItemAnimatable;
 import org.confluence.terraentity.api.event.NPCEvent;
@@ -654,7 +655,7 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE)
+                .add(LibAttributes.getAttackDamage())
                 .add(Attributes.MAX_HEALTH)
                 .add(Attributes.ARMOR)
                 .add(Attributes.MOVEMENT_SPEED)
@@ -662,7 +663,6 @@ public abstract class AbstractTerraNPC extends PathfinderMob implements GeoEntit
                 .add(Attributes.KNOCKBACK_RESISTANCE)
                 ;
     }
-
 
     @Override
     public void startSleeping(@NotNull BlockPos pos) {

@@ -13,6 +13,7 @@ import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.init.TESounds;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -52,7 +53,7 @@ public class SandPoacher extends Spider implements GeoEntity {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Spider.createMobAttributes()
-            .add(Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE)  // 攻击力
+            .add(LibAttributes.getAttackDamage(), ATTACK_DAMAGE)  // 攻击力
             .add(Attributes.MAX_HEALTH, MAX_HEALTH)        // 生命值
             .add(Attributes.ARMOR, 8)                 // 防御值
             .add(Attributes.MOVEMENT_SPEED, 0.38)          // 移动速度

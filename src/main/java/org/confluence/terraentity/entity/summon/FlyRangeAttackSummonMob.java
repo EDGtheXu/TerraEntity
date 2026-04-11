@@ -6,7 +6,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -15,7 +14,7 @@ import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.entity.PartEntity;
-import org.confluence.terraentity.api.entity.IPartEntityTargetable;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.ai.goal.FlyRangeAttackGoal;
 import org.confluence.terraentity.entity.proj.BaseProj;
 import software.bernie.geckolib.animation.AnimatableManager;
@@ -90,7 +89,7 @@ public class FlyRangeAttackSummonMob<P extends BaseProj<?>> extends AbstractSumm
         if (proj != null) {
             proj.setOwner(this);
             proj.setPos(this.position());
-            proj.setDamage((float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
+            proj.setDamage((float) this.getAttributeValue(LibAttributes.getAttackDamage()));
 
             // 检查是否有 PartEntity 实际目标，如果有则使用 PartEntity 的位置
             Entity attackTarget = target;

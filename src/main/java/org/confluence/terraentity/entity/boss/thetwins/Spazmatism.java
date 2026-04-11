@@ -12,7 +12,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.entity.IAutoLeaveMob;
 import org.confluence.terraentity.api.entity.ISharedFlagControllerHolder;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
@@ -296,7 +296,7 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
                     entity.shootFromRotation(mob, mob.getXRot(), mob.getYRot(), 0.0f, 1.5f, 10.0f);
                     entity.setOwner(mob);
                     entity.setPos(mob.getX(), mob.getY()  + mob.getBbHeight() * 0.5f, mob.getZ());
-                    entity.setDamage((float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) * rangeDamageFactor);
+                    entity.setDamage((float) mob.getAttributeValue(LibAttributes.getAttackDamage()) * rangeDamageFactor);
                     mob.level().addFreshEntity(entity);
                 }
             }
@@ -336,7 +336,7 @@ public class Spazmatism extends AbstractTerraBossBase implements ISharedFlagCont
 
                 for (LivingEntity e : hurt) {
                     if (this.mob.canAttack(e)) {
-                        e.hurt(this.mob.damageSources().inFire(), (float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) * rangeDamageFactor);
+                        e.hurt(this.mob.damageSources().inFire(), (float) mob.getAttributeValue(LibAttributes.getAttackDamage()) * rangeDamageFactor);
                         e.setRemainingFireTicks(100);
                     }
                 }

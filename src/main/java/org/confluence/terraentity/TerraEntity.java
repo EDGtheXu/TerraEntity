@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 public class TerraEntity {
     public static final String MODID = "terra_entity";
     public static final Logger LOGGER = LoggerFactory.getLogger("TerraEntity");
+
     public static ResourceLocation space(String path) {return ResourceLocation.fromNamespaceAndPath(MODID, path);}
 
     public static ResourceLocation parse(String path) {return ResourceLocation.parse(path);}
@@ -41,7 +42,6 @@ public class TerraEntity {
         TEItems.register(modEventBus);
         TEEffects.EFFECTS.register(modEventBus);
         TEAttachments.TYPES.register(modEventBus);
-        TEAttributes.ATTRIBUTES.register(modEventBus);
         TEDataComponentTypes.TYPES.register(modEventBus);
         TEEntityDataSerializers.SERIALIZERS.register(modEventBus);
         TEBlocks.register(modEventBus);

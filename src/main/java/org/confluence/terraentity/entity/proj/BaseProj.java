@@ -304,7 +304,7 @@ public abstract class BaseProj<T extends BaseProj<T>> extends Projectile impleme
 
     public float defaultDamage() {
 //        if(getOwner() != null)
-//            return (int) ((LivingEntity)getOwner()).getAttribute(Attributes.ATTACK_DAMAGE).getValue();
+//            return (int) ((LivingEntity)getOwner()).getAttribute(LibAttributes.getAttackDamage()).getValue();
         return 0;
     }
 

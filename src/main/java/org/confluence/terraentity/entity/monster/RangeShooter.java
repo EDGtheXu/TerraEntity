@@ -14,6 +14,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.entity.monster.prefab.AttributeBuilder;
 import org.confluence.terraentity.entity.proj.BaseProj;
@@ -71,7 +72,7 @@ public class RangeShooter extends AbstractMonster {
                 BaseProj proj = projType.get().create(level());
                 proj.setOwner(this);
                 proj.setPos(this.getEyePosition());
-                proj.setDamage((float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
+                proj.setDamage((float) this.getAttributeValue(LibAttributes.getAttackDamage()));
                 proj.shoot((float)(target.getX() - this.getX()), (float)(target.getY() - target.getBbHeight() * 0.3f - this.getY()), (float)(target.getZ() - this.getZ()), 0.3f, 0.8f);
                 level().addFreshEntity(proj);
             }

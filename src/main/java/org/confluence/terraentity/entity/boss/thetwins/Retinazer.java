@@ -4,9 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.data.mappeddata.BossSkillMapDatas;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTBossTwoStageRoot;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
@@ -174,7 +174,7 @@ public class Retinazer extends Spazmatism {
                     entity.shootFromRotation(mob, mob.getXRot(), mob.getYRot(), 0.0f, 1.5f, inaccuracy);
                     entity.setOwner(mob);
                     entity.setPos(mob.getX(), mob.getY() + mob.getBbHeight() * 0.5f, mob.getZ());
-                    entity.setDamage((float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE) * mob.skillParams.rangeDamageFactor);
+                    entity.setDamage((float) mob.getAttributeValue(LibAttributes.getAttackDamage()) * mob.skillParams.rangeDamageFactor);
                     mob.level().addFreshEntity(entity);
                 }
             }

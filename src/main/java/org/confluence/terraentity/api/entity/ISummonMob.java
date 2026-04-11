@@ -27,14 +27,10 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.event.SummonEvent;
-import org.confluence.terraentity.entity.ai.goal.summon.SummonAttackPartEntityGoal;
-import org.confluence.terraentity.entity.ai.goal.summon.SummonFollowOwnerGoal;
-import org.confluence.terraentity.entity.ai.goal.summon.SummonOwnerHurtByTargetGoal;
-import org.confluence.terraentity.entity.ai.goal.summon.SummonOwnerHurtTargetGoal;
-import org.confluence.terraentity.entity.ai.goal.summon.SummonPriorAttackGoal;
+import org.confluence.terraentity.entity.ai.goal.summon.*;
 import org.confluence.terraentity.init.TEAttachments;
-import org.confluence.terraentity.init.TEAttributes;
 import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.item.SummonItem;
 import org.confluence.terraentity.utils.AdapterUtils;
@@ -60,7 +56,7 @@ public interface ISummonMob extends OwnableEntity {
     /**
      * 区分是否为宠物，这样不需要再进行一次类型检查
      */
-    default boolean isPet(){
+    default boolean isPet() {
         return false;
     }
 
@@ -203,17 +199,17 @@ public interface ISummonMob extends OwnableEntity {
         summon_setOwnerUUID(player.getUUID());
         summon_setTame(true, true);
         if (stack.getItem() instanceof SummonItem<?> summonItem)
-            asEntity().getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(summonItem.baseAttackDamage);
+            asEntity().getAttribute(LibAttributes.getAttackDamage()).setBaseValue(summonItem.baseAttackDamage);
         AdapterUtils.postGameEvent(new SummonEvent(player, stack, this));
     }
 
     /* Attack API */
 
     default float summon_getAttackDamage(Entity entity, ServerLevel serverLevel, DamageSource damageSource) {
-        float f = (float) asEntity().getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float f = (float) asEntity().getAttributeValue(LibAttributes.getAttackDamage());
         f = EnchantmentHelper.modifyDamage(serverLevel, asEntity().getWeaponItem(), entity, damageSource, f);
-        if(getOwner() != null){
-            f *= TEUtils.getAttributePercent(TEAttributes.SUMMON_DAMAGE, getOwner());
+        if (getOwner() != null) {
+            f *= TEUtils.getAttributePercent(LibAttributes.getSummonDamage(), getOwner());
         }
         return f;
     }

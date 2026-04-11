@@ -19,6 +19,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.lib.ConfluenceMagicLib;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;
 import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.api.entity.ISummonMob;
@@ -29,7 +31,6 @@ import org.confluence.terraentity.data.mappeddata.WeaponMappedDatas;
 import org.confluence.terraentity.data.mappeddata.data.WhipPathManager;
 import org.confluence.terraentity.entity.ai.keyframe.animation.Vec3KeyframeAnimation;
 import org.confluence.terraentity.entity.ai.keyframe.dynamic_curve.SplineKeyframeDynamicCurve;
-import org.confluence.terraentity.init.TEAttributes;
 import org.confluence.terraentity.init.TEDataComponentTypes;
 import org.confluence.terraentity.init.TESounds;
 import org.confluence.terraentity.init.TETags;
@@ -122,7 +123,7 @@ public class WhipEntity extends Projectile {
      */
     public void setWeapon(ItemStack weapon) {
         this.entityData.set(DATA_WEAPON, weapon);
-        if(weapon.getItem() instanceof BaseWhipItem item1){
+        if (weapon.getItem() instanceof BaseWhipItem item1) {
             item = item1;
         }
         var data = weapon.get(TEDataComponentTypes.EFFECT_STRATEGY);
@@ -132,19 +133,19 @@ public class WhipEntity extends Projectile {
         if (data1 != null)
             hiteffect_beneficial = data1;
         boolean triggerSweep = random.nextFloat() < 0.2f;
-        serverRandom =  triggerSweep? 1: 0;
+        serverRandom = triggerSweep ? 1 : 0;
         this.entityData.set(DATA_SERVER_RANDOM, serverRandom);
         updateWeapon(weapon, triggerSweep);
     }
 
-    private void updateWeapon(ItemStack weapon, boolean sweep){
+    private void updateWeapon(ItemStack weapon, boolean sweep) {
         int sweepLevel = TEEnchantmentHelper.getEnchantmentLevel(TEEnchantments.WHIP_SWEEP, weapon);
         WhipPathManager.WhipPath path1 = MappedDataTypes.getData(MappedDataTypes.WEAPON_MAP_DATAS, WeaponMappedDatas.WHIP_PATHS).getWhipPath(weapon);
-        if(sweepLevel > 0 && sweep) {
+        if (sweepLevel > 0 && sweep) {
             // 横扫之鞭
             parts = path1.sweep;
             this.weepDamage += sweepLevel * 0.2f;
-        }else {
+        } else {
             parts = path1.keys;
         }
         keyPositions = new ArrayList<>();
@@ -155,6 +156,7 @@ public class WhipEntity extends Projectile {
         }
         interpolator = new SplineKeyframeDynamicCurve<>(parts);
     }
+
     /**
      * 获取鞭的武器
      */
@@ -176,7 +178,7 @@ public class WhipEntity extends Projectile {
      * 获取鞭范围
      */
     public double getRange(Player player) {
-        return _rangeFactor * player.getAttribute(TEAttributes.WHIP_RANGE).getValue();
+        return _rangeFactor * player.getAttribute(ConfluenceMagicLib.WHIP_RANGE).getValue();
     }
 
 
@@ -203,14 +205,14 @@ public class WhipEntity extends Projectile {
             }
         }
 
-        if((int)(existTick * 0.3f) == tickCount){
-            if(this.getOwner() != null) {
+        if ((int) (existTick * 0.3f) == tickCount) {
+            if (this.getOwner() != null) {
                 this.getOwner().playSound(TESounds.WHIP_ATTACK.get(), 0.6F + getRandom().nextFloat() * 0.2f, 1.0F);
             }
         }
 
 
-        if(parts == null || parts.isEmpty()) return;
+        if (parts == null || parts.isEmpty()) return;
         this.speed = (double) _existTick / this.existTick;
         if (getOwner() instanceof Player owner) {
             if (initialPosition != null && initDirection != null) {
@@ -225,7 +227,7 @@ public class WhipEntity extends Projectile {
         // 可以插值让攻击更准确
         List<Vec3> attackPoints = keyPositions.stream().map(Vec3::new).toList();
 
-        float additionalRange = serverRandom == 1? 0.5f: 0;
+        float additionalRange = serverRandom == 1 ? 0.5f : 0;
         // 攻击
         float range = 1.5f + additionalRange;
         for (Vec3 attackPoint : attackPoints) {
@@ -233,12 +235,12 @@ public class WhipEntity extends Projectile {
             AABB aabb = new AABB(pos.x - range, pos.y - range, pos.z - range,
                     pos.x + range, pos.y + range, pos.z + range);
 
-            if (!level().isClientSide){
-                for (int x0 = (int) (pos.x - range); x0 <= pos.x + range; x0++){
-                    for (int y0 = (int) (pos.y - range); y0 <= pos.y + range; y0++){
-                        for (int z0 = (int) (pos.z - range); z0 <= pos.z + range; z0++){
-                            Vec3 forwardP = new Vec3(x0,y0,z0);
-                            if (!hittedPos.contains(forwardP)){
+            if (!level().isClientSide) {
+                for (int x0 = (int) (pos.x - range); x0 <= pos.x + range; x0++) {
+                    for (int y0 = (int) (pos.y - range); y0 <= pos.y + range; y0++) {
+                        for (int z0 = (int) (pos.z - range); z0 <= pos.z + range; z0++) {
+                            Vec3 forwardP = new Vec3(x0, y0, z0);
+                            if (!hittedPos.contains(forwardP)) {
                                 BlockPos blockPos = BlockPos.containing(forwardP);
                                 BlockState blockstate = level().getBlockState(blockPos);
                                 BlockHitResult blockHitResult = new BlockHitResult(forwardP, this.getDirection(), blockPos, true);
@@ -256,43 +258,43 @@ public class WhipEntity extends Projectile {
                 // 某些鞭子禁止穿墙攻击
                 if (item != null && !item.canPenetrate && level().clip(new ClipContext(owner.getEyePosition(), entity.position().add(0, entity.getBbHeight(), 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, owner)).getType() != HitResult.Type.MISS
                         && level().clip(new ClipContext(owner.getEyePosition(), entity.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, owner)).getType() != HitResult.Type.MISS
-                        &&level().clip(new ClipContext(owner.getEyePosition(), entity.position().add(0, entity.getBbHeight() * 0.5f, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, owner)).getType() != HitResult.Type.MISS) {
+                        && level().clip(new ClipContext(owner.getEyePosition(), entity.position().add(0, entity.getBbHeight() * 0.5f, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, owner)).getType() != HitResult.Type.MISS) {
                     hitEntities.put(entity, hitCooldown);
                     continue;
                 }
 
-                if(!hitEntities.containsKey(entity)){
+                if (!hitEntities.containsKey(entity)) {
                     if (entity instanceof LivingEntity hurter) {
                         // 命中无多体节敌人
-                        if(owner.canAttack(hurter) && TEUtils.projectileCanHurtEntityTest.test(this, hurter)) {
+                        if (owner.canAttack(hurter) && TEUtils.projectileCanHurtEntityTest.test(this, hurter)) {
                             hitEntities.put(entity, hitCooldown);
                             trigger = doHurt(owner, hurter, hurter);
                         }
-                        if(hurter instanceof ISummonMob){
-                            if(hiteffect_beneficial != null){
+                        if (hurter instanceof ISummonMob) {
+                            if (hiteffect_beneficial != null) {
                                 hiteffect_beneficial.applyAll(owner, hurter);
                             }
                         }
 
-                    }else if(entity instanceof PartEntity<?> partEntity){
+                    } else if (entity instanceof PartEntity<?> partEntity) {
                         // 名字多体节敌人
-                        if(partEntity.getParent() instanceof LivingEntity hurter){
-                            if(owner.canAttack(hurter) && TEUtils.projectileCanHurtEntityTest.test(this, hurter)) {
+                        if (partEntity.getParent() instanceof LivingEntity hurter) {
+                            if (owner.canAttack(hurter) && TEUtils.projectileCanHurtEntityTest.test(this, hurter)) {
                                 hitEntities.put(entity, hitCooldown);
                                 trigger = doHurt(owner, hurter, partEntity);
                             }
                         }
                     }
-                }else{
+                } else {
                     hitEntities.put(entity, hitEntities.get(entity) - 1);
-                    if(hitEntities.get(entity) <= 0){
+                    if (hitEntities.get(entity) <= 0) {
                         hitEntities.remove(entity);
                     }
                     return;
                 }
             }
         }
-        if(trigger){
+        if (trigger) {
             // 命中敌人造成伤害才消耗耐久
             getWeapon().hurtAndBreak(1, owner, EquipmentSlot.MAINHAND);
         }
@@ -316,7 +318,7 @@ public class WhipEntity extends Projectile {
             keyPositions.set(i, lp);
         }
 
-        if(tickCount > drawBackTick){
+        if (tickCount > drawBackTick) {
             // 过渡到player位置
             double delta = (double) (tickCount - drawBackTick) / (existTick - drawBackTick);
             double lerpx = Mth.lerp(delta, getX(), getOwner().getEyePosition().x);
@@ -324,35 +326,35 @@ public class WhipEntity extends Projectile {
             double lerpz = Mth.lerp(delta, getZ(), getOwner().getEyePosition().z);
 
             Vec3 dir = new Vec3(lerpx - getX(), lerpy - getY(), lerpz - getZ());
-            setDeltaMovement(0,0,0);
+            setDeltaMovement(0, 0, 0);
             move(MoverType.SELF, dir.scale(0.5f));
 
         }
     }
 
-    protected boolean doHurt(LivingEntity owner, LivingEntity hurter, Entity actualHurter){
-        double damage = owner.getAttributeValue(TEAttributes.SUMMON_DAMAGE);
+    protected boolean doHurt(LivingEntity owner, LivingEntity hurter, Entity actualHurter) {
+        double damage = owner.getAttributeValue(LibAttributes.getSummonDamage());
         boolean trigger = false;
-        if(TEUtils.attackTamableTest.test(owner, hurter)){
+        if (TEUtils.attackTamableTest.test(owner, hurter)) {
             owner.setLastHurtMob(hurter); // 让召唤物可以攻击敌人
-            if(actualHurter instanceof PartEntity<?> && owner instanceof IPartEntityTargetable targetable){
+            if (actualHurter instanceof PartEntity<?> && owner instanceof IPartEntityTargetable targetable) {
                 targetable.setActualTargetEntity(actualHurter);
             }
             trigger = true;
             damage *= damageDecline;
             damageDecline = Math.max(_damageMin, damageDecline * _damageDecline);
             if (hiteffect != null) {
-                hiteffect.applyAll( owner, hurter);
+                hiteffect.applyAll(owner, hurter);
             }
-        }else{
+        } else {
             // 当命中宠物时
-            if(getWeapon().getItem() == TEWhipItems.LEATHER_WHIP.get()){
-                if(hiteffect_beneficial != null){
-                    hiteffect_beneficial.applyAll( owner, hurter);
+            if (getWeapon().getItem() == TEWhipItems.LEATHER_WHIP.get()) {
+                if (hiteffect_beneficial != null) {
+                    hiteffect_beneficial.applyAll(owner, hurter);
                 }
                 // 如果是皮鞭
                 damage *= 0.2F;
-            }else{
+            } else {
                 return false;
             }
         }
@@ -360,9 +362,9 @@ public class WhipEntity extends Projectile {
         return trigger;
     }
 
-    protected DamageSource getDamageSource(){
-        if(this.getOwner() != null){
-            return TETags.DamageTypes.of(level(), TETags.DamageTypes.SUMMON,  getOwner());
+    protected DamageSource getDamageSource() {
+        if (this.getOwner() != null) {
+            return TETags.DamageTypes.of(level(), TETags.DamageTypes.SUMMON, getOwner());
         }
         return damageSources().magic();
     }
@@ -381,6 +383,7 @@ public class WhipEntity extends Projectile {
     protected ParticleOptions getTrailParticle() {
         return null;
     }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(DATA_INITIAL_POSITION, new Vector3f(0, 0, 0));
@@ -391,27 +394,27 @@ public class WhipEntity extends Projectile {
     }
 
     @Override
-    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> var1){
-        if(level().isClientSide){
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> var1) {
+        if (level().isClientSide) {
 
             if (var1 == DATA_INITIAL_POSITION) {
                 initialPosition = new Vec3(this.entityData.get(DATA_INITIAL_POSITION));
             } else if (var1 == DATA_INITIAL_DIRECTION) {
                 initDirection = new Vec3(this.entityData.get(DATA_INITIAL_DIRECTION));
-            }else if (var1 == DATA_INITIAL_EXISTING_TIME) {
+            } else if (var1 == DATA_INITIAL_EXISTING_TIME) {
                 existTick = this.entityData.get(DATA_INITIAL_EXISTING_TIME);
                 this.drawBackTick = (int) (existTick * 0.5F);
-            }else if(var1 == DATA_WEAPON){
+            } else if (var1 == DATA_WEAPON) {
                 weapon = this.entityData.get(DATA_WEAPON);
-                if(weapon.getItem() instanceof BaseWhipItem whip){
+                if (weapon.getItem() instanceof BaseWhipItem whip) {
                     this.item = whip;
                 }
-            }else if(var1 == DATA_SERVER_RANDOM){
+            } else if (var1 == DATA_SERVER_RANDOM) {
                 this.serverRandom = this.entityData.get(DATA_SERVER_RANDOM);
             }
             boolean keyframeRelated = var1 == DATA_WEAPON || var1 == DATA_SERVER_RANDOM;
-            if(keyframeRelated){
-                if(weapon != null && serverRandom != -1){
+            if (keyframeRelated) {
+                if (weapon != null && serverRandom != -1) {
                     updateWeapon(this.entityData.get(DATA_WEAPON), serverRandom == 1);
                 }
             }
@@ -426,9 +429,9 @@ public class WhipEntity extends Projectile {
         this.shoot(f, f1, f2, velocity, inaccuracy);
         Vec3 vec3 = shooter.getKnownMovement();
         Vec3 dir = new Vec3(f, f1, f2);
-        if(TEUtils.angleBetween(shooter.getLookAngle(), vec3) < 1.5f){
+        if (TEUtils.angleBetween(shooter.getLookAngle(), vec3) < 1.5f) {
             this.setDeltaMovement(this.getDeltaMovement().add(vec3.x, vec3.y * 0.2F, vec3.z));
-        }else{
+        } else {
             this.setDeltaMovement(this.getDeltaMovement().add(vec3.x * 0.23f, vec3.y * 0.2F, vec3.z * 0.23f));
         }
         dir = dir.normalize().scale(this.getDeltaMovement().length());

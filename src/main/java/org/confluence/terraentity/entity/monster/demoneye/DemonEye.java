@@ -19,6 +19,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.entity.IMinion;
 import org.confluence.terraentity.entity.boss.EyeOfCthulhu;
 import org.confluence.terraentity.entity.util.DeathAnimOptions;
@@ -48,7 +49,7 @@ public class DemonEye extends Monster implements Enemy, VariantHolder<DemonEyeVa
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH)
-                .add(Attributes.ATTACK_DAMAGE)
+                .add(LibAttributes.getAttackDamage())
                 .add(Attributes.ARMOR)
                 .add(Attributes.MOVEMENT_SPEED);
     }
@@ -77,7 +78,7 @@ public class DemonEye extends Monster implements Enemy, VariantHolder<DemonEyeVa
         entityData.set(DATA_VARIANT_ID, pVariant.id);
         AttributeMap attributeMap = getAttributes();
         attributeMap.getInstance(Attributes.MAX_HEALTH).setBaseValue(pVariant.health);
-        attributeMap.getInstance(Attributes.ATTACK_DAMAGE).setBaseValue(pVariant.damage);
+        attributeMap.getInstance(LibAttributes.getAttackDamage()).setBaseValue(pVariant.damage);
         attributeMap.getInstance(Attributes.ARMOR).setBaseValue(pVariant.armor);
         attributeMap.getInstance(Attributes.MOVEMENT_SPEED).setBaseValue(pVariant.big ? 0.1 : 0.2);
         setHealth(getMaxHealth());

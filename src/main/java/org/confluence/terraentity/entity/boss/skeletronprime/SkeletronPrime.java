@@ -9,7 +9,6 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -21,6 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.ISharedFlagControllerHolder;
 import org.confluence.terraentity.api.entity.ITrackType;
@@ -144,12 +144,12 @@ public class SkeletronPrime extends AbstractTerraBossBase implements ISharedFlag
             return BTFactory.selector()
                     .addWithCondition(TimeCondition.isDay(this.mob.level()), BTFactory.sequence()
                             .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, true))
-                            .addChild(new AttributeModifierAction.Add(this.mob, Attributes.ATTACK_DAMAGE, TerraEntity.space("day"), 999, AttributeModifier.Operation.ADD_VALUE))
+                            .addChild(new AttributeModifierAction.Add(this.mob, LibAttributes.getAttackDamage(), TerraEntity.space("day"), 999, AttributeModifier.Operation.ADD_VALUE))
                             .addChild(BTFactory.withTimer(99999,new FlyTowardTargetAction(mob, 2.0f)))
                     )
                     .addWithCondition(TimeCondition.isNight(this.mob.level()), BTFactory.sequence()
                             .addChild(new SyncFlagAction<>(this.mob, this.mob.spinFlag, false))
-                            .addChild(new AttributeModifierAction.Remove(this.mob, Attributes.ATTACK_DAMAGE, TerraEntity.space("day")))
+                            .addChild(new AttributeModifierAction.Remove(this.mob, LibAttributes.getAttackDamage(), TerraEntity.space("day")))
                             .addChild(BTFactory.withTimer(200, BTFactory.parallel(ParallelNode.Policy.REQUIRE_ONE, ParallelNode.Policy.REQUIRE_ALL)
                                     .addChild(new LerpTrackAction(mob))
                                     .addChild(BTFactory.infinite(BTFactory.sequence()

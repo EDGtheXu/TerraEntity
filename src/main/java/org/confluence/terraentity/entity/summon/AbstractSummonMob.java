@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.entity.ICollisionAttackEntity;
 import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.api.entity.ISummonMob;
@@ -206,7 +207,7 @@ public abstract class AbstractSummonMob extends TamableAnimal implements GeoEnti
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE)
+                .add(LibAttributes.getAttackDamage())
                 .add(Attributes.MAX_HEALTH)
                 .add(Attributes.ARMOR)
                 .add(Attributes.MOVEMENT_SPEED, 0.5f)

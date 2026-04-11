@@ -27,6 +27,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.EventHooks;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;
 import org.confluence.terraentity.attachment.WeaponStorage;
 import org.confluence.terraentity.config.ClientConfig;
@@ -120,7 +121,7 @@ public class BoomerangProjectile extends Projectile {
             DamageSource source = this.damageSources().mobAttack(owner); // 回旋镖是近战伤害
             if (hurter instanceof LivingEntity living && actualHurter.isAlive() && TEUtils.projectileCanHurtEntityTest.test(this, living)) {
                 penetrationCount--;
-                float damage = (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE) + modifier.damage - 1;
+                float damage = (float) owner.getAttributeValue(LibAttributes.getAttackDamage()) + modifier.damage - 1;
                 if (actualHurter.hurt(source, damage)) {
                     EffectStrategyComponent data = weapon.get(TEDataComponentTypes.EFFECT_STRATEGY);
                     if (data != null) {

@@ -3,6 +3,7 @@ package org.confluence.terraentity.entity.util;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import org.confluence.lib.common.LibAttributes;
 
 public class AttBuilder extends AttributeSupplier.Builder {
 
@@ -20,7 +21,7 @@ public class AttBuilder extends AttributeSupplier.Builder {
 
     public static AttBuilder createBoss(double attack, double health, double armor){
         return new AttBuilder(Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, attack)
+                .add(LibAttributes.getAttackDamage(), attack)
                 .add(Attributes.MAX_HEALTH, health)
                 .add(Attributes.ARMOR, armor)
                 .add(Attributes.MOVEMENT_SPEED, 1)
@@ -35,7 +36,7 @@ public class AttBuilder extends AttributeSupplier.Builder {
 
     public static AttBuilder createAttributes()  {
         return new AttBuilder(Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE)
+                .add(LibAttributes.getAttackDamage())
                 .add(Attributes.MAX_HEALTH)
                 .add(Attributes.ARMOR)
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
@@ -51,7 +52,7 @@ public class AttBuilder extends AttributeSupplier.Builder {
 
     public static AttBuilder createAttributes(float health, float armor, float attack, float followRange, float knockBack, float knockBackResistance)  {
         return new AttBuilder(Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, attack)
+                .add(LibAttributes.getAttackDamage(), attack)
                 .add(Attributes.MAX_HEALTH, health)
                 .add(Attributes.ARMOR, armor)
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
@@ -73,7 +74,7 @@ public class AttBuilder extends AttributeSupplier.Builder {
         return createAttributes(health, armor, attack, 32, 1, 0.28f);
     }
     public AttBuilder attack(double attack) {
-        this.add(Attributes.ATTACK_DAMAGE, attack);
+        this.add(LibAttributes.getAttackDamage(), attack);
         return this;
     }
     public AttBuilder safeFall(double safeFall) {

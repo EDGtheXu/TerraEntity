@@ -34,6 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.api.entity.ICollisionAttackEntity;
 import org.confluence.terraentity.api.entity.IStateChangeableMob;
@@ -157,7 +158,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 1)
-                .add(Attributes.ATTACK_DAMAGE, 1)
+                .add(LibAttributes.getAttackDamage(), 1)
                 .add(Attributes.ATTACK_KNOCKBACK, 2.2)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 300.0)
@@ -166,7 +167,7 @@ public abstract class AbstractTerraBossBase extends Monster implements GeoEntity
 
     // 尽量不要使用这个方法，应该使用modifier且使用最好使用乘法，以适配其他模组的属性
     protected void setAttactDamage(float damage) {
-        this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(damage);
+        this.getAttribute(LibAttributes.getAttackDamage()).setBaseValue(damage);
     }
 
     /* 攻击目标 */

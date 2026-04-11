@@ -29,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
 import org.confluence.terraentity.entity.proj.LineProj;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
@@ -96,7 +97,7 @@ public class TheDestroyerProbe extends AbstractTerraBossBase implements GeoEntit
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0D)
-                .add(Attributes.ATTACK_DAMAGE, 4.0D)
+                .add(LibAttributes.getAttackDamage(), 4.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.5D)
                 .add(Attributes.FOLLOW_RANGE, 64.0D);
     }

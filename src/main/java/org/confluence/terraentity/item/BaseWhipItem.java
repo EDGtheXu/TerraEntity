@@ -19,9 +19,10 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.confluence.lib.ConfluenceMagicLib;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.entity.proj.WhipEntity;
-import org.confluence.terraentity.init.TEAttributes;
 import org.confluence.terraentity.init.TEDataComponentTypes;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.confluence.terraentity.registries.hit_effect.IEffectStrategy;
@@ -35,7 +36,7 @@ import java.util.function.Supplier;
 public class BaseWhipItem extends Item {
 
     public final int hitCooldown;
-//    public final float markDamage;
+    //    public final float markDamage;
 //    public final float attackSpeed;
     public final Supplier<? extends ParticleOptions> particleOptions;
     public final float chance;
@@ -48,8 +49,9 @@ public class BaseWhipItem extends Item {
 
     /**
      * <h1>鞭子
-     * @param damage - 召唤伤害
-     * @param markDamage - 标记伤害
+     *
+     * @param damage      - 召唤伤害
+     * @param markDamage  - 标记伤害
      * @param attackSpeed - 攻击速度
      * @param hitCooldown - 击中同一目标的间隔
      */
@@ -60,10 +62,9 @@ public class BaseWhipItem extends Item {
                         int hitCooldown,
                         float rangeFactor) {
         super(properties.stacksTo(1)
-                .attributes(
-                ItemAttributeModifiers.builder()
+                .attributes(ItemAttributeModifiers.builder()
                         .add(
-                                TEAttributes.SUMMON_DAMAGE,
+                                LibAttributes.getSummonDamage(),
                                 new AttributeModifier(TerraEntity.space("whip_damage_modifier"), damage, AttributeModifier.Operation.ADD_VALUE),
                                 EquipmentSlotGroup.MAINHAND
                         )
@@ -73,28 +74,26 @@ public class BaseWhipItem extends Item {
                                 EquipmentSlotGroup.MAINHAND
                         )
                         .add(
-                                TEAttributes.MARK_DAMAGE,
+                                ConfluenceMagicLib.MARK_DAMAGE,
                                 new AttributeModifier(TerraEntity.space("whip_mark_damage_modifier"), markDamage, AttributeModifier.Operation.ADD_VALUE),
                                 EquipmentSlotGroup.MAINHAND
                         )
                         .add(
-                                TEAttributes.WHIP_RANGE,
+                                ConfluenceMagicLib.WHIP_RANGE,
                                 new AttributeModifier(TerraEntity.space("whip_range_modifier"), rangeFactor, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
                                 EquipmentSlotGroup.MAINHAND
                         )
-                        .build()
-                )
+                        .build())
         );
         this.hitCooldown = hitCooldown;
 //        this.markDamage = markDamage;
 //        this.attackSpeed = attackSpeed;
-        if(properties instanceof WhipProperties whipProperties) {
+        if (properties instanceof WhipProperties whipProperties) {
             this.particleOptions = whipProperties.particleOptions;
             this.chance = whipProperties.chance;
             this.blockStateSupplier = whipProperties.blockStateSupplier;
             this.canPenetrate = whipProperties.canPenetrate;
-        }
-        else {
+        } else {
             this.particleOptions = null;
             this.chance = 0f;
         }
@@ -108,13 +107,13 @@ public class BaseWhipItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack stack = player.getItemInHand(usedHand);
-        if(usedHand == InteractionHand.OFF_HAND) return InteractionResultHolder.success(stack);
-        if(!level.isClientSide){
+        if (usedHand == InteractionHand.OFF_HAND) return InteractionResultHolder.success(stack);
+        if (!level.isClientSide) {
 
-            if(stack.getItem() instanceof BaseWhipItem self) {
+            if (stack.getItem() instanceof BaseWhipItem self) {
                 int cooldown = (int) (20 * getCdReduction(player));
                 player.getCooldowns().addCooldown(this, cooldown);
-                if(player.getOffhandItem().getItem() instanceof BaseWhipItem other){
+                if (player.getOffhandItem().getItem() instanceof BaseWhipItem other) {
                     player.getCooldowns().addCooldown(other, cooldown);
                 }
                 WhipEntity whipEntity = TEProjectileEntities.WHIP_PROJECTILE.get().create(level);
@@ -128,7 +127,7 @@ public class BaseWhipItem extends Item {
                 level.addFreshEntity(whipEntity);
 //                stack.hurtAndBreak(1, player, (Consumer<LivingEntity>) (e -> e.playSound(SoundEvents.)));
             }
-        }else{
+        } else {
             clickTime = player.tickCount;
             cooldownTime = (int) (20 * getCdReduction(player));
         }
@@ -174,8 +173,9 @@ public class BaseWhipItem extends Item {
 
         /**
          * 设置粒子效果
+         *
          * @param particleOptions 粒子效果
-         * @param chance 粒子效果出现的几率
+         * @param chance          粒子效果出现的几率
          */
         public WhipProperties setParticle(Supplier<? extends ParticleOptions> particleOptions, float chance) {
             this.particleOptions = particleOptions;
@@ -190,10 +190,11 @@ public class BaseWhipItem extends Item {
 
         /**
          * 设置耐久度，默认为无限耐久
+         *
          * @param durability 耐久度
          */
         public WhipProperties setDurability(int durability) {
-            modifiers.add(p-> p.durability(durability));
+            modifiers.add(p -> p.durability(durability));
             hasDamage = true;
             return this;
         }
@@ -208,8 +209,8 @@ public class BaseWhipItem extends Item {
          */
         public Properties buildProperties() {
 
-            if(!hasDamage) this.component(DataComponents.UNBREAKABLE, new Unbreakable(true));
-            return modifiers.stream().reduce(this, (p, m)-> (WhipProperties) m.apply(p), (p1, p2)->p1);
+            if (!hasDamage) this.component(DataComponents.UNBREAKABLE, new Unbreakable(true));
+            return modifiers.stream().reduce(this, (p, m) -> (WhipProperties) m.apply(p), (p1, p2) -> p1);
         }
     }
 

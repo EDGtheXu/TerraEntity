@@ -23,8 +23,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.terraentity.TerraEntity;
-import org.confluence.terraentity.init.TEAttributes;
 import org.confluence.terraentity.init.TETags;
 
 import java.util.List;
@@ -57,7 +57,7 @@ public class TEEnchantments {
                         Enchantment.dynamicCost(18, 8),
                         8,
                         EquipmentSlotGroup.MAINHAND
-        )));
+                )));
 
         register(context, MULTI_BOOMERANG,
                 Enchantment.enchantment(Enchantment.definition(
@@ -68,25 +68,25 @@ public class TEEnchantments {
                         Enchantment.dynamicCost(18, 8),
                         8,
                         EquipmentSlotGroup.MAINHAND
-        )));
+                )));
 
         register(context, SUMMONER_PACT,
                 Enchantment.enchantment(Enchantment.definition(
-                        itemLookup.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
-                        5,
-                        3,
-                        Enchantment.dynamicCost(10, 8),
-                        Enchantment.dynamicCost(18, 8),
-                        10,
-                        EquipmentSlotGroup.HEAD))
-                .exclusiveWith(enchantLookup.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE))
-                .withEffect(
-                        EnchantmentEffectComponents.ATTRIBUTES,
-                        new EnchantmentAttributeEffect(
-                                TerraEntity.space("enchantment.summoner_pact"),
-                                TEAttributes.MINION_CAPACITY,
-                                LevelBasedValue.perLevel(1,0.5f),
-                                AttributeModifier.Operation.ADD_VALUE))
+                                itemLookup.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                                5,
+                                3,
+                                Enchantment.dynamicCost(10, 8),
+                                Enchantment.dynamicCost(18, 8),
+                                10,
+                                EquipmentSlotGroup.HEAD))
+                        .exclusiveWith(enchantLookup.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE))
+                        .withEffect(
+                                EnchantmentEffectComponents.ATTRIBUTES,
+                                new EnchantmentAttributeEffect(
+                                        TerraEntity.space("enchantment.summoner_pact"),
+                                        ConfluenceMagicLib.MINION_CAPACITY,
+                                        LevelBasedValue.perLevel(1, 0.5f),
+                                        AttributeModifier.Operation.ADD_VALUE))
         );
     }
 
@@ -100,6 +100,7 @@ public class TEEnchantments {
             return TYPES.register(name, () -> DataComponentType.<List<ConditionalEffect<EnchantmentValueEffect>>>builder().persistent(ConditionalEffect.codec(EnchantmentValueEffect.CODEC, paramSet).listOf()).build());
         }
     }
+
     // 注册附魔的方法
     private static void register(BootstrapContext<Enchantment> context, ResourceKey<Enchantment> key, Enchantment.Builder builder) {
         context.register(key, builder.build(key.location()));
@@ -107,7 +108,7 @@ public class TEEnchantments {
 
     // 创建附魔资源键的方法
     private static ResourceKey<Enchantment> key(String name) {
-        return ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID,name));
+        return ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath(TerraEntity.MODID, name));
     }
 
     public static void register(IEventBus bus) {

@@ -18,7 +18,7 @@ public class NPCNurseTargetSensor<T extends AbstractTerraNPC> extends NPCNearest
     protected boolean isMatchingEntity(T owner, LivingEntity target) {
         double percent = target.getHealth() / target.getMaxHealth();
         if(target instanceof Player) {
-            if (ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get()) return false;
+            if (ConfluenceMagicLib.IS_CONFLUENCE_LOAD) return false;
             // 玩家生命小于0.33才治疗
             return percent <= 0.33f;
         }

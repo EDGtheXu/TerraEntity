@@ -202,7 +202,7 @@ dependencies {
         implementation "org.mesdag:ParticleStorm:${particle_storm_version}"
         implementation "org.mesdag.thr_dim_particle:ThreeDimensionParticle-core:${thr_dim_particle_version}"
     } else {
-        implementation jarJar("libs:confluence_magic_lib:0.0.8")
+        implementation jarJar("libs:confluence_magic_lib:${confluence_lib_version}")
         implementation jarJar("software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}")
         implementation jarJar("org.mesdag:ParticleStorm:${particle_storm_version}")
         implementation jarJar("org.mesdag.thr_dim_particle:ThreeDimensionParticle-core:${thr_dim_particle_version}")

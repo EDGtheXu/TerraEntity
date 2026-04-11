@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.phys.*;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.IAttackableProjectile;
@@ -235,7 +236,7 @@ public final class TEUtils {
     public static float getMultiple(Level level, BlockPos pos, Holder<Attribute> attribute) {
         if (attribute == Attributes.MAX_HEALTH)
             return switchByDifficulty(level, pos, 0.66f, 1f, 1.5f);
-        else if (attribute == Attributes.ATTACK_DAMAGE)
+        else if (attribute == LibAttributes.getAttackDamage())
             return switchByDifficulty(level, pos, 0.66f, 1f, 1.5f);
         else return 1f;
     }
@@ -258,7 +259,7 @@ public final class TEUtils {
                     entity.setHealth(entity.getMaxHealth());
                 }
             }
-            var damageAttribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
+            var damageAttribute = entity.getAttribute(LibAttributes.getAttackDamage());
             if (damageAttribute != null) {
                 if (!damageAttribute.hasModifier(difficultyDamageKey))
                     damageAttribute.addPermanentModifier(new AttributeModifier(difficultyDamageKey, multiplier - 1, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
@@ -287,7 +288,7 @@ public final class TEUtils {
                     entity.setHealth(entity.getMaxHealth());
                 }
             }
-            var damageAttribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
+            var damageAttribute = entity.getAttribute(LibAttributes.getAttackDamage());
             if (damageAttribute != null) {
                 if (!damageAttribute.hasModifier(damageKey))
                     damageAttribute.addPermanentModifier(new AttributeModifier(damageKey, ServerConfig.MONSTER_ATTRIBUTES_MULTIPLIER_DAMAGE.get() - 1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));

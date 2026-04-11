@@ -11,9 +11,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.TerraEntity;
 import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.entity.ai.goal.skill.SkillCooldownManager;
@@ -199,7 +199,7 @@ public class Terraprisma extends SummonSword {
                     .addKeyframe(0,0)
                     .addKeyframe(10,1080)
                     .build()), true);
-            Objects.requireNonNull(this.sword.getAttribute(Attributes.ATTACK_DAMAGE)).addOrUpdateTransientModifier(new AttributeModifier(attackModifierId, 0.3f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            Objects.requireNonNull(this.sword.getAttribute(LibAttributes.getAttackDamage())).addOrUpdateTransientModifier(new AttributeModifier(attackModifierId, 0.3f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 
         }
 
@@ -207,7 +207,7 @@ public class Terraprisma extends SummonSword {
         @Override
         public void stop(){
             super.stop();
-            Objects.requireNonNull(this.sword.getAttribute(Attributes.ATTACK_DAMAGE)).removeModifier(attackModifierId);
+            Objects.requireNonNull(this.sword.getAttribute(LibAttributes.getAttackDamage())).removeModifier(attackModifierId);
 
             Entity actualTarget = sword instanceof IPartEntityTargetable t ? t.getActualTargetEntity() : null;
             if (actualTarget == null) actualTarget = sword.getTarget();

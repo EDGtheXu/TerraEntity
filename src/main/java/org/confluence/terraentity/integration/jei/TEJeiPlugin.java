@@ -45,7 +45,7 @@ public final class TEJeiPlugin implements IModPlugin {
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         NPCTradeManager.Loader.getInstance().getTradeMap().forEach((npc, manager) -> {
             List<ITrade> trades = manager.getRawTrades().getAllSupportedTrades();
-            if (ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get()) {
+            if (ConfluenceMagicLib.IS_CONFLUENCE_LOAD) {
                 // 汇流加载时，替换掉配方
                 if(npc.getNamespace().equals(TerraEntity.MODID)){
                     return;

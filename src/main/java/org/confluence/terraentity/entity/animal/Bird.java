@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.init.TESounds;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -59,7 +60,7 @@ public class Bird extends Animal implements GeoEntity, FlyingAnimal {
     private float flapping = 1.0F;
     private float nextFlap = 1.0F;
     private boolean partyBird;
-    
+
     @Nullable
     private BlockPos jukebox;
 
@@ -93,11 +94,21 @@ public class Bird extends Animal implements GeoEntity, FlyingAnimal {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 6.0).add(Attributes.FLYING_SPEED, 0.4000000059604645).add(Attributes.MOVEMENT_SPEED, 0.20000000298023224).add(Attributes.ATTACK_DAMAGE, 3.0).add(Attributes.FALL_DAMAGE_MULTIPLIER, 0);
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 6.0)
+                .add(Attributes.FLYING_SPEED, 0.4000000059604645)
+                .add(Attributes.MOVEMENT_SPEED, 0.20000000298023224)
+                .add(LibAttributes.getAttackDamage(), 3.0)
+                .add(Attributes.FALL_DAMAGE_MULTIPLIER, 0);
     }
 
     public static AttributeSupplier.Builder createInspectAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 3.0).add(Attributes.FLYING_SPEED, 0.25).add(Attributes.MOVEMENT_SPEED, 0.18).add(Attributes.ATTACK_DAMAGE, 3.0).add(Attributes.FALL_DAMAGE_MULTIPLIER, 0);
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 3.0)
+                .add(Attributes.FLYING_SPEED, 0.25)
+                .add(Attributes.MOVEMENT_SPEED, 0.18)
+                .add(LibAttributes.getAttackDamage(), 3.0)
+                .add(Attributes.FALL_DAMAGE_MULTIPLIER, 0);
     }
 
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {
@@ -144,12 +155,12 @@ public class Bird extends Animal implements GeoEntity, FlyingAnimal {
 
         this.flap += this.flapping * 2.0F;
     }
-    
+
 
     @Override
     public @NotNull InteractionResult mobInteract(@NotNull Player player, @NotNull InteractionHand hand) {
         return super.mobInteract(player, hand);
-        
+
     }
     @Override
     public boolean isFood(@NotNull ItemStack stack) {
@@ -178,7 +189,7 @@ public class Bird extends Animal implements GeoEntity, FlyingAnimal {
     public SoundEvent getAmbientSound() {
         return super.getAmbientSound();
     }
-    
+
 
     protected SoundEvent getHurtSound(@NotNull DamageSource damageSource) {
         return TESounds.ROUTINE_HURT.get();
@@ -216,7 +227,7 @@ public class Bird extends Animal implements GeoEntity, FlyingAnimal {
     public boolean isPushable() {
         return true;
     }
-    
+
     @Override
     protected void doPush(@NotNull Entity entity) {
         if (!(entity instanceof Player)) {
@@ -224,7 +235,7 @@ public class Bird extends Animal implements GeoEntity, FlyingAnimal {
         }
 
     }
-    
+
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
         return super.hurt(source, amount);
@@ -258,7 +269,7 @@ public class Bird extends Animal implements GeoEntity, FlyingAnimal {
         return new Vec3(0.0, (double)(0.5F * this.getEyeHeight()), (double)(this.getBbWidth() * 0.4F));
     }
 
-    
+
     public static class BirdWanderGoal extends WaterAvoidingRandomFlyingGoal {
         public BirdWanderGoal(PathfinderMob mob, double speedModifier) {
             super(mob, speedModifier);

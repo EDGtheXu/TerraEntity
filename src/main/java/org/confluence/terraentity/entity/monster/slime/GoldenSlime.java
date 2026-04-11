@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.Level;
 import org.confluence.lib.color.FloatRGB;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.util.DeathAnimOptions;
 import org.confluence.terraentity.init.TEParticles;
 import org.confluence.terraentity.mixin.accessor.SlimeAccessor;
@@ -65,7 +66,7 @@ public class GoldenSlime extends Slime implements DeathAnimOptions {
 
     public static AttributeSupplier.Builder createSlimeAttributes() {
         return BaseSlime.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, 5)
+                .add(LibAttributes.getAttackDamage(), 5)
                 .add(Attributes.ARMOR, 2)
                 .add(Attributes.MAX_HEALTH, 97);
     }

@@ -17,6 +17,7 @@ import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import org.confluence.lib.color.FloatRGB;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.util.DeathAnimOptions;
 import org.confluence.terraentity.init.TEParticles;
 import org.confluence.terraentity.mixin.accessor.SlimeAccessor;
@@ -95,7 +96,7 @@ public class BlackSlime extends Slime implements DeathAnimOptions {
         }
 
         setSize(size, false);
-        AttributeInstance attackDamage = getAttribute(Attributes.ATTACK_DAMAGE);
+        AttributeInstance attackDamage = getAttribute(LibAttributes.getAttackDamage());
         AttributeInstance maxHealth = getAttribute(Attributes.MAX_HEALTH);
         assert attackDamage != null && maxHealth != null;
         if (size == 2) {

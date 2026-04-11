@@ -9,12 +9,12 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTFactory;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTNode;
 import org.confluence.terraentity.entity.ai.goal.behavior.BTRoot;
@@ -243,7 +243,7 @@ public class SkeletronPrimePart extends AbstractMonster implements GeoEntity, Ow
                     entity.shootFromRotation(mob, mob.getXRot(), mob.getYRot(), 0.0f, 1.5f, 10.0f);
                     entity.setOwner(mob);
                     entity.setPos(mob.getX(), mob.getY()  + mob.getBbHeight() * 0.5f, mob.getZ());
-                    entity.setDamage((float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE));
+                    entity.setDamage((float) mob.getAttributeValue(LibAttributes.getAttackDamage()));
                     mob.level().addFreshEntity(entity);
                 }
             }
@@ -263,7 +263,7 @@ public class SkeletronPrimePart extends AbstractMonster implements GeoEntity, Ow
                     entity.shootFromRotation(mob, mob.getXRot(), mob.getYRot(), 0.0f, 1.5f, 10.0f);
                     entity.setOwner(mob);
                     entity.setPos(mob.getX(), mob.getY()  + mob.getBbHeight() * 0.5f, mob.getZ());
-//                    entity.setDamage((float) mob.getAttributeValue(Attributes.ATTACK_DAMAGE));
+//                    entity.setDamage((float) mob.getAttributeValue(LibAttributes.getAttackDamage()));
                     mob.level().addFreshEntity(entity);
                 }
             }

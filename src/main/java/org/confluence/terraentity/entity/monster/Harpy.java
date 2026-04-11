@@ -7,11 +7,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.ai.goal.DashGoal;
 import org.confluence.terraentity.entity.monster.prefab.AttributeBuilder;
 import org.confluence.terraentity.entity.proj.LineProj;
@@ -117,7 +117,7 @@ public class Harpy extends AbstractMonster {
             proj.setPos(this.getEyePosition());
             proj.setOwner(this);
             proj.shoot(living.getX() - this.getX(), living.getY() - this.getY(), living.getZ() - this.getZ(), 0.5f, 2f);
-            proj.setDamage((float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
+            proj.setDamage((float) this.getAttributeValue(LibAttributes.getAttackDamage()));
             level().addFreshEntity(proj);
         }
     }

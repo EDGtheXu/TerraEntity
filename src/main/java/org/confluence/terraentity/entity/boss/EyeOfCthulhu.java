@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.api.entity.Boss;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.entity.IAutoLeaveMob;
 import org.confluence.terraentity.api.entity.blur.IMotionBlurHolder;
 import org.confluence.terraentity.config.ServerConfig;
@@ -211,9 +212,9 @@ public class EyeOfCthulhu extends AbstractTerraBossBase implements GeoEntity, Bo
                     if(dashPos != null && dashDir != null){
                         this.lookControl.setLookAt(dashPos);
                         // 冲刺增加伤害
-                        //getAttribute(Attributes.ATTACK_DAMAGE).addTransientModifier(
+                        //getAttribute(LibAttributes.getAttackDamage()).addTransientModifier(
                         //new AttributeModifier(DASH_UUID.toString(),2, AttributeModifier.Operation.ADDITION));
-                        getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(DAMAGE * dashFactor);
+                        getAttribute(LibAttributes.getAttackDamage()).setBaseValue(DAMAGE * dashFactor);
 
                         this.setDeltaMovement(dashDir.normalize().scale(MOVE_SPEED * speedFactor));
                     }
@@ -221,7 +222,7 @@ public class EyeOfCthulhu extends AbstractTerraBossBase implements GeoEntity, Bo
                 },
                 terraBossBase -> {
                     // 结束冲刺移除加成
-                    getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(DAMAGE);
+                    getAttribute(LibAttributes.getAttackDamage()).setBaseValue(DAMAGE);
                     if (this.getStage() == 1 ){
                         if(--stage1_dashCount <= 0) {
                             stage1_dashCount = 3;
@@ -244,7 +245,7 @@ public class EyeOfCthulhu extends AbstractTerraBossBase implements GeoEntity, Bo
                     },
                 terraBossBase -> {
                     // 增加属性
-                    getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(CRAZY_DAMAGE);
+                    getAttribute(LibAttributes.getAttackDamage()).setBaseValue(CRAZY_DAMAGE);
 
                 });
         this.stage2_stare = new MobSkill(type2, 3 * 20, 0,
@@ -281,7 +282,7 @@ public class EyeOfCthulhu extends AbstractTerraBossBase implements GeoEntity, Bo
                     }else{
                         this.stage2_dashCount = 3;
                     }
-                    getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(CRAZY_DAMAGE);
+                    getAttribute(LibAttributes.getAttackDamage()).setBaseValue(CRAZY_DAMAGE);
                 }
         );
         this.state2_dash = new MobSkill(type2run, 30, 20,
@@ -340,13 +341,13 @@ public class EyeOfCthulhu extends AbstractTerraBossBase implements GeoEntity, Bo
                         this.lookControl.setLookAt(dashPos);
                         this.lookAt(EntityAnchorArgument.Anchor.EYES, dashPos);
                         // 冲刺增加伤害
-                        getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(CRAZY_DAMAGE * dashFactor);
+                        getAttribute(LibAttributes.getAttackDamage()).setBaseValue(CRAZY_DAMAGE * dashFactor);
                         this.setDeltaMovement(dashDir.normalize().scale(MOVE_SPEED * speedFactor * stage2SpeedFactor));
                     }
                 },
                 terraBossBase -> {
                     // 结束冲刺移除加成
-                    getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(CRAZY_DAMAGE);
+                    getAttribute(LibAttributes.getAttackDamage()).setBaseValue(CRAZY_DAMAGE);
                     if (--stage2_dashCount <= 0) {
                         // 冲刺完
                         stage2_dashCount = stage2_dashCount_base;

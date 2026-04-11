@@ -6,9 +6,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.entity.monster.prefab.AttributeBuilder;
 import org.confluence.terraentity.entity.proj.DemonScytheProj;
 import org.confluence.terraentity.init.TESounds;
@@ -78,7 +78,7 @@ public class Demon extends Harpy {
             proj.setOwner(this);
             proj.shootFromRotation(this, getXRot(), getYRot(), 0, 0.2F, 2); // fixme 射弹的初始旋转有问题
             //proj.shoot(living.getX() - this.getX(), living.getY() - this.getY(), living.getZ() - this.getZ(), 0.2f, 2f);
-            proj.setDamage((float) this.getAttributeValue(Attributes.ATTACK_DAMAGE));
+            proj.setDamage((float) this.getAttributeValue(LibAttributes.getAttackDamage()));
             level().addFreshEntity(proj);
         }
     }

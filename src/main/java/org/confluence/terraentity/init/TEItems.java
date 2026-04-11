@@ -46,7 +46,7 @@ public class TEItems {
                         WipNotDisplayOutput wrappedOutput = new WipNotDisplayOutput(output);
                         Consumer<DeferredHolder<Item, ? extends Item>> action = item -> wrappedOutput.accept(item.get());
                         TESpawnEggItems.ITEMS.getEntries().forEach(action);
-                        if(!ConfluenceMagicLib.IS_CONFLUENCE_LOADED.get() || TERuntime.isDevMode()) {
+                        if(!ConfluenceMagicLib.IS_CONFLUENCE_LOAD || TERuntime.isDevMode()) {
                             TEBossSummonsItems.ITEMS.getEntries().forEach(action);
                         }
                         TERideableItems.ITEMS.getEntries().forEach(action);

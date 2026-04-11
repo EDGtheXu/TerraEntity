@@ -9,12 +9,13 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.entity.PartEntity;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.api.entity.IPartEntityTargetable;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.entity.ai.goal.summon.SummonFlyFlowOwnerGoal;
@@ -24,7 +25,6 @@ import org.confluence.terraentity.entity.proj.LineProj;
 import org.confluence.terraentity.init.entity.TEProjectileEntities;
 import org.confluence.terraentity.utils.TEUtils;
 import org.jetbrains.annotations.Nullable;
-import net.neoforged.neoforge.entity.PartEntity;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -113,7 +113,7 @@ public class SummonHornet extends Hornet implements ISummonMob, IPartEntityTarge
     }
 
     protected LineProj createProj(){
-        return TEProjectileEntities.SUMMON_BEE_STICK_PROJ.get().create(level()).setDamage((float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
+        return TEProjectileEntities.SUMMON_BEE_STICK_PROJ.get().create(level()).setDamage((float) this.getAttribute(LibAttributes.getAttackDamage()).getValue());
     }
 
     public void summon_registerMoveGoal(){

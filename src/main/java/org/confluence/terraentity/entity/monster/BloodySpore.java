@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.init.TESounds;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,7 @@ public class BloodySpore extends Creeper implements GeoEntity {
 
     public static AttributeSupplier.@NotNull Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, 0.0)
+                .add(LibAttributes.getAttackDamage(), 0.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.MAX_HEALTH, 100.0)
                 .add(Attributes.ARMOR, 6)

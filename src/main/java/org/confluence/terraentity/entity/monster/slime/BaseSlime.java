@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.confluence.lib.color.FloatRGB;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.entity.boss.KingSlime;
 import org.confluence.terraentity.entity.util.DeathAnimOptions;
@@ -90,7 +91,7 @@ public class BaseSlime extends Slime implements DeathAnimOptions {
 
     public static AttributeSupplier.Builder createSlimeAttributes(float attackDamage, int armor, float maxHealth) {
         return Mob.createMobAttributes()
-                .add(Attributes.ATTACK_DAMAGE, attackDamage)
+                .add(LibAttributes.getAttackDamage(), attackDamage)
                 .add(Attributes.ARMOR, armor)
                 .add(Attributes.WATER_MOVEMENT_EFFICIENCY, slimeWaterMoveSpeed)
                 .add(Attributes.MAX_HEALTH, maxHealth);

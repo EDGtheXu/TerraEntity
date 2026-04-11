@@ -20,6 +20,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
+import org.confluence.lib.common.LibAttributes;
 import org.confluence.terraentity.init.TESounds;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -75,7 +76,11 @@ public class Piranha extends WaterAnimal implements Enemy, GeoEntity {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 15.0).add(Attributes.ARMOR, 2).add(Attributes.MOVEMENT_SPEED, 1.2).add(Attributes.ATTACK_DAMAGE, 13.0);
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 15.0)
+                .add(Attributes.ARMOR, 2)
+                .add(Attributes.MOVEMENT_SPEED, 1.2)
+                .add(LibAttributes.getAttackDamage(), 13.0);
     }
 
     @Override

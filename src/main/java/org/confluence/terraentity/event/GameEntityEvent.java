@@ -25,6 +25,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.lib.api.entity.Boss;
 import org.confluence.lib.api.entity.IDiscardWhenRespawnEntity;
 import org.confluence.terraentity.api.entity.ISummonMob;
@@ -40,7 +41,10 @@ import org.confluence.terraentity.entity.monster.prefab.IAttributeHolder;
 import org.confluence.terraentity.entity.monster.slime.BaseSlime;
 import org.confluence.terraentity.entity.monster.slime.BlackSlime;
 import org.confluence.terraentity.entity.npc.AbstractTerraNPC;
-import org.confluence.terraentity.init.*;
+import org.confluence.terraentity.init.TEAttachments;
+import org.confluence.terraentity.init.TEDataMaps;
+import org.confluence.terraentity.init.TEEffects;
+import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.init.entity.TEMonsterEntities;
 import org.confluence.terraentity.mixed.IPlayer;
 import org.confluence.terraentity.mixed.IZombie;
@@ -157,14 +161,14 @@ public class GameEntityEvent {
             if (attacker instanceof ISummonMob summoner) {
                 LivingEntity owner = summoner.summon_getOwner();
                 if (owner != null) {
-                    var att = owner.getAttribute(TEAttributes.MARK_DAMAGE);
+                    var att = owner.getAttribute(ConfluenceMagicLib.MARK_DAMAGE);
                     if (att != null) {
                         double damage = att.getValue();
                         amount += (float) damage;
                     }
                 }
             } else if (attacker instanceof LivingEntity owner) {
-                var att = owner.getAttribute(TEAttributes.MARK_DAMAGE);
+                var att = owner.getAttribute(ConfluenceMagicLib.MARK_DAMAGE);
                 if (att != null) {
                     double damage = att.getValue();
                     amount += (float) damage;
