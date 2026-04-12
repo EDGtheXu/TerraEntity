@@ -28,6 +28,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.confluence.lib.ConfluenceMagicLib;
 import org.confluence.lib.api.entity.Boss;
 import org.confluence.lib.api.entity.IDiscardWhenRespawnEntity;
+import org.confluence.lib.util.LibUtils;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.api.npc.trade.ITradeHolder;
 import org.confluence.terraentity.config.ServerConfig;
@@ -151,27 +152,16 @@ public class GameEntityEvent {
         LivingEntity hurter = event.getEntity();
         Entity attacker = event.getSource().getEntity();
 
-        if (damageSource.is(TETags.DamageTypes.SUMMONER) || attacker instanceof ISummonMob summoner) {
+        if (damageSource.is(TETags.DamageTypes.SUMMONER) || attacker instanceof ISummonMob) {
             // 召唤物集火伤害加成
             if (hurter.hasEffect(TEEffects.SUMMON_FOCUS)) {
-                amount = amount + 2;
-
+                amount += 2;
             }
             // 召唤物标记伤害增加
-            if (attacker instanceof ISummonMob summoner) {
-                LivingEntity owner = summoner.summon_getOwner();
-                if (owner != null) {
-                    var att = owner.getAttribute(ConfluenceMagicLib.MARK_DAMAGE);
-                    if (att != null) {
-                        double damage = att.getValue();
-                        amount += (float) damage;
-                    }
-                }
-            } else if (attacker instanceof LivingEntity owner) {
+            if (LibUtils.getOwner(attacker) instanceof LivingEntity owner) {
                 var att = owner.getAttribute(ConfluenceMagicLib.MARK_DAMAGE);
                 if (att != null) {
-                    double damage = att.getValue();
-                    amount += (float) damage;
+                    amount += (float) att.getValue();
                 }
             }
         }
@@ -222,8 +212,8 @@ public class GameEntityEvent {
         data.accept(mob);
         //
         Integer xp = BuiltInRegistries.ENTITY_TYPE.getData(TEDataMaps.ENTITY_XP_DATA_MAP, mob.getType().builtInRegistryHolder().unwrapKey().orElseThrow());
-        if(xp != null){
-            ((MobAccessor)mob).setXpReward(xp);
+        if (xp != null) {
+            ((MobAccessor) mob).setXpReward(xp);
         }
 
     }

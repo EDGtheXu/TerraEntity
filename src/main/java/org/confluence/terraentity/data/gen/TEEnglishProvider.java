@@ -149,14 +149,6 @@ public class TEEnglishProvider extends LanguageProvider {
         // rideable
         add("tooltip.terra_entity.rideable_item.desc", "Press hotkey to ride. Default R .");
 
-        // attribute
-        add("attribute.name.player.summon_damage", "Summon Damage");
-        add("attribute.name.player.mark_damage", "Mark Damage");
-        add("attribute.name.player.whip_range", "Whip Range");
-        add("attribute.name.player.summon_knockback", "Summon Knockback");
-        add("attribute.name.player.minion_capacity", "Minion Capacity");
-        add("attribute.name.player.sentry_capacity", "Sentry Capacity");
-
         // track
         add("terra_entity.track_type.simple", "Simple Track");
         add("terra_entity.track_type.basis", "Basis Track");

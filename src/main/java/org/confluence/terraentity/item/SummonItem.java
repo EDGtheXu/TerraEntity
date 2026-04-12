@@ -134,7 +134,7 @@ public class SummonItem<T extends Mob & ISummonMob> extends Item {
         int b = SummonerAttachment.getMaxCapacity(localPlayer);
         tooltipComponents.add(Component.translatable("tooltip.terra_entity.summon_info", b - a, b).withColor(a <= 0 ? 0xAB0000 : 0x00ABAC));
 
-        this.tooltips.forEach(tooltipComponents::add);
+        tooltipComponents.addAll(this.tooltips);
     }
 
     @Override

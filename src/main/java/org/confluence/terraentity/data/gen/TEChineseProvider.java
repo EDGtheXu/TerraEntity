@@ -658,15 +658,6 @@ public class TEChineseProvider extends LanguageProvider {
         // rideable
         add("tooltip.terra_entity.rideable_item.desc", "按下快捷键以骑乘。默认 R 键");
 
-
-        // attribute
-        add("attribute.name.player.summon_damage", "召唤伤害");
-        add("attribute.name.player.mark_damage", "标记伤害");
-        add("attribute.name.player.whip_range", "鞭范围");
-        add("attribute.name.player.summon_knockback", "召唤物击退");
-        add("attribute.name.player.minion_capacity", "仆从容量");
-        add("attribute.name.player.sentry_capacity", "哨兵容量");
-
         // track
         add("terra_entity.track_type.simple", "简单");
         add("terra_entity.track_type.basis", "基平面");

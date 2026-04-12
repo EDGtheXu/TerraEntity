@@ -21,7 +21,6 @@ import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.EntityGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,14 +34,12 @@ import org.confluence.terraentity.init.TETags;
 import org.confluence.terraentity.item.SummonItem;
 import org.confluence.terraentity.utils.AdapterUtils;
 import org.confluence.terraentity.utils.TEUtils;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * 召唤物接口，必须由Mob实现
- */
+/// 召唤物接口，必须由Mob实现
 @SuppressWarnings({"unchecked", "rawtypes", "unused"})
 public interface ISummonMob extends OwnableEntity {
     int getCost();
@@ -53,9 +50,7 @@ public interface ISummonMob extends OwnableEntity {
         return (Mob) this;
     }
 
-    /**
-     * 区分是否为宠物，这样不需要再进行一次类型检查
-     */
+    /// 区分是否为宠物，这样不需要再进行一次类型检查
     default boolean isPet() {
         return false;
     }
@@ -64,24 +59,20 @@ public interface ISummonMob extends OwnableEntity {
 
     EntityDataAccessor<Optional<UUID>> get_DATA_OWNERUUID_ID();
 
-    default LivingEntity summon_getOwner() {
-        UUID uuid = this.summon_getOwnerUUID();
-        return uuid == null ? null : asEntity().level().getPlayerByUUID(uuid);
+    default @Nullable LivingEntity summon_getOwner() {
+        return getOwner();
     }
 
     default void summon_setOwnerUUID(@Nullable UUID uuid) {
         asEntity().getEntityData().set(get_DATA_OWNERUUID_ID(), Optional.ofNullable(uuid));
     }
 
-    @Nullable
-    default UUID getOwnerUUID() {
+    default @Nullable UUID getOwnerUUID() {
         return summon_getOwnerUUID();
     }
 
-    EntityGetter level();
-
-    default UUID summon_getOwnerUUID() {
-        return (UUID) ((Optional) asEntity().getEntityData().get(get_DATA_OWNERUUID_ID())).orElse(null);
+    default @Nullable UUID summon_getOwnerUUID() {
+        return asEntity().getEntityData().get(get_DATA_OWNERUUID_ID()).orElse(null);
     }
 
     default boolean summon_unableToMoveToOwner() {
@@ -137,16 +128,12 @@ public interface ISummonMob extends OwnableEntity {
 
     /* Teleport API */
 
-    /**
-     * 当距离平方超过这个数时，会尝试传送到owner附近
-     */
+    /// 当距离平方超过这个数时，会尝试传送到owner附近
     default float summon_getDistanceToTeleportToOwner() {
         return 40 * 40;
     }
 
-    /**
-     * 当距离平方超过这个数时，会尝试移动到owner附近
-     */
+    /// 当距离平方超过这个数时，会尝试移动到owner附近
     default float summon_getStartDistanceToOwner() {
         return 32 * 32;
     }
@@ -218,9 +205,7 @@ public interface ISummonMob extends OwnableEntity {
         return asEntity().damageSources().source(TETags.DamageTypes.SUMMONER, summon_getOwner());
     }
 
-    /**
-     * 简单攻击
-     */
+    /// 简单攻击
     default boolean summon_doHurtTarget(Entity entity) {
         float f = 0;
         DamageSource damagesource = summon_getDamageSource();

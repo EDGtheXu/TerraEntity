@@ -41,7 +41,6 @@ import org.confluence.terraentity.api.entity.IAttackableProjectile;
 import org.confluence.terraentity.api.entity.ISummonMob;
 import org.confluence.terraentity.config.ServerConfig;
 import org.confluence.terraentity.entity.boss.AbstractTerraBossBase;
-import org.confluence.terraentity.mixed.IAttributeInstance;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
@@ -740,6 +739,7 @@ public final class TEUtils {
         }
         return null;
     }
+
     /**
      * 获取包围盒内锥形射线内的所有目标
      *
@@ -1062,7 +1062,7 @@ public final class TEUtils {
     public static float getAttributePercent(Holder<Attribute> attribute, LivingEntity entity) {
         AttributeInstance instance = entity.getAttribute(attribute);
         if (instance != null) {
-            return (float) ((IAttributeInstance) instance).terraentity$getPercentage();
+            return (float) instance.getValue();
         }
         return 1;
     }
